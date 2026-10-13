@@ -12,4 +12,18 @@ class WorkoutExercise {
     required this.order,
     required this.sets,
   });
+
+  WorkoutExercise copyWith({
+    String? id,
+    String? exerciseId,
+    int? order,
+    List<ExerciseSet>? sets,
+  }) {
+    return WorkoutExercise(
+      id: id ?? this.id,
+      exerciseId: exerciseId ?? this.exerciseId,
+      order: order ?? this.order,
+      sets: sets ?? this.sets,
+    );
+  }
 }

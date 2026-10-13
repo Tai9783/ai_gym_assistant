@@ -19,4 +19,20 @@ class WorkoutSession {
     required this.status,
     required this.exercises,
   });
+
+  WorkoutSession copyWith({
+    String? id,
+    DateTime? startedAt,
+    DateTime? endedAt,
+    WorkoutSessionStatus? status,
+    List<WorkoutExercise>? exercises,
+  }) {
+    return WorkoutSession(
+      id: id ?? this.id,
+      startedAt: startedAt ?? this.startedAt,
+      endedAt: endedAt ?? this.endedAt,
+      status: status ?? this.status,
+      exercises: exercises ?? this.exercises,
+    );
+  }
 }
