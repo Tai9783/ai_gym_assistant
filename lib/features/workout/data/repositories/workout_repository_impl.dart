@@ -1,3 +1,5 @@
+import 'package:injectable/injectable.dart';
+
 import '../../domain/entities/workout_exercise.dart';
 import '../../domain/entities/workout_session.dart';
 import '../../domain/repositories/workout_repository.dart';
@@ -5,7 +7,7 @@ import '../datasources/workout_local_data_source.dart';
 import '../mappers/exercise_set_mapper.dart';
 import '../mappers/workout_exercise_mapper.dart';
 import '../mappers/workout_session_mapper.dart';
-
+@LazySingleton(as: WorkoutRepository)
 class WorkoutRepositoryImpl implements WorkoutRepository {
   final WorkoutLocalDataSource localDataSource;
 

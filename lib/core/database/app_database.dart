@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:injectable/injectable.dart';
 
 import 'tables/workout_sessions.dart';
 import 'tables/workout_exercises.dart';
 import 'tables/exercise_sets.dart';
 
 part 'app_database.g.dart';
-
+@lazySingleton
 @DriftDatabase(
   tables: [
     WorkoutSessions,

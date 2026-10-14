@@ -1,7 +1,8 @@
 import 'package:drift/drift.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../core/database/app_database.dart';
-
+@LazySingleton()
 class WorkoutLocalDataSource {
   final AppDatabase database;
 

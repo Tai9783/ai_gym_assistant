@@ -1,7 +1,9 @@
+import 'package:injectable/injectable.dart';
+
 import '../entities/exercise_set.dart';
 import '../entities/workout_session.dart';
 import '../repositories/workout_repository.dart';
-
+@LazySingleton()
 class UpdateExerciseSet {
   final WorkoutRepository repository;
 

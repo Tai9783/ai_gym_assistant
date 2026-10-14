@@ -1,9 +1,10 @@
+import 'package:injectable/injectable.dart';
 import 'package:uuid/uuid.dart';
 
 import '../entities/workout_exercise.dart';
 import '../entities/workout_session.dart';
 import '../repositories/workout_repository.dart';
-
+@LazySingleton()
 class StartWorkout {
   final WorkoutRepository repository;
 

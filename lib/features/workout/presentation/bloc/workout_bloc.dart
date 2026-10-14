@@ -1,11 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../domain/usecases/finish_workout.dart';
 import '../../domain/usecases/start_workout.dart';
 import '../../domain/usecases/update_exercise_set.dart';
 import 'workout_event.dart';
 import 'workout_state.dart';
-
+@injectable
 class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   final StartWorkout startWorkout;
   final UpdateExerciseSet updateExerciseSet;
