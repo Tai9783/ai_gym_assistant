@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import 'workout_exercises.dart';
 
+@DataClassName('ExerciseSetRecord')
 class ExerciseSets extends Table {
   TextColumn get id => text()();
 

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+@DataClassName('WorkoutSessionRecord')
 class WorkoutSessions extends Table {
   TextColumn get id => text()();
 
