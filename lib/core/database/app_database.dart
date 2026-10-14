@@ -21,6 +21,7 @@ class AppDatabase extends _$AppDatabase {
       name: 'ai_gym_assistant',
     ),
   );
+  AppDatabase.forTesting(super.executor);
 
   @override
   int get schemaVersion => 1;
