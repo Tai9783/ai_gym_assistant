@@ -1217,6 +1217,280 @@ class ExerciseSetsCompanion extends UpdateCompanion<ExerciseSetRecord> {
   }
 }
 
+class $ExerciseDefinitionsTable extends ExerciseDefinitions
+    with TableInfo<$ExerciseDefinitionsTable, ExerciseDefinitionRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExerciseDefinitionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _muscleGroupMeta = const VerificationMeta(
+    'muscleGroup',
+  );
+  @override
+  late final GeneratedColumn<String> muscleGroup = GeneratedColumn<String>(
+    'muscle_group',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, muscleGroup];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exercise_definitions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExerciseDefinitionRecord> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('muscle_group')) {
+      context.handle(
+        _muscleGroupMeta,
+        muscleGroup.isAcceptableOrUnknown(
+          data['muscle_group']!,
+          _muscleGroupMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_muscleGroupMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExerciseDefinitionRecord map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExerciseDefinitionRecord(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      muscleGroup: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}muscle_group'],
+      )!,
+    );
+  }
+
+  @override
+  $ExerciseDefinitionsTable createAlias(String alias) {
+    return $ExerciseDefinitionsTable(attachedDatabase, alias);
+  }
+}
+
+class ExerciseDefinitionRecord extends DataClass
+    implements Insertable<ExerciseDefinitionRecord> {
+  final String id;
+  final String name;
+  final String muscleGroup;
+  const ExerciseDefinitionRecord({
+    required this.id,
+    required this.name,
+    required this.muscleGroup,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['muscle_group'] = Variable<String>(muscleGroup);
+    return map;
+  }
+
+  ExerciseDefinitionsCompanion toCompanion(bool nullToAbsent) {
+    return ExerciseDefinitionsCompanion(
+      id: Value(id),
+      name: Value(name),
+      muscleGroup: Value(muscleGroup),
+    );
+  }
+
+  factory ExerciseDefinitionRecord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExerciseDefinitionRecord(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      muscleGroup: serializer.fromJson<String>(json['muscleGroup']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'muscleGroup': serializer.toJson<String>(muscleGroup),
+    };
+  }
+
+  ExerciseDefinitionRecord copyWith({
+    String? id,
+    String? name,
+    String? muscleGroup,
+  }) => ExerciseDefinitionRecord(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    muscleGroup: muscleGroup ?? this.muscleGroup,
+  );
+  ExerciseDefinitionRecord copyWithCompanion(
+    ExerciseDefinitionsCompanion data,
+  ) {
+    return ExerciseDefinitionRecord(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      muscleGroup: data.muscleGroup.present
+          ? data.muscleGroup.value
+          : this.muscleGroup,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExerciseDefinitionRecord(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('muscleGroup: $muscleGroup')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, muscleGroup);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExerciseDefinitionRecord &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.muscleGroup == this.muscleGroup);
+}
+
+class ExerciseDefinitionsCompanion
+    extends UpdateCompanion<ExerciseDefinitionRecord> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> muscleGroup;
+  final Value<int> rowid;
+  const ExerciseDefinitionsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.muscleGroup = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExerciseDefinitionsCompanion.insert({
+    required String id,
+    required String name,
+    required String muscleGroup,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       muscleGroup = Value(muscleGroup);
+  static Insertable<ExerciseDefinitionRecord> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? muscleGroup,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (muscleGroup != null) 'muscle_group': muscleGroup,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExerciseDefinitionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? muscleGroup,
+    Value<int>? rowid,
+  }) {
+    return ExerciseDefinitionsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      muscleGroup: muscleGroup ?? this.muscleGroup,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (muscleGroup.present) {
+      map['muscle_group'] = Variable<String>(muscleGroup.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExerciseDefinitionsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('muscleGroup: $muscleGroup, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1227,6 +1501,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $ExerciseSetsTable exerciseSets = $ExerciseSetsTable(this);
+  late final $ExerciseDefinitionsTable exerciseDefinitions =
+      $ExerciseDefinitionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1235,6 +1511,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     workoutSessions,
     workoutExercises,
     exerciseSets,
+    exerciseDefinitions,
   ];
 }
 
@@ -2352,6 +2629,198 @@ typedef $$ExerciseSetsTableProcessedTableManager =
       ExerciseSetRecord,
       PrefetchHooks Function({bool workoutExerciseId})
     >;
+typedef $$ExerciseDefinitionsTableCreateCompanionBuilder =
+    ExerciseDefinitionsCompanion Function({
+      required String id,
+      required String name,
+      required String muscleGroup,
+      Value<int> rowid,
+    });
+typedef $$ExerciseDefinitionsTableUpdateCompanionBuilder =
+    ExerciseDefinitionsCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> muscleGroup,
+      Value<int> rowid,
+    });
+
+class $$ExerciseDefinitionsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExerciseDefinitionsTable> {
+  $$ExerciseDefinitionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get muscleGroup => $composableBuilder(
+    column: $table.muscleGroup,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExerciseDefinitionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExerciseDefinitionsTable> {
+  $$ExerciseDefinitionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get muscleGroup => $composableBuilder(
+    column: $table.muscleGroup,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExerciseDefinitionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExerciseDefinitionsTable> {
+  $$ExerciseDefinitionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get muscleGroup => $composableBuilder(
+    column: $table.muscleGroup,
+    builder: (column) => column,
+  );
+}
+
+class $$ExerciseDefinitionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExerciseDefinitionsTable,
+          ExerciseDefinitionRecord,
+          $$ExerciseDefinitionsTableFilterComposer,
+          $$ExerciseDefinitionsTableOrderingComposer,
+          $$ExerciseDefinitionsTableAnnotationComposer,
+          $$ExerciseDefinitionsTableCreateCompanionBuilder,
+          $$ExerciseDefinitionsTableUpdateCompanionBuilder,
+          (
+            ExerciseDefinitionRecord,
+            BaseReferences<
+              _$AppDatabase,
+              $ExerciseDefinitionsTable,
+              ExerciseDefinitionRecord
+            >,
+          ),
+          ExerciseDefinitionRecord,
+          PrefetchHooks Function()
+        > {
+  $$ExerciseDefinitionsTableTableManager(
+    _$AppDatabase db,
+    $ExerciseDefinitionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExerciseDefinitionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExerciseDefinitionsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ExerciseDefinitionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> muscleGroup = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ExerciseDefinitionsCompanion(
+                id: id,
+                name: name,
+                muscleGroup: muscleGroup,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String muscleGroup,
+                Value<int> rowid = const Value.absent(),
+              }) => ExerciseDefinitionsCompanion.insert(
+                id: id,
+                name: name,
+                muscleGroup: muscleGroup,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $ExerciseDefinitionsTable,
+                    ExerciseDefinitionRecord
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ExerciseDefinitionsTable,
+                    ExerciseDefinitionRecord
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExerciseDefinitionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExerciseDefinitionsTable,
+      ExerciseDefinitionRecord,
+      $$ExerciseDefinitionsTableFilterComposer,
+      $$ExerciseDefinitionsTableOrderingComposer,
+      $$ExerciseDefinitionsTableAnnotationComposer,
+      $$ExerciseDefinitionsTableCreateCompanionBuilder,
+      $$ExerciseDefinitionsTableUpdateCompanionBuilder,
+      (
+        ExerciseDefinitionRecord,
+        BaseReferences<
+          _$AppDatabase,
+          $ExerciseDefinitionsTable,
+          ExerciseDefinitionRecord
+        >,
+      ),
+      ExerciseDefinitionRecord,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2362,4 +2831,6 @@ class $AppDatabaseManager {
       $$WorkoutExercisesTableTableManager(_db, _db.workoutExercises);
   $$ExerciseSetsTableTableManager get exerciseSets =>
       $$ExerciseSetsTableTableManager(_db, _db.exerciseSets);
+  $$ExerciseDefinitionsTableTableManager get exerciseDefinitions =>
+      $$ExerciseDefinitionsTableTableManager(_db, _db.exerciseDefinitions);
 }

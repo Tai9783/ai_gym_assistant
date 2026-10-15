@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../features/exercise_catalog/domain/entities/exercise_definition.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,12 +22,9 @@ class _HomePageState extends State<HomePage> {
     'Toàn thân',
   ];
 
-  final List<String> _selectedExercises = [
-    'Bench Press',
-    'Incline Dumbbell Press',
-  ];
-
   String? _selectedMuscleGroup;
+
+  List<ExerciseDefinition> _selectedExercises = [];
 
   @override
   void dispose() {
@@ -56,7 +56,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -68,7 +73,9 @@ class _HomePageState extends State<HomePage> {
                 color: textColor,
               ),
             ),
+
             const SizedBox(height: 8),
+
             const Text(
               'Chọn nhóm cơ hoặc chọn bài tập cụ thể để AI đề xuất buổi tập phù hợp.',
               style: TextStyle(
@@ -77,9 +84,10 @@ class _HomePageState extends State<HomePage> {
                 color: subTextColor,
               ),
             ),
+
             const SizedBox(height: 24),
 
-            // Chọn nhóm cơ
+            // Nhóm cơ
             _buildSectionCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,12 +100,15 @@ class _HomePageState extends State<HomePage> {
                       color: textColor,
                     ),
                   ),
+
                   const SizedBox(height: 14),
+
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
                     children: _muscleGroups.map((group) {
-                      final isSelected = _selectedMuscleGroup == group;
+                      final isSelected =
+                          _selectedMuscleGroup == group;
 
                       return GestureDetector(
                         onTap: () {
@@ -116,11 +127,16 @@ class _HomePageState extends State<HomePage> {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? primaryColor.withOpacity(0.10)
+                                ? primaryColor.withValues(
+                              alpha: 0.10,
+                            )
                                 : Colors.white,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius:
+                            BorderRadius.circular(14),
                             border: Border.all(
-                              color: isSelected ? primaryColor : borderColor,
+                              color: isSelected
+                                  ? primaryColor
+                                  : borderColor,
                             ),
                           ),
                           child: Text(
@@ -128,7 +144,9 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: isSelected ? primaryColor : textColor,
+                              color: isSelected
+                                  ? primaryColor
+                                  : textColor,
                             ),
                           ),
                         ),
@@ -164,7 +182,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 8),
+
                   const Text(
                     'Bạn có thể tự chọn bài tập muốn đưa vào buổi tập.',
                     style: TextStyle(
@@ -172,62 +192,91 @@ class _HomePageState extends State<HomePage> {
                       color: subTextColor,
                     ),
                   ),
+
                   const SizedBox(height: 14),
 
-                  ..._selectedExercises.map(
-                        (exercise) => Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: borderColor),
-                        color: Colors.white,
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 4,
+                  if (_selectedExercises.isNotEmpty) ...[
+                    ..._selectedExercises.map(
+                          (exercise) => Container(
+                        margin: const EdgeInsets.only(
+                          bottom: 10,
                         ),
-                        leading: const CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Color(0xFFEEF2FF),
-                          child: Icon(
-                            Icons.sports_gymnastics,
-                            color: primaryColor,
-                            size: 18,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                          BorderRadius.circular(14),
+                          border: Border.all(
+                            color: borderColor,
+                          ),
+                          color: Colors.white,
+                        ),
+                        child: ListTile(
+                          contentPadding:
+                          const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 4,
+                          ),
+                          leading: const CircleAvatar(
+                            radius: 18,
+                            backgroundColor:
+                            Color(0xFFEEF2FF),
+                            child: Icon(
+                              Icons.fitness_center,
+                              color: primaryColor,
+                              size: 18,
+                            ),
+                          ),
+                          title: Text(
+                            exercise.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: textColor,
+                            ),
                           ),
                         ),
-                        title: Text(
-                          exercise,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: textColor,
-                          ),
-                        ),
-                        trailing: const Icon(
-                          Icons.chevron_right,
-                          color: Colors.grey,
-                        ),
-                        onTap: () {},
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 4),
+                    const SizedBox(height: 4),
+                  ],
 
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () {
-                        //mở trang chọn bài tập
+                      onPressed: () async {
+                        final result = await context
+                            .push<List<ExerciseDefinition>>(
+                          '/select-exercises',
+                          extra: _selectedExercises
+                              .map(
+                                (exercise) => exercise.id,
+                          )
+                              .toList(),
+                        );
+
+                        if (result != null) {
+                          setState(() {
+                            _selectedExercises = result;
+                          });
+                        }
                       },
                       icon: const Icon(Icons.add),
-                      label: const Text('Chọn bài tập'),
+                      label: Text(
+                        _selectedExercises.isEmpty
+                            ? 'Chọn bài tập'
+                            : 'Chỉnh sửa bài tập',
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: primaryColor,
-                        side: const BorderSide(color: borderColor),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: const BorderSide(
+                          color: borderColor,
+                        ),
+                        padding:
+                        const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius:
+                          BorderRadius.circular(14),
                         ),
                         textStyle: const TextStyle(
                           fontSize: 15,
@@ -265,7 +314,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 8),
+
                   const Text(
                     'Ví dụ: Hôm nay vai hơi mỏi, muốn tập nhẹ hơn, ưu tiên bài dễ kiểm soát...',
                     style: TextStyle(
@@ -274,27 +325,41 @@ class _HomePageState extends State<HomePage> {
                       height: 1.5,
                     ),
                   ),
+
                   const SizedBox(height: 14),
+
                   TextField(
                     controller: _noteController,
                     minLines: 4,
                     maxLines: 5,
                     decoration: InputDecoration(
-                      hintText: 'Nhập ghi chú của bạn...',
-                      hintStyle: const TextStyle(color: Colors.grey),
+                      hintText:
+                      'Nhập ghi chú của bạn...',
+                      hintStyle: const TextStyle(
+                        color: Colors.grey,
+                      ),
                       filled: true,
-                      fillColor: const Color(0xFFF9FAFB),
-                      contentPadding: const EdgeInsets.all(14),
+                      fillColor:
+                      const Color(0xFFF9FAFB),
+                      contentPadding:
+                      const EdgeInsets.all(14),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(color: borderColor),
+                        borderRadius:
+                        BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: borderColor,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: const BorderSide(color: borderColor),
+                        borderRadius:
+                        BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: borderColor,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius:
+                        BorderRadius.circular(14),
                         borderSide: const BorderSide(
                           color: primaryColor,
                           width: 1.4,
@@ -308,25 +373,33 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 24),
 
+            // Generate Workout
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  //gọi generate workout
                 },
-                icon: const Icon(Icons.auto_awesome),
-                label: const Text('Tạo buổi tập với AI'),
+                icon: const Icon(
+                  Icons.auto_awesome,
+                ),
+                label: const Text(
+                  'Tạo buổi tập với AI',
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding:
+                  const EdgeInsets.symmetric(
+                    vertical: 16,
+                  ),
                   textStyle: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius:
+                    BorderRadius.circular(16),
                   ),
                 ),
               ),
@@ -337,14 +410,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSectionCard({required Widget child}) {
+  Widget _buildSectionCard({
+    required Widget child,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(
+          color: const Color(0xFFE5E7EB),
+        ),
       ),
       child: child,
     );

@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-
+import '../../features/exercise_catalog/presentation/pages/select_exercise_page.dart';
 import '../pages/home_page.dart';
 import '../pages/main_shell_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
@@ -69,6 +69,18 @@ final GoRouter appRouter = GoRouter(
           ],
         ),
       ],
+    ),
+    GoRoute(
+      path: '/select-exercises',
+      name: 'selectExercises',
+      builder: (context, state) {
+        final initialSelectedExerciseIds =
+            state.extra as List<String>? ?? const <String>[];
+
+        return SelectExercisePage(
+          initialSelectedExerciseIds: initialSelectedExerciseIds,
+        );
+      },
     ),
   ],
 );

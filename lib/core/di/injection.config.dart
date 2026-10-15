@@ -11,6 +11,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:ai_gym_assistant/core/database/app_database.dart' as _i117;
+import 'package:ai_gym_assistant/features/exercise_catalog/data/datasources/exercise_local_data_source.dart'
+    as _i1019;
+import 'package:ai_gym_assistant/features/exercise_catalog/data/repositories/exercise_repository_impl.dart'
+    as _i170;
+import 'package:ai_gym_assistant/features/exercise_catalog/domain/repositories/exercise_repository.dart'
+    as _i491;
+import 'package:ai_gym_assistant/features/exercise_catalog/domain/usecases/get_exercises.dart'
+    as _i158;
+import 'package:ai_gym_assistant/features/exercise_catalog/presentation/bloc/exercise_catalog_bloc.dart'
+    as _i534;
 import 'package:ai_gym_assistant/features/workout/data/datasources/workout_local_data_source.dart'
     as _i915;
 import 'package:ai_gym_assistant/features/workout/data/repositories/workout_repository_impl.dart'
@@ -36,11 +46,20 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     gh.lazySingleton<_i117.AppDatabase>(() => _i117.AppDatabase());
+    gh.lazySingleton<_i1019.ExerciseLocalDataSource>(
+      () => _i1019.ExerciseLocalDataSource(gh<_i117.AppDatabase>()),
+    );
     gh.lazySingleton<_i915.WorkoutLocalDataSource>(
       () => _i915.WorkoutLocalDataSource(gh<_i117.AppDatabase>()),
     );
+    gh.lazySingleton<_i491.ExerciseRepository>(
+      () => _i170.ExerciseRepositoryImpl(gh<_i1019.ExerciseLocalDataSource>()),
+    );
     gh.lazySingleton<_i729.WorkoutRepository>(
       () => _i769.WorkoutRepositoryImpl(gh<_i915.WorkoutLocalDataSource>()),
+    );
+    gh.lazySingleton<_i158.GetExercises>(
+      () => _i158.GetExercises(gh<_i491.ExerciseRepository>()),
     );
     gh.lazySingleton<_i679.FinishWorkout>(
       () => _i679.FinishWorkout(gh<_i729.WorkoutRepository>()),
@@ -57,6 +76,9 @@ extension GetItInjectableX on _i174.GetIt {
         updateExerciseSet: gh<_i811.UpdateExerciseSet>(),
         finishWorkout: gh<_i679.FinishWorkout>(),
       ),
+    );
+    gh.factory<_i534.ExerciseCatalogBloc>(
+      () => _i534.ExerciseCatalogBloc(getExercises: gh<_i158.GetExercises>()),
     );
     return this;
   }

@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/core/database/tables/exercise_definitions.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:injectable/injectable.dart';
@@ -13,6 +14,7 @@ part 'app_database.g.dart';
     WorkoutSessions,
     WorkoutExercises,
     ExerciseSets,
+    ExerciseDefinitions,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -25,5 +27,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await m.createAll();
+    },
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(exerciseDefinitions);
+      }
+    },
+  );
 }
