@@ -138,4 +138,124 @@ void main() {
 
     expect(sessionCount.length, 1);
   });
+
+  test(
+    'getCompletedWorkoutSessionsByExerciseId returns only completed '
+    'sessions containing that exerciseId, with exercises and sets loaded',
+        () async {
+      // Completed session with the target exercise -> should be included.
+      await repository.saveWorkoutSession(
+        WorkoutSession(
+          id: 'session_completed_bench',
+          startedAt: DateTime(2026, 10, 1),
+          endedAt: DateTime(2026, 10, 1),
+          status: WorkoutSessionStatus.completed,
+          exercises: [
+            WorkoutExercise(
+              id: 'ex_bench_1',
+              exerciseId: 'bench_press',
+              order: 1,
+              sets: [
+                ExerciseSet(
+                  id: 'set_bench_1',
+                  setNumber: 1,
+                  suggestedWeight: 40,
+                  suggestedReps: 8,
+                  actualWeight: 40,
+                  actualReps: 8,
+                  status: ExerciseSetStatus.completed,
+                  note: null,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+
+      // Same exerciseId, but session is still in progress -> must be excluded.
+      await repository.saveWorkoutSession(
+        WorkoutSession(
+          id: 'session_in_progress_bench',
+          startedAt: DateTime(2026, 10, 2),
+          endedAt: null,
+          status: WorkoutSessionStatus.inProgress,
+          exercises: [
+            WorkoutExercise(
+              id: 'ex_bench_2',
+              exerciseId: 'bench_press',
+              order: 1,
+              sets: [
+                ExerciseSet(
+                  id: 'set_bench_2',
+                  setNumber: 1,
+                  status: ExerciseSetStatus.pending,
+                  note: null,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+
+      // Completed session, but a different exerciseId -> must be excluded.
+      await repository.saveWorkoutSession(
+        WorkoutSession(
+          id: 'session_completed_squat',
+          startedAt: DateTime(2026, 10, 3),
+          endedAt: DateTime(2026, 10, 3),
+          status: WorkoutSessionStatus.completed,
+          exercises: [
+            WorkoutExercise(
+              id: 'ex_squat',
+              exerciseId: 'squat',
+              order: 1,
+              sets: [
+                ExerciseSet(
+                  id: 'set_squat',
+                  setNumber: 1,
+                  actualWeight: 60,
+                  actualReps: 5,
+                  status: ExerciseSetStatus.completed,
+                  note: null,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+
+      final result =
+      await repository.getCompletedWorkoutSessionsByExerciseId(
+        'bench_press',
+      );
+
+      expect(result.length, 1);
+
+      final session = result.first;
+
+      expect(session.id, 'session_completed_bench');
+      expect(session.status, WorkoutSessionStatus.completed);
+
+      expect(session.exercises.length, 1);
+      expect(session.exercises.first.exerciseId, 'bench_press');
+
+      final set = session.exercises.first.sets.first;
+
+      expect(set.actualWeight, 40);
+      expect(set.actualReps, 8);
+    },
+  );
+
+  test(
+    'getCompletedWorkoutSessionsByExerciseId returns empty list when there '
+    'is no matching history',
+        () async {
+      final result =
+      await repository.getCompletedWorkoutSessionsByExerciseId(
+        'bench_press',
+      );
+
+      expect(result, isEmpty);
+    },
+  );
 }

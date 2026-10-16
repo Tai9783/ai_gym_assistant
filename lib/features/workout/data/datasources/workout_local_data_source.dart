@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/database/app_database.dart';
+import '../../domain/entities/workout_session.dart';
 @LazySingleton()
 class WorkoutLocalDataSource {
   final AppDatabase database;
@@ -60,5 +61,33 @@ class WorkoutLocalDataSource {
             (table) => OrderingTerm.asc(table.setNumber),
       ]))
         .get();
+  }
+
+  Future<List<String>> getCompletedWorkoutSessionIdsByExerciseId(
+      String exerciseId,
+      ) async {
+    final query = database.selectOnly(database.workoutSessions)
+      ..addColumns([database.workoutSessions.id])
+      ..join([
+        innerJoin(
+          database.workoutExercises,
+          database.workoutExercises.sessionId.equalsExp(
+            database.workoutSessions.id,
+          ),
+        ),
+      ])
+      ..where(
+        database.workoutSessions.status.equals(
+          WorkoutSessionStatus.completed.name,
+        ),
+      )
+      ..where(database.workoutExercises.exerciseId.equals(exerciseId))
+      ..groupBy([database.workoutSessions.id]);
+
+    final rows = await query.get();
+
+    return rows
+        .map((row) => row.read(database.workoutSessions.id)!)
+        .toList();
   }
 }

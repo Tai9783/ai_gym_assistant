@@ -31,6 +31,8 @@ import 'package:ai_gym_assistant/features/progress/domain/services/recent_progre
     as _i26;
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart'
     as _i338;
+import 'package:ai_gym_assistant/features/progress/domain/usecases/get_exercise_progress.dart'
+    as _i329;
 import 'package:ai_gym_assistant/features/workout/data/datasources/workout_local_data_source.dart'
     as _i915;
 import 'package:ai_gym_assistant/features/workout/data/repositories/workout_repository_impl.dart'
@@ -85,6 +87,14 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i729.WorkoutRepository>(
       () => _i769.WorkoutRepositoryImpl(gh<_i915.WorkoutLocalDataSource>()),
+    );
+    gh.lazySingleton<_i329.GetExerciseProgress>(
+      () => _i329.GetExerciseProgress(
+        gh<_i729.WorkoutRepository>(),
+        gh<_i147.ExerciseSessionSummarizer>(),
+        gh<_i26.RecentProgressAnalyzer>(),
+        gh<_i516.LongTermProgressAnalyzer>(),
+      ),
     );
     gh.lazySingleton<_i158.GetExercises>(
       () => _i158.GetExercises(gh<_i491.ExerciseRepository>()),
