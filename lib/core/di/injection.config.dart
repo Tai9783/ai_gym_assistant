@@ -21,6 +21,10 @@ import 'package:ai_gym_assistant/features/exercise_catalog/domain/usecases/get_e
     as _i158;
 import 'package:ai_gym_assistant/features/exercise_catalog/presentation/bloc/exercise_catalog_bloc.dart'
     as _i534;
+import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart'
+    as _i516;
+import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart'
+    as _i899;
 import 'package:ai_gym_assistant/features/progress/domain/services/recent_progress_analyzer.dart'
     as _i26;
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart'
@@ -49,6 +53,9 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    gh.factory<_i899.LongTermTrendCalculator>(
+      () => _i899.LongTermTrendCalculator(),
+    );
     gh.factory<_i338.SessionTargetClassifier>(
       () => _i338.SessionTargetClassifier(),
     );
@@ -61,6 +68,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i915.WorkoutLocalDataSource>(
       () => _i915.WorkoutLocalDataSource(gh<_i117.AppDatabase>()),
+    );
+    gh.factory<_i516.LongTermProgressAnalyzer>(
+      () => _i516.LongTermProgressAnalyzer(
+        gh<_i338.SessionTargetClassifier>(),
+        gh<_i899.LongTermTrendCalculator>(),
+      ),
     );
     gh.lazySingleton<_i491.ExerciseRepository>(
       () => _i170.ExerciseRepositoryImpl(gh<_i1019.ExerciseLocalDataSource>()),
