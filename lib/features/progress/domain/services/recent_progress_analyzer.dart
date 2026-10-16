@@ -2,7 +2,9 @@ import 'package:ai_gym_assistant/features/progress/domain/services/session_targe
 import 'package:injectable/injectable.dart';
 
 import '../entities/exercise_session_summary.dart';
+import '../entities/progress_trend.dart';
 import '../entities/recent_exercise_progress.dart';
+
 @injectable
 class RecentProgressAnalyzer {
   static const int recentSessionLimit = 5;
@@ -15,25 +17,20 @@ class RecentProgressAnalyzer {
     required List<ExerciseSessionSummary> summaries,
   }) {
     final exerciseSummaries = summaries
-        .where(
-          (summary) => summary.exerciseId == exerciseId,
-    )
+        .where((summary) => summary.exerciseId == exerciseId)
         .toList();
 
     if (exerciseSummaries.isEmpty) {
       return null;
     }
 
-    exerciseSummaries.sort(
-          (a, b) => a.performedAt.compareTo(b.performedAt),
-    );
+    exerciseSummaries.sort((a, b) => a.performedAt.compareTo(b.performedAt));
 
-    final recentSummaries =
-    exerciseSummaries.length <= recentSessionLimit
+    final recentSummaries = exerciseSummaries.length <= recentSessionLimit
         ? exerciseSummaries
         : exerciseSummaries.sublist(
-      exerciseSummaries.length - recentSessionLimit,
-    );
+            exerciseSummaries.length - recentSessionLimit,
+          );
 
     final sessionCount = recentSummaries.length;
 
@@ -68,16 +65,13 @@ class RecentProgressAnalyzer {
     }
     final totalEvaluatedSetCount = recentSummaries.fold<int>(
       0,
-          (total, summary) =>
-      total +
-          summary.targetHitSetCount +
-          summary.underTargetSetCount,
+      (total, summary) =>
+          total + summary.targetHitSetCount + summary.underTargetSetCount,
     );
 
     final totalHitSetCount = recentSummaries.fold<int>(
       0,
-          (total, summary) =>
-      total + summary.targetHitSetCount,
+      (total, summary) => total + summary.targetHitSetCount,
     );
 
     final targetHitSetRate = totalEvaluatedSetCount == 0
@@ -137,6 +131,7 @@ class RecentProgressAnalyzer {
       volumeTrend: volumeTrend,
     );
   }
+
   ProgressTrend _calculateTrend(List<double> values) {
     if (values.length < 2) {
       return ProgressTrend.insufficientData;

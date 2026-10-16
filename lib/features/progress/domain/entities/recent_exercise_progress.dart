@@ -1,11 +1,4 @@
-enum ProgressTrend {
-  increasing,
-  stable,
-  decreasing,
-
-  // Not enough recent sessions to determine a reliable trend.
-  insufficientData,
-}
+import 'package:ai_gym_assistant/features/progress/domain/entities/progress_trend.dart';
 
 class RecentExerciseProgress {
   final String exerciseId;

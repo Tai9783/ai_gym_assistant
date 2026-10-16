@@ -21,6 +21,8 @@ import 'package:ai_gym_assistant/features/exercise_catalog/domain/usecases/get_e
     as _i158;
 import 'package:ai_gym_assistant/features/exercise_catalog/presentation/bloc/exercise_catalog_bloc.dart'
     as _i534;
+import 'package:ai_gym_assistant/features/progress/domain/services/exercise_session_summarizer.dart'
+    as _i147;
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart'
     as _i516;
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart'
@@ -60,6 +62,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i338.SessionTargetClassifier(),
     );
     gh.lazySingleton<_i117.AppDatabase>(() => _i117.AppDatabase());
+    gh.lazySingleton<_i147.ExerciseSessionSummarizer>(
+      () => _i147.ExerciseSessionSummarizer(),
+    );
     gh.factory<_i26.RecentProgressAnalyzer>(
       () => _i26.RecentProgressAnalyzer(gh<_i338.SessionTargetClassifier>()),
     );

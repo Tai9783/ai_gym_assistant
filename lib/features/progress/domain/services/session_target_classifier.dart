@@ -2,23 +2,17 @@ import 'package:injectable/injectable.dart';
 
 import '../entities/exercise_session_summary.dart';
 
-enum SessionTargetResult {
-  hit,
-  miss,
-  unknown,
-}
+enum SessionTargetResult { hit, miss, unknown }
+
 @injectable
 class SessionTargetClassifier {
-  SessionTargetResult classify(
-      ExerciseSessionSummary summary,
-      ) {
+  SessionTargetResult classify(ExerciseSessionSummary summary) {
     final plannedSetCount = summary.plannedSetCount;
 
     final completedSetCount = summary.completedSetCount;
 
     final evaluatedSetCount =
-        summary.targetHitSetCount +
-            summary.underTargetSetCount;
+        summary.targetHitSetCount + summary.underTargetSetCount;
 
     if (plannedSetCount == 0 || evaluatedSetCount == 0) {
       return SessionTargetResult.unknown;

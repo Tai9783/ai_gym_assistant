@@ -14,7 +14,7 @@ void main() {
 
   test(
     'should summarize suggested and actual exercise performance correctly',
-        () {
+    () {
       // Arrange
       final session = WorkoutSession(
         id: 'session_1',
@@ -68,10 +68,7 @@ void main() {
       // Assert
       expect(summary.sessionId, 'session_1');
       expect(summary.exerciseId, 'bench_press');
-      expect(
-        summary.performedAt,
-        DateTime(2026, 10, 15),
-      );
+      expect(summary.performedAt, DateTime(2026, 10, 15));
 
       expect(summary.plannedSetCount, 3);
       expect(summary.completedSetCount, 3);

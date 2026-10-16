@@ -46,3 +46,6 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+CLAUDE.md
+AI_GYM_ASSISTANT_PROJECT_CONTEXT.md
+AI_GYM_ASSISTANT_QUICK_CONTEXT.md

@@ -1,8 +1,11 @@
+import 'package:injectable/injectable.dart';
+
 import '../../../workout/domain/entities/exercise_set.dart';
 import '../../../workout/domain/entities/workout_exercise.dart';
 import '../../../workout/domain/entities/workout_session.dart';
 import '../entities/exercise_session_summary.dart';
 
+@lazySingleton
 class ExerciseSessionSummarizer {
   ExerciseSessionSummary summarize({
     required WorkoutSession session,
@@ -19,53 +22,56 @@ class ExerciseSessionSummarizer {
         .length;
 
     final suggestedTotalReps = exercise.sets.fold<int>(
-      0, (total, set) => total + (set.suggestedReps ?? 0),
+      0,
+      (total, set) => total + (set.suggestedReps ?? 0),
     );
 
     final actualTotalReps = exercise.sets.fold<int>(
-      0, (total, set) => total + (set.actualReps ?? 0));
+      0,
+      (total, set) => total + (set.actualReps ?? 0),
+    );
 
     final suggestedVolume = exercise.sets.fold<double>(
-      0, (total, set) => total + (set.suggestedWeight ?? 0) * (set.suggestedReps ?? 0),
+      0,
+      (total, set) =>
+          total + (set.suggestedWeight ?? 0) * (set.suggestedReps ?? 0),
     );
 
     final actualVolume = exercise.sets.fold<double>(
-      0, (total, set) => total + (set.actualWeight ?? 0) * (set.actualReps ?? 0),
+      0,
+      (total, set) => total + (set.actualWeight ?? 0) * (set.actualReps ?? 0),
     );
 
-    final suggestedMaxWeight = exercise.sets.fold<double?>(
-      null,
-          (maxWeight, set) {
-        final weight = set.suggestedWeight;
+    final suggestedMaxWeight = exercise.sets.fold<double?>(null, (
+      maxWeight,
+      set,
+    ) {
+      final weight = set.suggestedWeight;
 
-        if (weight == null) {
-          return maxWeight;
-        }
-
-        if (maxWeight == null || weight > maxWeight) {
-          return weight;
-        }
-
+      if (weight == null) {
         return maxWeight;
-      },
-    );
+      }
 
-    final actualMaxWeight = exercise.sets.fold<double?>(
-      null,
-          (maxWeight, set) {
-        final weight = set.actualWeight;
+      if (maxWeight == null || weight > maxWeight) {
+        return weight;
+      }
 
-        if (weight == null) {
-          return maxWeight;
-        }
+      return maxWeight;
+    });
 
-        if (maxWeight == null || weight > maxWeight) {
-          return weight;
-        }
+    final actualMaxWeight = exercise.sets.fold<double?>(null, (maxWeight, set) {
+      final weight = set.actualWeight;
 
+      if (weight == null) {
         return maxWeight;
-      },
-    );
+      }
+
+      if (maxWeight == null || weight > maxWeight) {
+        return weight;
+      }
+
+      return maxWeight;
+    });
     int targetHitSetCount = 0;
     int underTargetSetCount = 0;
     final underTargetSetNumbers = <int>[];
@@ -109,8 +115,7 @@ class ExerciseSessionSummarizer {
   }
 
   bool _hasSuggestedTarget(ExerciseSet set) {
-    return set.suggestedWeight != null ||
-        set.suggestedReps != null;
+    return set.suggestedWeight != null || set.suggestedReps != null;
   }
 
   // - Only completed sets are evaluated.
@@ -131,13 +136,13 @@ class ExerciseSessionSummarizer {
     final actualWeight = set.actualWeight;
     final actualReps = set.actualReps;
 
-    final weightHit = suggestedWeight == null ||
-        (actualWeight != null &&
-            actualWeight >= suggestedWeight);
+    final weightHit =
+        suggestedWeight == null ||
+        (actualWeight != null && actualWeight >= suggestedWeight);
 
-    final repsHit = suggestedReps == null ||
-        (actualReps != null &&
-            actualReps >= suggestedReps);
+    final repsHit =
+        suggestedReps == null ||
+        (actualReps != null && actualReps >= suggestedReps);
 
     return weightHit && repsHit;
   }
