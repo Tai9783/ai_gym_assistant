@@ -21,6 +21,10 @@ import 'package:ai_gym_assistant/features/exercise_catalog/domain/usecases/get_e
     as _i158;
 import 'package:ai_gym_assistant/features/exercise_catalog/presentation/bloc/exercise_catalog_bloc.dart'
     as _i534;
+import 'package:ai_gym_assistant/features/progress/domain/services/recent_progress_analyzer.dart'
+    as _i26;
+import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart'
+    as _i338;
 import 'package:ai_gym_assistant/features/workout/data/datasources/workout_local_data_source.dart'
     as _i915;
 import 'package:ai_gym_assistant/features/workout/data/repositories/workout_repository_impl.dart'
@@ -45,7 +49,13 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    gh.factory<_i338.SessionTargetClassifier>(
+      () => _i338.SessionTargetClassifier(),
+    );
     gh.lazySingleton<_i117.AppDatabase>(() => _i117.AppDatabase());
+    gh.factory<_i26.RecentProgressAnalyzer>(
+      () => _i26.RecentProgressAnalyzer(gh<_i338.SessionTargetClassifier>()),
+    );
     gh.lazySingleton<_i1019.ExerciseLocalDataSource>(
       () => _i1019.ExerciseLocalDataSource(gh<_i117.AppDatabase>()),
     );

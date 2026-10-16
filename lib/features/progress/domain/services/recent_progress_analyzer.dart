@@ -1,8 +1,14 @@
+import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart';
+import 'package:injectable/injectable.dart';
+
 import '../entities/exercise_session_summary.dart';
 import '../entities/recent_exercise_progress.dart';
-
+@injectable
 class RecentProgressAnalyzer {
   static const int recentSessionLimit = 5;
+  final SessionTargetClassifier _classifier;
+
+  RecentProgressAnalyzer(this._classifier);
 
   RecentExerciseProgress? analyze({
     required String exerciseId,
@@ -36,13 +42,25 @@ class RecentProgressAnalyzer {
 
     final latestSummary = recentSummaries.last;
 
-    final latestSessionHitTarget = _isSessionHitTarget(latestSummary);
-    final hitSessionCount = recentSummaries.where(_isSessionHitTarget).length;
-    final missedTargetSessionCount = sessionCount - hitSessionCount;
+    final sessionResults = recentSummaries
+        .map((summary) => _classifier.classify(summary))
+        .toList();
+
+    final latestSessionHitTarget =
+        sessionResults.last == SessionTargetResult.hit;
+
+    final hitSessionCount = sessionResults
+        .where((result) => result == SessionTargetResult.hit)
+        .length;
+
+    final missedTargetSessionCount = sessionResults
+        .where((result) => result == SessionTargetResult.miss)
+        .length;
+
     int currentMissStreak = 0;
 
-    for (final summary in recentSummaries.reversed) {
-      if (_isSessionHitTarget(summary)) {
+    for (final result in sessionResults.reversed) {
+      if (result != SessionTargetResult.miss) {
         break;
       }
 
@@ -118,12 +136,6 @@ class RecentProgressAnalyzer {
       weightTrend: weightTrend,
       volumeTrend: volumeTrend,
     );
-  }
-
-  bool _isSessionHitTarget(ExerciseSessionSummary summary) {
-    return summary.plannedSetCount > 0 &&
-        summary.completedSetCount == summary.plannedSetCount &&
-        summary.underTargetSetCount == 0;
   }
   ProgressTrend _calculateTrend(List<double> values) {
     if (values.length < 2) {

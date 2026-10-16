@@ -1,3 +1,5 @@
+import 'package:injectable/injectable.dart';
+
 import '../entities/exercise_session_summary.dart';
 
 enum SessionTargetResult {
@@ -5,7 +7,7 @@ enum SessionTargetResult {
   miss,
   unknown,
 }
-
+@injectable
 class SessionTargetClassifier {
   SessionTargetResult classify(
       ExerciseSessionSummary summary,

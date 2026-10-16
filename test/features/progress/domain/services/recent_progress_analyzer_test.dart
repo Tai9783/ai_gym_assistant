@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ai_gym_assistant/features/progress/domain/entities/exercise_session_summary.dart';
@@ -8,7 +9,9 @@ void main() {
   late RecentProgressAnalyzer analyzer;
 
   setUp(() {
-    analyzer = RecentProgressAnalyzer();
+    analyzer = RecentProgressAnalyzer(
+      SessionTargetClassifier(),
+    );
   });
 
   test('should analyze recent exercise progress correctly', () {
