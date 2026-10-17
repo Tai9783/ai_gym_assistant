@@ -33,6 +33,10 @@ import 'package:ai_gym_assistant/features/progress/domain/services/session_targe
     as _i338;
 import 'package:ai_gym_assistant/features/progress/domain/usecases/get_exercise_progress.dart'
     as _i329;
+import 'package:ai_gym_assistant/features/recommendation/domain/services/ai_context_builder.dart'
+    as _i576;
+import 'package:ai_gym_assistant/features/recommendation/domain/usecases/prepare_ai_context.dart'
+    as _i1051;
 import 'package:ai_gym_assistant/features/workout/data/datasources/workout_local_data_source.dart'
     as _i915;
 import 'package:ai_gym_assistant/features/workout/data/repositories/workout_repository_impl.dart'
@@ -67,6 +71,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i147.ExerciseSessionSummarizer>(
       () => _i147.ExerciseSessionSummarizer(),
     );
+    gh.lazySingleton<_i576.AiContextBuilder>(() => _i576.AiContextBuilder());
     gh.factory<_i26.RecentProgressAnalyzer>(
       () => _i26.RecentProgressAnalyzer(gh<_i338.SessionTargetClassifier>()),
     );
@@ -113,6 +118,13 @@ extension GetItInjectableX on _i174.GetIt {
         startWorkout: gh<_i256.StartWorkout>(),
         updateExerciseSet: gh<_i811.UpdateExerciseSet>(),
         finishWorkout: gh<_i679.FinishWorkout>(),
+      ),
+    );
+    gh.lazySingleton<_i1051.PrepareAiContext>(
+      () => _i1051.PrepareAiContext(
+        gh<_i158.GetExercises>(),
+        gh<_i329.GetExerciseProgress>(),
+        gh<_i576.AiContextBuilder>(),
       ),
     );
     gh.factory<_i534.ExerciseCatalogBloc>(
