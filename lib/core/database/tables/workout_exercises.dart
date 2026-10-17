@@ -6,10 +6,7 @@ import 'workout_sessions.dart';
 class WorkoutExercises extends Table {
   TextColumn get id => text()();
 
-  TextColumn get sessionId => text().references(
-    WorkoutSessions,
-    #id,
-  )();
+  TextColumn get sessionId => text().references(WorkoutSessions, #id)();
 
   TextColumn get exerciseId => text()();
 

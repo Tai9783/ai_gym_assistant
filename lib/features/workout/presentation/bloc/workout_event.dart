@@ -7,10 +7,8 @@ sealed class WorkoutEvent {
 
 final class WorkoutStarted extends WorkoutEvent {
   final List<WorkoutExercise> exercises;
-  
-  const WorkoutStarted({
-    required this.exercises,
-  });
+
+  const WorkoutStarted({required this.exercises});
 }
 
 final class ExerciseSetUpdated extends WorkoutEvent {
@@ -36,7 +34,5 @@ final class ExerciseSetUpdated extends WorkoutEvent {
 final class WorkoutFinished extends WorkoutEvent {
   final String sessionId;
 
-  const WorkoutFinished({
-    required this.sessionId,
-  });
+  const WorkoutFinished({required this.sessionId});
 }

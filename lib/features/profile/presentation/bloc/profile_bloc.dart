@@ -1,4 +1,3 @@
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -12,18 +11,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final GetUserProfile _getUserProfile;
   final SaveUserProfile _saveUserProfile;
 
-  ProfileBloc(
-      this._getUserProfile,
-      this._saveUserProfile,
-      ) : super(const ProfileInitial()) {
+  ProfileBloc(this._getUserProfile, this._saveUserProfile)
+    : super(const ProfileInitial()) {
     on<ProfileLoadRequested>(_onLoadRequested);
     on<ProfileSaveRequested>(_onSaveRequested);
   }
 
   Future<void> _onLoadRequested(
-      ProfileLoadRequested event,
-      Emitter<ProfileState> emit,
-      ) async {
+    ProfileLoadRequested event,
+    Emitter<ProfileState> emit,
+  ) async {
     emit(const ProfileLoading());
 
     try {
@@ -36,9 +33,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   Future<void> _onSaveRequested(
-      ProfileSaveRequested event,
-      Emitter<ProfileState> emit,
-      ) async {
+    ProfileSaveRequested event,
+    Emitter<ProfileState> emit,
+  ) async {
     emit(const ProfileSaving());
 
     try {

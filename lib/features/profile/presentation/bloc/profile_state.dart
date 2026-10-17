@@ -1,4 +1,3 @@
-
 import '../../domain/entities/user_profile.dart';
 
 sealed class ProfileState {

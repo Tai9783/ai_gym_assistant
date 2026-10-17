@@ -15,15 +15,11 @@ final class ExerciseCatalogLoading extends ExerciseCatalogState {
 final class ExerciseCatalogLoaded extends ExerciseCatalogState {
   final List<ExerciseDefinition> exercises;
 
-  const ExerciseCatalogLoaded({
-    required this.exercises,
-  });
+  const ExerciseCatalogLoaded({required this.exercises});
 }
 
 final class ExerciseCatalogFailure extends ExerciseCatalogState {
   final String message;
 
-  const ExerciseCatalogFailure({
-    required this.message,
-  });
+  const ExerciseCatalogFailure({required this.message});
 }

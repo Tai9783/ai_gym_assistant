@@ -28,9 +28,7 @@ class GetExerciseProgress {
     this._longTermAnalyzer,
   );
 
-  Future<ExerciseProgressResult> call({
-    required String exerciseId,
-  }) async {
+  Future<ExerciseProgressResult> call({required String exerciseId}) async {
     final completedSessions = await _workoutRepository
         .getCompletedWorkoutSessionsByExerciseId(exerciseId);
 
@@ -65,10 +63,7 @@ class GetExerciseProgress {
 
       for (final exercise in matchingExercises) {
         summaries.add(
-          _summarizer.summarize(
-            session: session,
-            exercise: exercise,
-          ),
+          _summarizer.summarize(session: session, exercise: exercise),
         );
       }
     }

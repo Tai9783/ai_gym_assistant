@@ -1,9 +1,6 @@
 import 'workout_exercise.dart';
 
-enum WorkoutSessionStatus {
-  inProgress,
-  completed,
-}
+enum WorkoutSessionStatus { inProgress, completed }
 
 class WorkoutSession {
   final String id;

@@ -1,11 +1,4 @@
-enum WorkoutFocus {
-  chest,
-  back,
-  legs,
-  shoulders,
-  arms,
-  fullBody,
-}
+enum WorkoutFocus { chest, back, legs, shoulders, arms, fullBody }
 
 class WorkoutRequest {
   final WorkoutFocus focus;

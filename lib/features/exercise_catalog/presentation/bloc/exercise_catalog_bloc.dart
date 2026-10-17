@@ -10,32 +10,23 @@ class ExerciseCatalogBloc
     extends Bloc<ExerciseCatalogEvent, ExerciseCatalogState> {
   final GetExercises getExercises;
 
-  ExerciseCatalogBloc({
-    required this.getExercises,
-  }) : super(const ExerciseCatalogInitial()) {
+  ExerciseCatalogBloc({required this.getExercises})
+    : super(const ExerciseCatalogInitial()) {
     on<ExerciseCatalogRequested>(_onExerciseCatalogRequested);
   }
 
   Future<void> _onExerciseCatalogRequested(
-      ExerciseCatalogRequested event,
-      Emitter<ExerciseCatalogState> emit,
-      ) async {
+    ExerciseCatalogRequested event,
+    Emitter<ExerciseCatalogState> emit,
+  ) async {
     try {
       emit(const ExerciseCatalogLoading());
 
       final exercises = await getExercises();
 
-      emit(
-        ExerciseCatalogLoaded(
-          exercises: exercises,
-        ),
-      );
+      emit(ExerciseCatalogLoaded(exercises: exercises));
     } catch (e) {
-      emit(
-        ExerciseCatalogFailure(
-          message: e.toString(),
-        ),
-      );
+      emit(ExerciseCatalogFailure(message: e.toString()));
     }
   }
 }

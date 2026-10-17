@@ -10,7 +10,11 @@ class AiContext {
   final UserProfile? profile;
   final List<AiExerciseContext> exercises;
 
-  const AiContext({required this.request, this.profile, required this.exercises});
+  const AiContext({
+    required this.request,
+    this.profile,
+    required this.exercises,
+  });
 }
 
 class AiExerciseContext {

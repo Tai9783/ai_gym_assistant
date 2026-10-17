@@ -28,9 +28,7 @@ class _WorkoutView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AI Gym Assistant'),
-      ),
+      appBar: AppBar(title: const Text('AI Gym Assistant')),
       body: BlocBuilder<WorkoutBloc, WorkoutState>(
         builder: (context, state) {
           if (state is WorkoutInitial) {
@@ -38,9 +36,7 @@ class _WorkoutView extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   context.read<WorkoutBloc>().add(
-                    WorkoutStarted(
-                      exercises: _buildHardcodedWorkout(),
-                    ),
+                    WorkoutStarted(exercises: _buildHardcodedWorkout()),
                   );
                 },
                 child: const Text('Start Workout'),
@@ -49,9 +45,7 @@ class _WorkoutView extends StatelessWidget {
           }
 
           if (state is WorkoutLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is WorkoutInProgress) {
@@ -60,19 +54,14 @@ class _WorkoutView extends StatelessWidget {
               children: [
                 const Text(
                   'Workout in progress',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 8),
 
                 Text(
                   'Session: ${state.session.id}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(fontSize: 12),
                 ),
 
                 const SizedBox(height: 24),
@@ -92,21 +81,22 @@ class _WorkoutView extends StatelessWidget {
                     WorkoutSetCard(
                       key: ValueKey(set.id),
                       set: set,
-                      onComplete: ({
-                        required double actualWeight,
-                        required int actualReps,
-                      }) {
-                        context.read<WorkoutBloc>().add(
-                          ExerciseSetUpdated(
-                            sessionId: state.session.id,
-                            workoutExerciseId: exercise.id,
-                            setId: set.id,
-                            actualWeight: actualWeight,
-                            actualReps: actualReps,
-                            status: ExerciseSetStatus.completed,
-                          ),
-                        );
-                      },
+                      onComplete:
+                          ({
+                            required double actualWeight,
+                            required int actualReps,
+                          }) {
+                            context.read<WorkoutBloc>().add(
+                              ExerciseSetUpdated(
+                                sessionId: state.session.id,
+                                workoutExerciseId: exercise.id,
+                                setId: set.id,
+                                actualWeight: actualWeight,
+                                actualReps: actualReps,
+                                status: ExerciseSetStatus.completed,
+                              ),
+                            );
+                          },
                     ),
 
                     const SizedBox(height: 12),
@@ -120,9 +110,7 @@ class _WorkoutView extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       context.read<WorkoutBloc>().add(
-                        WorkoutFinished(
-                          sessionId: state.session.id,
-                        ),
+                        WorkoutFinished(sessionId: state.session.id),
                       );
                     },
                     child: const Text('Finish Workout'),
@@ -151,21 +139,15 @@ class _WorkoutView extends StatelessWidget {
 
                     const SizedBox(height: 16),
 
-                    Text(
-                      'Status: ${state.session.status.name}',
-                    ),
+                    Text('Status: ${state.session.status.name}'),
 
                     const SizedBox(height: 8),
 
-                    Text(
-                      'Started at: ${state.session.startedAt}',
-                    ),
+                    Text('Started at: ${state.session.startedAt}'),
 
                     const SizedBox(height: 8),
 
-                    Text(
-                      'Ended at: ${state.session.endedAt}',
-                    ),
+                    Text('Ended at: ${state.session.endedAt}'),
                   ],
                 ),
               ),
@@ -176,9 +158,7 @@ class _WorkoutView extends StatelessWidget {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(
-                  'Error: ${state.message}',
-                ),
+                child: Text('Error: ${state.message}'),
               ),
             );
           }

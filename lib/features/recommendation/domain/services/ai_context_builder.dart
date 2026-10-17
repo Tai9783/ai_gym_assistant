@@ -1,4 +1,3 @@
-
 import 'package:injectable/injectable.dart';
 
 import '../../../profile/domain/entities/user_profile.dart';
@@ -21,9 +20,7 @@ class AiContextBuilder {
       final progress = progressByExerciseId[exercise.id];
 
       if (progress == null) {
-        throw StateError(
-          'Missing progress result for ${exercise.id}',
-        );
+        throw StateError('Missing progress result for ${exercise.id}');
       }
 
       exerciseContexts.add(

@@ -20,12 +20,7 @@ part 'app_database.g.dart';
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase()
-      : super(
-    driftDatabase(
-      name: 'ai_gym_assistant',
-    ),
-  );
+  AppDatabase() : super(driftDatabase(name: 'ai_gym_assistant'));
   AppDatabase.forTesting(super.executor);
 
   @override

@@ -17,8 +17,6 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
 
     final records = await localDataSource.getAllExercises();
 
-    return records
-        .map(ExerciseDefinitionMapper.toDomain)
-        .toList();
+    return records.map(ExerciseDefinitionMapper.toDomain).toList();
   }
 }

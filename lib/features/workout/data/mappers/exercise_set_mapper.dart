@@ -20,9 +20,9 @@ class ExerciseSetMapper {
 
   // Domain -> Database
   static ExerciseSetsCompanion toCompanion(
-      ExerciseSet entity, {
-        required String workoutExerciseId,
-      }) {
+    ExerciseSet entity, {
+    required String workoutExerciseId,
+  }) {
     return ExerciseSetsCompanion.insert(
       id: entity.id,
       workoutExerciseId: workoutExerciseId,

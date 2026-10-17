@@ -1,4 +1,3 @@
-
 import 'package:injectable/injectable.dart';
 
 import '../../domain/entities/user_profile.dart';
@@ -7,8 +6,7 @@ import '../datasources/user_profile_local_data_source.dart';
 import '../mappers/user_profile_mapper.dart';
 
 @LazySingleton(as: UserProfileRepository)
-class UserProfileRepositoryImpl
-    implements UserProfileRepository {
+class UserProfileRepositoryImpl implements UserProfileRepository {
   final UserProfileLocalDataSource _localDataSource;
 
   UserProfileRepositoryImpl(this._localDataSource);

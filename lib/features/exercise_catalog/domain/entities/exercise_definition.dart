@@ -1,10 +1,4 @@
-enum MuscleGroup {
-  chest,
-  back,
-  legs,
-  shoulders,
-  arms,
-}
+enum MuscleGroup { chest, back, legs, shoulders, arms }
 
 class ExerciseDefinition {
   final String id;

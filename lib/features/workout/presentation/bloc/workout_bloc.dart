@@ -6,6 +6,7 @@ import '../../domain/usecases/start_workout.dart';
 import '../../domain/usecases/update_exercise_set.dart';
 import 'workout_event.dart';
 import 'workout_state.dart';
+
 @injectable
 class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   final StartWorkout startWorkout;
@@ -23,34 +24,24 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   }
 
   Future<void> _onWorkoutStarted(
-      WorkoutStarted event,
-      Emitter<WorkoutState> emit,
-      ) async {
+    WorkoutStarted event,
+    Emitter<WorkoutState> emit,
+  ) async {
     try {
       emit(const WorkoutLoading());
 
-      final session = await startWorkout(
-        exercises: event.exercises,
-      );
+      final session = await startWorkout(exercises: event.exercises);
 
-      emit(
-        WorkoutInProgress(
-          session: session,
-        ),
-      );
+      emit(WorkoutInProgress(session: session));
     } catch (e) {
-      emit(
-        WorkoutFailure(
-          message: e.toString(),
-        ),
-      );
+      emit(WorkoutFailure(message: e.toString()));
     }
   }
 
   Future<void> _onExerciseSetUpdated(
-      ExerciseSetUpdated event,
-      Emitter<WorkoutState> emit,
-      ) async {
+    ExerciseSetUpdated event,
+    Emitter<WorkoutState> emit,
+  ) async {
     try {
       final session = await updateExerciseSet(
         sessionId: event.sessionId,
@@ -62,42 +53,24 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
         note: event.note,
       );
 
-      emit(
-        WorkoutInProgress(
-          session: session,
-        ),
-      );
+      emit(WorkoutInProgress(session: session));
     } catch (e) {
-      emit(
-        WorkoutFailure(
-          message: e.toString(),
-        ),
-      );
+      emit(WorkoutFailure(message: e.toString()));
     }
   }
 
   Future<void> _onWorkoutFinished(
-      WorkoutFinished event,
-      Emitter<WorkoutState> emit,
-      ) async {
+    WorkoutFinished event,
+    Emitter<WorkoutState> emit,
+  ) async {
     try {
       emit(const WorkoutLoading());
 
-      final session = await finishWorkout(
-        sessionId: event.sessionId,
-      );
+      final session = await finishWorkout(sessionId: event.sessionId);
 
-      emit(
-        WorkoutCompleted(
-          session: session,
-        ),
-      );
+      emit(WorkoutCompleted(session: session));
     } catch (e) {
-      emit(
-        WorkoutFailure(
-          message: e.toString(),
-        ),
-      );
+      emit(WorkoutFailure(message: e.toString()));
     }
   }
 }

@@ -9,14 +9,12 @@ class UserProfileLocalDataSource {
   UserProfileLocalDataSource(this._database);
 
   Future<db.UserProfile?> getProfile() async {
-    return (_database.select(_database.userProfiles)
-      ..where((table) => table.id.equals(1)))
-        .getSingleOrNull();
+    return (_database.select(
+      _database.userProfiles,
+    )..where((table) => table.id.equals(1))).getSingleOrNull();
   }
 
-  Future<void> saveProfile(
-      db.UserProfilesCompanion profile,
-      ) async {
+  Future<void> saveProfile(db.UserProfilesCompanion profile) async {
     await _database
         .into(_database.userProfiles)
         .insertOnConflictUpdate(profile);

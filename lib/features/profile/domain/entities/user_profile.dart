@@ -1,4 +1,3 @@
-
 class UserProfile {
   final String goal;
   final double? weightKg;

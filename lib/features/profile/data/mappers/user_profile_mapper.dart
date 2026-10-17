@@ -1,4 +1,3 @@
-
 import 'package:drift/drift.dart';
 
 import '../../../../core/database/app_database.dart' as db;
@@ -14,9 +13,7 @@ class UserProfileMapper {
     );
   }
 
-  static db.UserProfilesCompanion toCompanion(
-      domain.UserProfile profile,
-      ) {
+  static db.UserProfilesCompanion toCompanion(domain.UserProfile profile) {
     return db.UserProfilesCompanion.insert(
       id: const Value(1),
       goal: profile.goal,

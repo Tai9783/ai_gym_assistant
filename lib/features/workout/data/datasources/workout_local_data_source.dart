@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../core/database/app_database.dart';
 import '../../domain/entities/workout_session.dart';
+
 @LazySingleton()
 class WorkoutLocalDataSource {
   final AppDatabase database;
@@ -26,46 +27,38 @@ class WorkoutLocalDataSource {
       }
 
       for (final set in sets) {
-        await database
-            .into(database.exerciseSets)
-            .insertOnConflictUpdate(set);
+        await database.into(database.exerciseSets).insertOnConflictUpdate(set);
       }
     });
   }
+
   Future<WorkoutSessionRecord?> getWorkoutSessionById(String id) async {
-    return (database.select(database.workoutSessions)
-      ..where((table) => table.id.equals(id)))
-        .getSingleOrNull();
+    return (database.select(
+      database.workoutSessions,
+    )..where((table) => table.id.equals(id))).getSingleOrNull();
   }
 
   Future<List<WorkoutExerciseRecord>> getWorkoutExercisesBySessionId(
-      String sessionId,
-      ) async {
+    String sessionId,
+  ) async {
     return (database.select(database.workoutExercises)
-      ..where((table) => table.sessionId.equals(sessionId))
-      ..orderBy([
-            (table) => OrderingTerm.asc(table.order),
-      ]))
+          ..where((table) => table.sessionId.equals(sessionId))
+          ..orderBy([(table) => OrderingTerm.asc(table.order)]))
         .get();
   }
 
   Future<List<ExerciseSetRecord>> getExerciseSetsByWorkoutExerciseId(
-      String workoutExerciseId,
-      ) async {
+    String workoutExerciseId,
+  ) async {
     return (database.select(database.exerciseSets)
-      ..where(
-            (table) =>
-            table.workoutExerciseId.equals(workoutExerciseId),
-      )
-      ..orderBy([
-            (table) => OrderingTerm.asc(table.setNumber),
-      ]))
+          ..where((table) => table.workoutExerciseId.equals(workoutExerciseId))
+          ..orderBy([(table) => OrderingTerm.asc(table.setNumber)]))
         .get();
   }
 
   Future<List<String>> getCompletedWorkoutSessionIdsByExerciseId(
-      String exerciseId,
-      ) async {
+    String exerciseId,
+  ) async {
     final query = database.selectOnly(database.workoutSessions)
       ..addColumns([database.workoutSessions.id])
       ..join([
@@ -86,8 +79,6 @@ class WorkoutLocalDataSource {
 
     final rows = await query.get();
 
-    return rows
-        .map((row) => row.read(database.workoutSessions.id)!)
-        .toList();
+    return rows.map((row) => row.read(database.workoutSessions.id)!).toList();
   }
 }

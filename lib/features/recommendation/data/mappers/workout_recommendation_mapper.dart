@@ -1,10 +1,7 @@
-
 import '../../domain/entities/workout_recommendation.dart';
 
 class WorkoutRecommendationMapper {
-  static WorkoutRecommendation fromJson(
-      Map<String, dynamic> json,
-      ) {
+  static WorkoutRecommendation fromJson(Map<String, dynamic> json) {
     final rawExercises = json['exercises'];
 
     if (rawExercises is! List) {
@@ -41,14 +38,9 @@ class WorkoutRecommendationMapper {
         );
       }).toList();
 
-      return RecommendedExercise(
-        exerciseId: exerciseId,
-        sets: sets,
-      );
+      return RecommendedExercise(exerciseId: exerciseId, sets: sets);
     }).toList();
 
-    return WorkoutRecommendation(
-      exercises: exercises,
-    );
+    return WorkoutRecommendation(exercises: exercises);
   }
 }

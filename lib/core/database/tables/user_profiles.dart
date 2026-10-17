@@ -1,4 +1,3 @@
-
 import 'package:drift/drift.dart';
 
 class UserProfiles extends Table {

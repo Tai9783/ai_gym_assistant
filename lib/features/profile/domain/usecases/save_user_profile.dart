@@ -1,4 +1,3 @@
-
 import 'package:injectable/injectable.dart';
 
 import '../entities/user_profile.dart';

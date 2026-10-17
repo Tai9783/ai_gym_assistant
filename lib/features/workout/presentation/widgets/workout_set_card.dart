@@ -4,10 +4,8 @@ import '../../domain/entities/exercise_set.dart';
 
 class WorkoutSetCard extends StatefulWidget {
   final ExerciseSet set;
-  final void Function({
-  required double actualWeight,
-  required int actualReps,
-  }) onComplete;
+  final void Function({required double actualWeight, required int actualReps})
+  onComplete;
 
   const WorkoutSetCard({
     super.key,
@@ -28,13 +26,15 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
     super.initState();
 
     _weightController = TextEditingController(
-      text: widget.set.actualWeight?.toString() ??
+      text:
+          widget.set.actualWeight?.toString() ??
           widget.set.suggestedWeight?.toString() ??
           '',
     );
 
     _repsController = TextEditingController(
-      text: widget.set.actualReps?.toString() ??
+      text:
+          widget.set.actualReps?.toString() ??
           widget.set.suggestedReps?.toString() ??
           '',
     );
@@ -53,23 +53,17 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
 
     if (weight == null || reps == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter valid weight and reps'),
-        ),
+        const SnackBar(content: Text('Please enter valid weight and reps')),
       );
       return;
     }
 
-    widget.onComplete(
-      actualWeight: weight,
-      actualReps: reps,
-    );
+    widget.onComplete(actualWeight: weight, actualReps: reps);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted =
-        widget.set.status == ExerciseSetStatus.completed;
+    final isCompleted = widget.set.status == ExerciseSetStatus.completed;
 
     return Card(
       child: Padding(
@@ -79,18 +73,15 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
           children: [
             Text(
               'Set ${widget.set.setNumber}',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
 
             Text(
               'Suggested: '
-                  '${widget.set.suggestedWeight ?? '-'} kg × '
-                  '${widget.set.suggestedReps ?? '-'} reps',
+              '${widget.set.suggestedWeight ?? '-'} kg × '
+              '${widget.set.suggestedReps ?? '-'} reps',
             ),
 
             const SizedBox(height: 16),
@@ -126,9 +117,7 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: isCompleted ? null : _completeSet,
-                child: Text(
-                  isCompleted ? 'Completed' : 'Complete Set',
-                ),
+                child: Text(isCompleted ? 'Completed' : 'Complete Set'),
               ),
             ),
           ],

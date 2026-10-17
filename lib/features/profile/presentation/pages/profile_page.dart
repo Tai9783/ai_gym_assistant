@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,9 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
 
-    context.read<ProfileBloc>().add(
-      const ProfileLoadRequested(),
-    );
+    context.read<ProfileBloc>().add(const ProfileLoadRequested());
   }
 
   @override
@@ -59,11 +56,9 @@ class _ProfilePageState extends State<ProfilePage> {
     _profile = profile;
     _selectedGoal = profile?.goal;
 
-    _weightController.text =
-        profile?.weightKg?.toString() ?? '';
+    _weightController.text = profile?.weightKg?.toString() ?? '';
 
-    _heightController.text =
-        profile?.heightCm?.toString() ?? '';
+    _heightController.text = profile?.heightCm?.toString() ?? '';
 
     _ageController.text = profile?.age?.toString() ?? '';
 
@@ -99,9 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     final number = _parseDouble(value);
 
-    if (number == null ||
-        !number.isFinite ||
-        number <= 0) {
+    if (number == null || !number.isFinite || number <= 0) {
       return 'Vui lòng nhập số hợp lệ';
     }
 
@@ -144,9 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
           : int.parse(_ageController.text.trim()),
     );
 
-    context.read<ProfileBloc>().add(
-      ProfileSaveRequested(profile),
-    );
+    context.read<ProfileBloc>().add(ProfileSaveRequested(profile));
   }
 
   @override
@@ -156,10 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text(
           'AI Gym Assistant',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
@@ -181,9 +169,7 @@ class _ProfilePageState extends State<ProfilePage> {
             });
 
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Đã lưu hồ sơ thành công'),
-              ),
+              const SnackBar(content: Text('Đã lưu hồ sơ thành công')),
             );
           }
 
@@ -191,9 +177,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  _hasLoaded
-                      ? 'Không thể lưu hồ sơ'
-                      : 'Không thể tải hồ sơ',
+                  _hasLoaded ? 'Không thể lưu hồ sơ' : 'Không thể tải hồ sơ',
                 ),
               ),
             );
@@ -214,9 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             }
 
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           final isSaving = state is ProfileSaving;
@@ -226,9 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               Text(
                 _isEditing
-                    ? (_profile == null
-                    ? 'Thiết lập hồ sơ'
-                    : 'Chỉnh sửa hồ sơ')
+                    ? (_profile == null ? 'Thiết lập hồ sơ' : 'Chỉnh sửa hồ sơ')
                     : 'Hồ sơ cá nhân',
                 style: const TextStyle(
                   fontSize: 24,
@@ -242,13 +222,10 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 _isEditing
                     ? 'Cập nhật thông tin để AI đề xuất '
-                    'buổi tập phù hợp với bạn.'
+                          'buổi tập phù hợp với bạn.'
                     : 'Thông tin cá nhân và mục tiêu '
-                    'tập luyện của bạn.',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.black54,
-                ),
+                          'tập luyện của bạn.',
+                style: const TextStyle(fontSize: 13, color: Colors.black54),
               ),
 
               const SizedBox(height: 20),
@@ -295,10 +272,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
               const Text(
                 'Mục tiêu tập luyện',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black54,
-                ),
+                style: TextStyle(fontSize: 13, color: Colors.black54),
               ),
 
               const SizedBox(height: 6),
@@ -379,12 +353,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
         const Text(
           'Thông tin này giúp AI hiểu mục tiêu '
-              'và cá nhân hóa bài tập cho bạn.',
+          'và cá nhân hóa bài tập cho bạn.',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.black54,
-          ),
+          style: TextStyle(fontSize: 12, color: Colors.black54),
         ),
       ],
     );
@@ -402,10 +373,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               const Text(
                 'Bạn muốn đạt được điều gì?',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black54,
-                ),
+                style: TextStyle(fontSize: 13, color: Colors.black54),
               ),
 
               const SizedBox(height: 12),
@@ -414,8 +382,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 spacing: 8,
                 runSpacing: 8,
                 children: _goalNames.entries.map((entry) {
-                  final selected =
-                      _selectedGoal == entry.key;
+                  final selected = _selectedGoal == entry.key;
 
                   return ChoiceChip(
                     label: Text(entry.value),
@@ -423,14 +390,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     selectedColor: const Color(0xFFECEBFF),
                     backgroundColor: Colors.white,
                     side: BorderSide(
-                      color: selected
-                          ? _primaryColor
-                          : _borderColor,
+                      color: selected ? _primaryColor : _borderColor,
                     ),
                     labelStyle: TextStyle(
-                      color: selected
-                          ? _primaryColor
-                          : const Color(0xFF333544),
+                      color: selected ? _primaryColor : const Color(0xFF333544),
                       fontWeight: selected
                           ? FontWeight.w600
                           : FontWeight.normal,
@@ -438,11 +401,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     onSelected: isSaving
                         ? null
                         : (_) {
-                      setState(() {
-                        _selectedGoal = entry.key;
-                        _goalError = false;
-                      });
-                    },
+                            setState(() {
+                              _selectedGoal = entry.key;
+                              _goalError = false;
+                            });
+                          },
                   );
                 }).toList(),
               ),
@@ -451,10 +414,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 8),
                 const Text(
                   'Vui lòng chọn mục tiêu',
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.red, fontSize: 12),
                 ),
               ],
             ],
@@ -504,11 +464,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
           const Text(
             'Cân nặng, chiều cao và tuổi có thể '
-                'để trống nếu bạn chưa muốn cung cấp.',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.black54,
-            ),
+            'để trống nếu bạn chưa muốn cung cấp.',
+            style: TextStyle(fontSize: 12, color: Colors.black54),
           ),
 
           const SizedBox(height: 22),
@@ -519,19 +476,15 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: isSaving ? null : _saveProfile,
               icon: isSaving
                   ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
                   : const Icon(Icons.check_rounded),
-              label: Text(
-                isSaving
-                    ? 'Đang lưu...'
-                    : 'Lưu thông tin',
-              ),
+              label: Text(isSaving ? 'Đang lưu...' : 'Lưu thông tin'),
               style: FilledButton.styleFrom(
                 backgroundColor: _primaryColor,
                 shape: RoundedRectangleBorder(
@@ -570,11 +523,7 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                size: 19,
-                color: _primaryColor,
-              ),
+              Icon(icon, size: 19, color: _primaryColor),
               const SizedBox(width: 8),
               Text(
                 title,
@@ -599,10 +548,7 @@ class _ProfilePageState extends State<ProfilePage> {
     required String unit,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 14,
-        horizontal: 6,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
       decoration: BoxDecoration(
         color: _backgroundColor,
         borderRadius: BorderRadius.circular(12),
@@ -613,25 +559,16 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Colors.black54,
-            ),
+            style: const TextStyle(fontSize: 11, color: Colors.black54),
           ),
           const SizedBox(height: 5),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           Text(
             unit,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Colors.black54,
-            ),
+            style: const TextStyle(fontSize: 11, color: Colors.black54),
           ),
         ],
       ),
@@ -650,16 +587,12 @@ class _ProfilePageState extends State<ProfilePage> {
     return TextFormField(
       controller: controller,
       enabled: !isSaving,
-      keyboardType: TextInputType.numberWithOptions(
-        decimal: !isInteger,
-      ),
+      keyboardType: TextInputType.numberWithOptions(decimal: !isInteger),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon, size: 20),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       validator: validator,
     );

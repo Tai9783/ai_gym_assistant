@@ -19,8 +19,8 @@ class SelectExercisePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<ExerciseCatalogBloc>()
-        ..add(const ExerciseCatalogRequested()),
+      create: (_) =>
+          getIt<ExerciseCatalogBloc>()..add(const ExerciseCatalogRequested()),
       child: _SelectExerciseView(
         initialSelectedExerciseIds: initialSelectedExerciseIds,
       ),
@@ -31,13 +31,10 @@ class SelectExercisePage extends StatelessWidget {
 class _SelectExerciseView extends StatefulWidget {
   final List<String> initialSelectedExerciseIds;
 
-  const _SelectExerciseView({
-    required this.initialSelectedExerciseIds,
-  });
+  const _SelectExerciseView({required this.initialSelectedExerciseIds});
 
   @override
-  State<_SelectExerciseView> createState() =>
-      _SelectExerciseViewState();
+  State<_SelectExerciseView> createState() => _SelectExerciseViewState();
 }
 
 class _SelectExerciseViewState extends State<_SelectExerciseView> {
@@ -47,9 +44,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
   void initState() {
     super.initState();
 
-    _selectedExerciseIds = {
-      ...widget.initialSelectedExerciseIds,
-    };
+    _selectedExerciseIds = {...widget.initialSelectedExerciseIds};
   }
 
   void _toggleExercise(String exerciseId) {
@@ -62,14 +57,9 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
     });
   }
 
-  void _confirmSelection(
-      List<ExerciseDefinition> exercises,
-      ) {
+  void _confirmSelection(List<ExerciseDefinition> exercises) {
     final selectedExercises = exercises
-        .where(
-          (exercise) =>
-          _selectedExerciseIds.contains(exercise.id),
-    )
+        .where((exercise) => _selectedExerciseIds.contains(exercise.id))
         .toList();
 
     context.pop(selectedExercises);
@@ -103,18 +93,14 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
         elevation: 0,
         title: const Text(
           'Chọn bài tập',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w700),
         ),
       ),
       body: BlocBuilder<ExerciseCatalogBloc, ExerciseCatalogState>(
         builder: (context, state) {
           if (state is ExerciseCatalogInitial ||
               state is ExerciseCatalogLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (state is ExerciseCatalogFailure) {
@@ -130,9 +116,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
           }
 
           if (state is ExerciseCatalogLoaded) {
-            return _buildExerciseList(
-              state.exercises,
-            );
+            return _buildExerciseList(state.exercises);
           }
 
           return const SizedBox.shrink();
@@ -141,9 +125,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
     );
   }
 
-  Widget _buildExerciseList(
-      List<ExerciseDefinition> exercises,
-      ) {
+  Widget _buildExerciseList(List<ExerciseDefinition> exercises) {
     final hasSelection = _selectedExerciseIds.isNotEmpty;
 
     return Column(
@@ -158,9 +140,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
             itemBuilder: (context, index) {
               final exercise = exercises[index];
 
-              final isSelected = _selectedExerciseIds.contains(
-                exercise.id,
-              );
+              final isSelected = _selectedExerciseIds.contains(exercise.id);
 
               return InkWell(
                 borderRadius: BorderRadius.circular(14),
@@ -186,8 +166,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
                     children: [
                       Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               exercise.name,
@@ -198,9 +177,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _muscleGroupLabel(
-                                exercise.muscleGroup,
-                              ),
+                              _muscleGroupLabel(exercise.muscleGroup),
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: Color(0xFF6B7280),
@@ -223,12 +200,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
           ),
         ),
         Container(
-          padding: const EdgeInsets.fromLTRB(
-            16,
-            12,
-            16,
-            20,
-          ),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           color: Colors.white,
           child: SafeArea(
             top: false,
@@ -236,8 +208,9 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed:
-                hasSelection ? ()=> _confirmSelection(exercises) : null,
+                onPressed: hasSelection
+                    ? () => _confirmSelection(exercises)
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF5B6CFF),
                   foregroundColor: Colors.white,

@@ -5,11 +5,10 @@ import '../../domain/entities/workout_exercise.dart';
 import '../../domain/entities/workout_session.dart';
 
 class WorkoutSessionMapper {
-
   static WorkoutSession toDomain(
-      WorkoutSessionRecord record,
-      List<WorkoutExercise> exercises,
-      ) {
+    WorkoutSessionRecord record,
+    List<WorkoutExercise> exercises,
+  ) {
     return WorkoutSession(
       id: record.id,
       startedAt: record.startedAt,
@@ -19,9 +18,7 @@ class WorkoutSessionMapper {
     );
   }
 
-  static WorkoutSessionsCompanion toCompanion(
-      WorkoutSession entity,
-      ) {
+  static WorkoutSessionsCompanion toCompanion(WorkoutSession entity) {
     return WorkoutSessionsCompanion.insert(
       id: entity.id,
       startedAt: entity.startedAt,

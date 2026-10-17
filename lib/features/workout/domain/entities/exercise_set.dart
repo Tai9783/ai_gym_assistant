@@ -1,8 +1,5 @@
-enum ExerciseSetStatus {
-  pending,
-  completed,
-  skipped,
-}
+enum ExerciseSetStatus { pending, completed, skipped }
+
 class ExerciseSet {
   final String id;
   final int setNumber;
@@ -26,7 +23,7 @@ class ExerciseSet {
     required this.status,
     this.note,
   });
-  
+
   ExerciseSet copyWith({
     double? actualWeight,
     int? actualReps,

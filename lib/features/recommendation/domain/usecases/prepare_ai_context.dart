@@ -1,4 +1,3 @@
-
 import 'package:injectable/injectable.dart';
 
 import '../../../exercise_catalog/domain/entities/exercise_definition.dart';
@@ -17,15 +16,13 @@ class PrepareAiContext {
   final GetUserProfile _getUserProfile;
 
   PrepareAiContext(
-      this._getExercises,
-      this._getExerciseProgress,
-      this._builder,
-      this._getUserProfile,
-      );
+    this._getExercises,
+    this._getExerciseProgress,
+    this._builder,
+    this._getUserProfile,
+  );
 
-  Future<AiContext> call({
-    required WorkoutRequest request,
-  }) async {
+  Future<AiContext> call({required WorkoutRequest request}) async {
     // Read the list of exercises from the Catalog.
     final catalogExercises = await _getExercises();
 
@@ -34,8 +31,7 @@ class PrepareAiContext {
     //Identify the exercises that are permitted to be proposed.
     if (request.exerciseIds.isNotEmpty) {
       final exerciseById = {
-        for (final exercise in catalogExercises)
-          exercise.id: exercise,
+        for (final exercise in catalogExercises) exercise.id: exercise,
       };
 
       for (final id in request.exerciseIds.toSet()) {
@@ -51,8 +47,8 @@ class PrepareAiContext {
       // TH2: The list has been filtered based on focus.
       exercises.addAll(
         catalogExercises.where(
-              (exercise) =>
-          request.focus.name == 'fullBody' ||
+          (exercise) =>
+              request.focus.name == 'fullBody' ||
               exercise.muscleGroup.name == request.focus.name,
         ),
       );
@@ -63,13 +59,10 @@ class PrepareAiContext {
     }
 
     // Get Recent + LongTerm for each exercise.
-    final progressByExerciseId =
-    <String, ExerciseProgressResult>{};
+    final progressByExerciseId = <String, ExerciseProgressResult>{};
 
     for (final exercise in exercises) {
-      final progress = await _getExerciseProgress(
-        exerciseId: exercise.id,
-      );
+      final progress = await _getExerciseProgress(exerciseId: exercise.id);
 
       progressByExerciseId[exercise.id] = progress;
     }
