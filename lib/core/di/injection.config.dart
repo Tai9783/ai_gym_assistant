@@ -45,12 +45,22 @@ import 'package:ai_gym_assistant/features/progress/domain/services/session_targe
     as _i338;
 import 'package:ai_gym_assistant/features/progress/domain/usecases/get_exercise_progress.dart'
     as _i329;
+import 'package:ai_gym_assistant/features/recommendation/data/datasources/gemini_remote_data_source.dart'
+    as _i489;
+import 'package:ai_gym_assistant/features/recommendation/data/repositories/recommendation_repository_impl.dart'
+    as _i444;
+import 'package:ai_gym_assistant/features/recommendation/domain/repositories/recommendation_repository.dart'
+    as _i938;
 import 'package:ai_gym_assistant/features/recommendation/domain/services/ai_context_builder.dart'
     as _i576;
 import 'package:ai_gym_assistant/features/recommendation/domain/services/recommendation_validator.dart'
     as _i288;
+import 'package:ai_gym_assistant/features/recommendation/domain/usecases/generate_recommendation.dart'
+    as _i573;
 import 'package:ai_gym_assistant/features/recommendation/domain/usecases/prepare_ai_context.dart'
     as _i1051;
+import 'package:ai_gym_assistant/features/recommendation/presentation/bloc/recommendation_bloc.dart'
+    as _i650;
 import 'package:ai_gym_assistant/features/workout/data/datasources/workout_local_data_source.dart'
     as _i915;
 import 'package:ai_gym_assistant/features/workout/data/repositories/workout_repository_impl.dart'
@@ -85,6 +95,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i147.ExerciseSessionSummarizer>(
       () => _i147.ExerciseSessionSummarizer(),
     );
+    gh.lazySingleton<_i489.GeminiRemoteDataSource>(
+      () => _i489.GeminiRemoteDataSource(),
+    );
     gh.lazySingleton<_i576.AiContextBuilder>(() => _i576.AiContextBuilder());
     gh.lazySingleton<_i288.RecommendationValidator>(
       () => _i288.RecommendationValidator(),
@@ -100,6 +113,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i915.WorkoutLocalDataSource>(
       () => _i915.WorkoutLocalDataSource(gh<_i117.AppDatabase>()),
+    );
+    gh.lazySingleton<_i938.RecommendationRepository>(
+      () => _i444.RecommendationRepositoryImpl(
+        gh<_i489.GeminiRemoteDataSource>(),
+        gh<_i288.RecommendationValidator>(),
+      ),
     );
     gh.factory<_i516.LongTermProgressAnalyzer>(
       () => _i516.LongTermProgressAnalyzer(
@@ -159,6 +178,12 @@ extension GetItInjectableX on _i174.GetIt {
         finishWorkout: gh<_i679.FinishWorkout>(),
       ),
     );
+    gh.lazySingleton<_i573.GenerateRecommendation>(
+      () => _i573.GenerateRecommendation(
+        gh<_i1051.PrepareAiContext>(),
+        gh<_i938.RecommendationRepository>(),
+      ),
+    );
     gh.factory<_i534.ExerciseCatalogBloc>(
       () => _i534.ExerciseCatalogBloc(getExercises: gh<_i158.GetExercises>()),
     );
@@ -167,6 +192,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i888.GetUserProfile>(),
         gh<_i917.SaveUserProfile>(),
       ),
+    );
+    gh.factory<_i650.RecommendationBloc>(
+      () => _i650.RecommendationBloc(gh<_i573.GenerateRecommendation>()),
     );
     return this;
   }

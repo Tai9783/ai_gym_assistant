@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/exercise_catalog/domain/entities/exercise_definition.dart';
+import '../../features/recommendation/domain/entities/workout_request.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -49,19 +50,11 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: textColor,
         title: const Text(
           'AI Gym Assistant',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 22,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          24,
-        ),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -78,11 +71,7 @@ class _HomePageState extends State<HomePage> {
 
             const Text(
               'Chọn nhóm cơ hoặc chọn bài tập cụ thể để AI đề xuất buổi tập phù hợp.',
-              style: TextStyle(
-                fontSize: 15,
-                height: 1.5,
-                color: subTextColor,
-              ),
+              style: TextStyle(fontSize: 15, height: 1.5, color: subTextColor),
             ),
 
             const SizedBox(height: 24),
@@ -107,8 +96,7 @@ class _HomePageState extends State<HomePage> {
                     spacing: 10,
                     runSpacing: 10,
                     children: _muscleGroups.map((group) {
-                      final isSelected =
-                          _selectedMuscleGroup == group;
+                      final isSelected = _selectedMuscleGroup == group;
 
                       return GestureDetector(
                         onTap: () {
@@ -127,16 +115,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? primaryColor.withValues(
-                              alpha: 0.10,
-                            )
+                                ? primaryColor.withValues(alpha: 0.10)
                                 : Colors.white,
-                            borderRadius:
-                            BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: isSelected
-                                  ? primaryColor
-                                  : borderColor,
+                              color: isSelected ? primaryColor : borderColor,
                             ),
                           ),
                           child: Text(
@@ -144,9 +127,7 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? primaryColor
-                                  : textColor,
+                              color: isSelected ? primaryColor : textColor,
                             ),
                           ),
                         ),
@@ -187,38 +168,28 @@ class _HomePageState extends State<HomePage> {
 
                   const Text(
                     'Bạn có thể tự chọn bài tập muốn đưa vào buổi tập.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: subTextColor,
-                    ),
+                    style: TextStyle(fontSize: 14, color: subTextColor),
                   ),
 
                   const SizedBox(height: 14),
 
                   if (_selectedExercises.isNotEmpty) ...[
                     ..._selectedExercises.map(
-                          (exercise) => Container(
-                        margin: const EdgeInsets.only(
-                          bottom: 10,
-                        ),
+                      (exercise) => Container(
+                        margin: const EdgeInsets.only(bottom: 10),
                         decoration: BoxDecoration(
-                          borderRadius:
-                          BorderRadius.circular(14),
-                          border: Border.all(
-                            color: borderColor,
-                          ),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: borderColor),
                           color: Colors.white,
                         ),
                         child: ListTile(
-                          contentPadding:
-                          const EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14,
                             vertical: 4,
                           ),
                           leading: const CircleAvatar(
                             radius: 18,
-                            backgroundColor:
-                            Color(0xFFEEF2FF),
+                            backgroundColor: Color(0xFFEEF2FF),
                             child: Icon(
                               Icons.fitness_center,
                               color: primaryColor,
@@ -245,13 +216,11 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () async {
                         final result = await context
                             .push<List<ExerciseDefinition>>(
-                          '/select-exercises',
-                          extra: _selectedExercises
-                              .map(
-                                (exercise) => exercise.id,
-                          )
-                              .toList(),
-                        );
+                              '/select-exercises',
+                              extra: _selectedExercises
+                                  .map((exercise) => exercise.id)
+                                  .toList(),
+                            );
 
                         if (result != null) {
                           setState(() {
@@ -267,16 +236,10 @@ class _HomePageState extends State<HomePage> {
                       ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: primaryColor,
-                        side: const BorderSide(
-                          color: borderColor,
-                        ),
-                        padding:
-                        const EdgeInsets.symmetric(
-                          vertical: 14,
-                        ),
+                        side: const BorderSide(color: borderColor),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                         textStyle: const TextStyle(
                           fontSize: 15,
@@ -333,33 +296,21 @@ class _HomePageState extends State<HomePage> {
                     minLines: 4,
                     maxLines: 5,
                     decoration: InputDecoration(
-                      hintText:
-                      'Nhập ghi chú của bạn...',
-                      hintStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
+                      hintText: 'Nhập ghi chú của bạn...',
+                      hintStyle: const TextStyle(color: Colors.grey),
                       filled: true,
-                      fillColor:
-                      const Color(0xFFF9FAFB),
-                      contentPadding:
-                      const EdgeInsets.all(14),
+                      fillColor: const Color(0xFFF9FAFB),
+                      contentPadding: const EdgeInsets.all(14),
                       border: OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius.circular(14),
-                        borderSide: const BorderSide(
-                          color: borderColor,
-                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: borderColor),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius.circular(14),
-                        borderSide: const BorderSide(
-                          color: borderColor,
-                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: borderColor),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius:
-                        BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(14),
                         borderSide: const BorderSide(
                           color: primaryColor,
                           width: 1.4,
@@ -377,29 +328,20 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () {
-                },
-                icon: const Icon(
-                  Icons.auto_awesome,
-                ),
-                label: const Text(
-                  'Tạo buổi tập với AI',
-                ),
+                onPressed: _onGeneratePressed,
+                icon: const Icon(Icons.auto_awesome),
+                label: const Text('Tạo buổi tập với AI'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  padding:
-                  const EdgeInsets.symmetric(
-                    vertical: 16,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
               ),
@@ -410,20 +352,59 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSectionCard({
-    required Widget child,
-  }) {
+  Widget _buildSectionCard({required Widget child}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFE5E7EB),
-        ),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: child,
     );
+  }
+
+  void _onGeneratePressed() {
+    // Require a muscle group or selected exercises.
+    if (_selectedMuscleGroup == null && _selectedExercises.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vui lòng chọn nhóm cơ hoặc bài tập cụ thể'),
+        ),
+      );
+      return;
+    }
+
+    // Convert the UI selection to WorkoutFocus.
+    final focus = switch (_selectedMuscleGroup) {
+      'Ngực' => WorkoutFocus.chest,
+      'Lưng' => WorkoutFocus.back,
+      'Chân' => WorkoutFocus.legs,
+      'Vai' => WorkoutFocus.shoulders,
+      'Tay' => WorkoutFocus.arms,
+      'Toàn thân' => WorkoutFocus.fullBody,
+      null => WorkoutFocus.fullBody,
+      _ => throw StateError('Unknown muscle group'),
+    };
+
+    // Get selected exercise IDs.
+    final exerciseIds = _selectedExercises
+        .map((exercise) => exercise.id)
+        .toSet()
+        .toList();
+
+    // Get the user note.
+    final note = _noteController.text.trim();
+
+    // Build a WorkoutRequest from Home input.
+    final request = WorkoutRequest(
+      focus: focus,
+      exerciseIds: exerciseIds,
+      note: note.isEmpty ? null : note,
+    );
+
+    // Navigate to RecommendationPage.
+    context.push('/recommendation', extra: request);
   }
 }

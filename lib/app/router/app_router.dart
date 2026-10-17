@@ -1,8 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/di/injection.dart';
+import '../../features/exercise_catalog/domain/usecases/get_exercises.dart';
 import '../../features/exercise_catalog/presentation/pages/select_exercise_page.dart';
 import '../../features/profile/presentation/bloc/profile_bloc.dart';
+import '../../features/recommendation/domain/entities/workout_request.dart';
+import '../../features/recommendation/presentation/bloc/recommendation_bloc.dart';
+import '../../features/recommendation/presentation/bloc/recommendation_event.dart';
+import '../../features/recommendation/presentation/pages/recommendation_page.dart';
 import '../pages/home_page.dart';
 import '../pages/main_shell_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
@@ -13,14 +20,8 @@ final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (
-          context,
-          state,
-          navigationShell,
-          ) {
-        return MainShellPage(
-          navigationShell: navigationShell,
-        );
+      builder: (context, state, navigationShell) {
+        return MainShellPage(navigationShell: navigationShell);
       },
 
       branches: [
@@ -85,6 +86,29 @@ final GoRouter appRouter = GoRouter(
 
         return SelectExercisePage(
           initialSelectedExerciseIds: initialSelectedExerciseIds,
+        );
+      },
+    ),
+
+    GoRoute(
+      path: '/recommendation',
+      builder: (context, state) {
+        final extra = state.extra;
+
+        if (extra is! WorkoutRequest) {
+          return const Scaffold(
+            body: Center(child: Text('Thiếu yêu cầu tập luyện')),
+          );
+        }
+
+        return BlocProvider<RecommendationBloc>(
+          create: (_) =>
+              GetIt.I<RecommendationBloc>()
+                ..add(RecommendationGenerateRequested(extra)),
+          child: RecommendationPage(
+            request: extra,
+            getExercises: GetIt.I<GetExercises>(),
+          ),
         );
       },
     ),
