@@ -21,6 +21,16 @@ import 'package:ai_gym_assistant/features/exercise_catalog/domain/usecases/get_e
     as _i158;
 import 'package:ai_gym_assistant/features/exercise_catalog/presentation/bloc/exercise_catalog_bloc.dart'
     as _i534;
+import 'package:ai_gym_assistant/features/profile/data/datasources/user_profile_local_data_source.dart'
+    as _i976;
+import 'package:ai_gym_assistant/features/profile/data/repositories/user_profile_repository_impl.dart'
+    as _i267;
+import 'package:ai_gym_assistant/features/profile/domain/repositories/user_profile_repository.dart'
+    as _i651;
+import 'package:ai_gym_assistant/features/profile/domain/usecases/get_user_profile.dart'
+    as _i888;
+import 'package:ai_gym_assistant/features/profile/domain/usecases/save_user_profile.dart'
+    as _i917;
 import 'package:ai_gym_assistant/features/progress/domain/services/exercise_session_summarizer.dart'
     as _i147;
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart'
@@ -75,6 +85,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i26.RecentProgressAnalyzer>(
       () => _i26.RecentProgressAnalyzer(gh<_i338.SessionTargetClassifier>()),
     );
+    gh.lazySingleton<_i976.UserProfileLocalDataSource>(
+      () => _i976.UserProfileLocalDataSource(gh<_i117.AppDatabase>()),
+    );
     gh.lazySingleton<_i1019.ExerciseLocalDataSource>(
       () => _i1019.ExerciseLocalDataSource(gh<_i117.AppDatabase>()),
     );
@@ -89,6 +102,11 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i491.ExerciseRepository>(
       () => _i170.ExerciseRepositoryImpl(gh<_i1019.ExerciseLocalDataSource>()),
+    );
+    gh.lazySingleton<_i651.UserProfileRepository>(
+      () => _i267.UserProfileRepositoryImpl(
+        gh<_i976.UserProfileLocalDataSource>(),
+      ),
     );
     gh.lazySingleton<_i729.WorkoutRepository>(
       () => _i769.WorkoutRepositoryImpl(gh<_i915.WorkoutLocalDataSource>()),
@@ -112,6 +130,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i811.UpdateExerciseSet>(
       () => _i811.UpdateExerciseSet(gh<_i729.WorkoutRepository>()),
+    );
+    gh.lazySingleton<_i888.GetUserProfile>(
+      () => _i888.GetUserProfile(gh<_i651.UserProfileRepository>()),
+    );
+    gh.lazySingleton<_i917.SaveUserProfile>(
+      () => _i917.SaveUserProfile(gh<_i651.UserProfileRepository>()),
     );
     gh.factory<_i572.WorkoutBloc>(
       () => _i572.WorkoutBloc(
