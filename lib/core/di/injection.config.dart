@@ -47,6 +47,8 @@ import 'package:ai_gym_assistant/features/progress/domain/usecases/get_exercise_
     as _i329;
 import 'package:ai_gym_assistant/features/recommendation/domain/services/ai_context_builder.dart'
     as _i576;
+import 'package:ai_gym_assistant/features/recommendation/domain/services/recommendation_validator.dart'
+    as _i288;
 import 'package:ai_gym_assistant/features/recommendation/domain/usecases/prepare_ai_context.dart'
     as _i1051;
 import 'package:ai_gym_assistant/features/workout/data/datasources/workout_local_data_source.dart'
@@ -84,6 +86,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i147.ExerciseSessionSummarizer(),
     );
     gh.lazySingleton<_i576.AiContextBuilder>(() => _i576.AiContextBuilder());
+    gh.lazySingleton<_i288.RecommendationValidator>(
+      () => _i288.RecommendationValidator(),
+    );
     gh.factory<_i26.RecentProgressAnalyzer>(
       () => _i26.RecentProgressAnalyzer(gh<_i338.SessionTargetClassifier>()),
     );
