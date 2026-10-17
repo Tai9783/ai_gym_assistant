@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../../exercise_catalog/domain/entities/exercise_definition.dart';
 import '../../../exercise_catalog/domain/usecases/get_exercises.dart';
+import '../../../profile/domain/usecases/get_user_profile.dart';
 import '../../../progress/domain/usecases/get_exercise_progress.dart';
 import '../entities/ai_context.dart';
 import '../entities/workout_request.dart';
@@ -13,11 +14,13 @@ class PrepareAiContext {
   final GetExercises _getExercises;
   final GetExerciseProgress _getExerciseProgress;
   final AiContextBuilder _builder;
+  final GetUserProfile _getUserProfile;
 
   PrepareAiContext(
       this._getExercises,
       this._getExerciseProgress,
       this._builder,
+      this._getUserProfile,
       );
 
   Future<AiContext> call({
@@ -70,9 +73,11 @@ class PrepareAiContext {
 
       progressByExerciseId[exercise.id] = progress;
     }
+    final profile = await _getUserProfile();
 
     return _builder.build(
       request: request,
+      profile: profile,
       exercises: exercises,
       progressByExerciseId: progressByExerciseId,
     );

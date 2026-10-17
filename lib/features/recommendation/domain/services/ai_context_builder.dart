@@ -1,6 +1,7 @@
 
 import 'package:injectable/injectable.dart';
 
+import '../../../profile/domain/entities/user_profile.dart';
 import '../../../exercise_catalog/domain/entities/exercise_definition.dart';
 import '../../../progress/domain/usecases/get_exercise_progress.dart';
 import '../entities/ai_context.dart';
@@ -12,6 +13,7 @@ class AiContextBuilder {
     required WorkoutRequest request,
     required List<ExerciseDefinition> exercises,
     required Map<String, ExerciseProgressResult> progressByExerciseId,
+    UserProfile? profile,
   }) {
     final exerciseContexts = <AiExerciseContext>[];
 
@@ -35,6 +37,7 @@ class AiContextBuilder {
 
     return AiContext(
       request: request,
+      profile: profile,
       exercises: exerciseContexts,
     );
   }

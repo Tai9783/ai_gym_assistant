@@ -1,4 +1,6 @@
 
+import 'package:ai_gym_assistant/features/profile/domain/entities/user_profile.dart';
+import 'package:ai_gym_assistant/features/profile/domain/usecases/get_user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ai_gym_assistant/features/exercise_catalog/domain/entities/exercise_definition.dart';
@@ -10,6 +12,7 @@ import 'package:ai_gym_assistant/features/recommendation/domain/usecases/prepare
 import 'package:mocktail/mocktail.dart';
 
 class MockGetExercises extends Mock implements GetExercises {}
+class MockGetUserProfile extends Mock implements GetUserProfile {}
 
 class MockGetExerciseProgress extends Mock
     implements GetExerciseProgress {}
@@ -18,17 +21,20 @@ void main() {
   late MockGetExercises getExercises;
   late MockGetExerciseProgress getExerciseProgress;
   late PrepareAiContext prepareAiContext;
+  late MockGetUserProfile getUserProfile;
 
   late List<ExerciseDefinition> catalog;
 
   setUp(() {
     getExercises = MockGetExercises();
     getExerciseProgress = MockGetExerciseProgress();
+    getUserProfile = MockGetUserProfile();
 
     prepareAiContext = PrepareAiContext(
       getExercises,
       getExerciseProgress,
       AiContextBuilder(),
+      getUserProfile,
     );
 
     catalog = [
@@ -62,6 +68,10 @@ void main() {
     ).thenAnswer(
           (_) async => (recent: null, longTerm: null),
     );
+    // Return no user profile by default.
+    when(
+          () => getUserProfile(),
+    ).thenAnswer((_) async => null);
   });
 
   test('Should use selected exercises', () async {
@@ -217,4 +227,53 @@ void main() {
       ),
     ).called(1);
   });
+
+  test('Should include user profile', () async {
+    final profile = UserProfile(
+      goal: 'muscleGain',
+      weightKg: 65.5,
+      heightCm: 170,
+      age: 22,
+    );
+
+    when(
+          () => getUserProfile(),
+    ).thenAnswer((_) async => profile);
+
+    final request = WorkoutRequest(
+      focus: WorkoutFocus.chest,
+      exerciseIds: ['bench_press'],
+      note: null,
+    );
+
+    final context = await prepareAiContext(
+      request: request,
+    );
+
+    expect(context.profile, same(profile));
+    expect(context.profile?.goal, 'muscleGain');
+    expect(context.profile?.weightKg, 65.5);
+    expect(context.profile?.heightCm, 170);
+    expect(context.profile?.age, 22);
+
+    verify(() => getUserProfile()).called(1);
+  });
+
+  test('Should work without user profile', () async {
+    final request = WorkoutRequest(
+      focus: WorkoutFocus.chest,
+      exerciseIds: ['bench_press'],
+      note: null,
+    );
+
+    final context = await prepareAiContext(
+      request: request,
+    );
+
+    expect(context.profile, isNull);
+    expect(context.exercises.length, 1);
+
+    verify(() => getUserProfile()).called(1);
+  });
+
 }

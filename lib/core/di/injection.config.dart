@@ -137,18 +137,19 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i917.SaveUserProfile>(
       () => _i917.SaveUserProfile(gh<_i651.UserProfileRepository>()),
     );
-    gh.factory<_i572.WorkoutBloc>(
-      () => _i572.WorkoutBloc(
-        startWorkout: gh<_i256.StartWorkout>(),
-        updateExerciseSet: gh<_i811.UpdateExerciseSet>(),
-        finishWorkout: gh<_i679.FinishWorkout>(),
-      ),
-    );
     gh.lazySingleton<_i1051.PrepareAiContext>(
       () => _i1051.PrepareAiContext(
         gh<_i158.GetExercises>(),
         gh<_i329.GetExerciseProgress>(),
         gh<_i576.AiContextBuilder>(),
+        gh<_i888.GetUserProfile>(),
+      ),
+    );
+    gh.factory<_i572.WorkoutBloc>(
+      () => _i572.WorkoutBloc(
+        startWorkout: gh<_i256.StartWorkout>(),
+        updateExerciseSet: gh<_i811.UpdateExerciseSet>(),
+        finishWorkout: gh<_i679.FinishWorkout>(),
       ),
     );
     gh.factory<_i534.ExerciseCatalogBloc>(
