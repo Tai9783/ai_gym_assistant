@@ -1,5 +1,8 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/di/injection.dart';
 import '../../features/exercise_catalog/presentation/pages/select_exercise_page.dart';
+import '../../features/profile/presentation/bloc/profile_bloc.dart';
 import '../pages/home_page.dart';
 import '../pages/main_shell_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
@@ -63,7 +66,10 @@ final GoRouter appRouter = GoRouter(
               path: '/profile',
               name: 'profile',
               builder: (context, state) {
-                return const ProfilePage();
+                return BlocProvider<ProfileBloc>(
+                  create: (_) => getIt<ProfileBloc>(),
+                  child: const ProfilePage(),
+                );
               },
             ),
           ],

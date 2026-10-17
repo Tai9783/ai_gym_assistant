@@ -31,6 +31,8 @@ import 'package:ai_gym_assistant/features/profile/domain/usecases/get_user_profi
     as _i888;
 import 'package:ai_gym_assistant/features/profile/domain/usecases/save_user_profile.dart'
     as _i917;
+import 'package:ai_gym_assistant/features/profile/presentation/bloc/profile_bloc.dart'
+    as _i165;
 import 'package:ai_gym_assistant/features/progress/domain/services/exercise_session_summarizer.dart'
     as _i147;
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart'
@@ -154,6 +156,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i534.ExerciseCatalogBloc>(
       () => _i534.ExerciseCatalogBloc(getExercises: gh<_i158.GetExercises>()),
+    );
+    gh.factory<_i165.ProfileBloc>(
+      () => _i165.ProfileBloc(
+        gh<_i888.GetUserProfile>(),
+        gh<_i917.SaveUserProfile>(),
+      ),
     );
     return this;
   }
