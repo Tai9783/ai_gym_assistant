@@ -364,11 +364,6 @@ class _RecommendationPageState extends State<RecommendationPage> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          const Text(
-            'Chức năng Bắt đầu tập sẽ được nối ở bước sau.',
-            style: TextStyle(fontSize: 11, color: Colors.black54),
-          ),
         ],
       ),
     );

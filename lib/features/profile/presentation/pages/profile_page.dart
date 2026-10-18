@@ -350,13 +350,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
 
         const SizedBox(height: 16),
-
-        const Text(
-          'Thông tin này giúp AI hiểu mục tiêu '
-          'và cá nhân hóa bài tập cho bạn.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Colors.black54),
-        ),
       ],
     );
   }
