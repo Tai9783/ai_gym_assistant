@@ -47,6 +47,8 @@ import 'package:ai_gym_assistant/features/progress/domain/services/session_targe
     as _i338;
 import 'package:ai_gym_assistant/features/progress/domain/usecases/get_exercise_progress.dart'
     as _i329;
+import 'package:ai_gym_assistant/features/progress/presentation/bloc/progress_bloc.dart'
+    as _i264;
 import 'package:ai_gym_assistant/features/recommendation/data/datasources/gemini_remote_data_source.dart'
     as _i489;
 import 'package:ai_gym_assistant/features/recommendation/data/repositories/recommendation_repository_impl.dart'
@@ -204,6 +206,13 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i165.ProfileBloc(
         gh<_i888.GetUserProfile>(),
         gh<_i917.SaveUserProfile>(),
+      ),
+    );
+    gh.factory<_i264.ProgressBloc>(
+      () => _i264.ProgressBloc(
+        gh<_i557.GetCompletedWorkouts>(),
+        gh<_i158.GetExercises>(),
+        gh<_i329.GetExerciseProgress>(),
       ),
     );
     gh.factory<_i650.RecommendationBloc>(
