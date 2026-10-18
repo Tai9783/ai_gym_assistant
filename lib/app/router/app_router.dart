@@ -10,6 +10,8 @@ import '../../features/recommendation/domain/entities/workout_request.dart';
 import '../../features/recommendation/presentation/bloc/recommendation_bloc.dart';
 import '../../features/recommendation/presentation/bloc/recommendation_event.dart';
 import '../../features/recommendation/presentation/pages/recommendation_page.dart';
+import '../../features/workout/domain/entities/workout_exercise.dart';
+import '../../features/workout/presentation/pages/workout_page.dart';
 import '../pages/home_page.dart';
 import '../pages/main_shell_page.dart';
 import '../../features/history/presentation/pages/history_page.dart';
@@ -109,6 +111,17 @@ final GoRouter appRouter = GoRouter(
             request: extra,
             getExercises: GetIt.I<GetExercises>(),
           ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/workout',
+      builder: (context, state) {
+        final extra = state.extra;
+
+        return WorkoutPage(
+          initialExercises:
+          extra is List<WorkoutExercise> ? extra : null,
         );
       },
     ),

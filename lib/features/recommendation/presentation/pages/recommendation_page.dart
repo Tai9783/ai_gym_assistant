@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../exercise_catalog/domain/entities/exercise_definition.dart';
 import '../../../exercise_catalog/domain/usecases/get_exercises.dart';
@@ -8,6 +9,7 @@ import '../../domain/entities/workout_recommendation.dart';
 import '../bloc/recommendation_bloc.dart';
 import '../bloc/recommendation_event.dart';
 import '../bloc/recommendation_state.dart';
+import '../mappers/recommendation_workout_mapper.dart';
 
 class RecommendationPage extends StatefulWidget {
   final WorkoutRequest request;
@@ -39,6 +41,15 @@ class _RecommendationPageState extends State<RecommendationPage> {
   void _generateAgain() {
     context.read<RecommendationBloc>().add(
       RecommendationGenerateRequested(widget.request),
+    );
+  }
+  void _startWorkout(WorkoutRecommendation recommendation) {
+    final exercises =
+    RecommendationWorkoutMapper.toWorkoutExercises(recommendation);
+
+    context.pushReplacement(
+      '/workout',
+      extra: exercises,
     );
   }
 
@@ -190,7 +201,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
             ],
           ),
         ),
-        _buildActions(),
+        _buildActions(recommendation),
       ],
     );
   }
@@ -316,7 +327,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
     );
   }
 
-  Widget _buildActions() {
+  Widget _buildActions(WorkoutRecommendation recommendation) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
       decoration: const BoxDecoration(
@@ -342,7 +353,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: FilledButton.icon(
-                  onPressed: null,
+                  onPressed: () => _startWorkout(recommendation),
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: const Text('Bắt đầu tập'),
                   style: FilledButton.styleFrom(

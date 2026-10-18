@@ -1,11 +1,15 @@
+
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/exercise_set.dart';
 
 class WorkoutSetCard extends StatefulWidget {
   final ExerciseSet set;
-  final void Function({required double actualWeight, required int actualReps})
-  onComplete;
+
+  final void Function({
+  required double actualWeight,
+  required int actualReps,
+  }) onComplete;
 
   const WorkoutSetCard({
     super.key,
@@ -18,6 +22,8 @@ class WorkoutSetCard extends StatefulWidget {
 }
 
 class _WorkoutSetCardState extends State<WorkoutSetCard> {
+  static const _primary = Color(0xFF5B6CFF);
+
   late final TextEditingController _weightController;
   late final TextEditingController _repsController;
 
@@ -26,17 +32,11 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
     super.initState();
 
     _weightController = TextEditingController(
-      text:
-          widget.set.actualWeight?.toString() ??
-          widget.set.suggestedWeight?.toString() ??
-          '',
+      text: widget.set.actualWeight?.toString() ?? '',
     );
 
     _repsController = TextEditingController(
-      text:
-          widget.set.actualReps?.toString() ??
-          widget.set.suggestedReps?.toString() ??
-          '',
+      text: widget.set.actualReps?.toString() ?? '',
     );
   }
 
@@ -48,80 +48,159 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
   }
 
   void _completeSet() {
-    final weight = double.tryParse(_weightController.text);
-    final reps = int.tryParse(_repsController.text);
+    final weight = double.tryParse(
+      _weightController.text.trim(),
+    );
 
-    if (weight == null || reps == null) {
+    final reps = int.tryParse(
+      _repsController.text.trim(),
+    );
+
+    if (weight == null ||
+        !weight.isFinite ||
+        weight < 0 ||
+        reps == null ||
+        reps <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter valid weight and reps')),
+        const SnackBar(
+          content: Text(
+            'Vui lòng nhập tạ và số reps hợp lệ',
+          ),
+        ),
       );
       return;
     }
 
-    widget.onComplete(actualWeight: weight, actualReps: reps);
+    widget.onComplete(
+      actualWeight: weight,
+      actualReps: reps,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted = widget.set.status == ExerciseSetStatus.completed;
+    final isCompleted =
+        widget.set.status == ExerciseSetStatus.completed;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Set ${widget.set.setNumber}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 8),
-
-            Text(
-              'Suggested: '
-              '${widget.set.suggestedWeight ?? '-'} kg × '
-              '${widget.set.suggestedReps ?? '-'} reps',
-            ),
-
-            const SizedBox(height: 16),
-
-            TextField(
-              controller: _weightController,
-              enabled: !isCompleted,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Set ${widget.set.setNumber}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-              decoration: const InputDecoration(
-                labelText: 'Weight',
-                suffixText: 'kg',
-                border: OutlineInputBorder(),
-              ),
+              const Spacer(),
+              if (!isCompleted)
+                Text(
+                  'AI: ${widget.set.suggestedWeight ?? '-'} kg'
+                      ' × ${widget.set.suggestedReps ?? '-'} reps',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.black54,
+                  ),
+                ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          if (isCompleted)
+            Row(
+              children: [
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.green,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${widget.set.actualWeight ?? '-'} kg'
+                      ' × ${widget.set.actualReps ?? '-'} reps',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                const Text(
+                  'Đã xong',
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _weightController,
+                    keyboardType:
+                    const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Tạ (kg)',
+                      hintText:
+                      widget.set.suggestedWeight?.toString(),
+                      isDense: true,
+                      border: const OutlineInputBorder(),
+                      contentPadding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                Expanded(
+                  child: TextField(
+                    controller: _repsController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Reps',
+                      hintText:
+                      widget.set.suggestedReps?.toString(),
+                      isDense: true,
+                      border: const OutlineInputBorder(),
+                      contentPadding:
+                      const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                IconButton.filledTonal(
+                  onPressed: _completeSet,
+                  icon: const Icon(Icons.check_rounded),
+                  tooltip: 'Hoàn thành set',
+                  style: IconButton.styleFrom(
+                    backgroundColor: const Color(0xFFE9EDFF),
+                    foregroundColor: _primary,
+                    minimumSize: const Size(48, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
             ),
-
-            const SizedBox(height: 12),
-
-            TextField(
-              controller: _repsController,
-              enabled: !isCompleted,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Reps',
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: isCompleted ? null : _completeSet,
-                child: Text(isCompleted ? 'Completed' : 'Complete Set'),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
