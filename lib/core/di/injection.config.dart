@@ -21,6 +21,8 @@ import 'package:ai_gym_assistant/features/exercise_catalog/domain/usecases/get_e
     as _i158;
 import 'package:ai_gym_assistant/features/exercise_catalog/presentation/bloc/exercise_catalog_bloc.dart'
     as _i534;
+import 'package:ai_gym_assistant/features/history/presentation/bloc/history_bloc.dart'
+    as _i1018;
 import 'package:ai_gym_assistant/features/profile/data/datasources/user_profile_local_data_source.dart'
     as _i976;
 import 'package:ai_gym_assistant/features/profile/data/repositories/user_profile_repository_impl.dart'
@@ -69,6 +71,8 @@ import 'package:ai_gym_assistant/features/workout/domain/repositories/workout_re
     as _i729;
 import 'package:ai_gym_assistant/features/workout/domain/usecases/finish_workout.dart'
     as _i679;
+import 'package:ai_gym_assistant/features/workout/domain/usecases/get_completed_workouts.dart'
+    as _i557;
 import 'package:ai_gym_assistant/features/workout/domain/usecases/start_workout.dart'
     as _i256;
 import 'package:ai_gym_assistant/features/workout/domain/usecases/update_exercise_set.dart'
@@ -151,6 +155,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i679.FinishWorkout>(
       () => _i679.FinishWorkout(gh<_i729.WorkoutRepository>()),
     );
+    gh.lazySingleton<_i557.GetCompletedWorkouts>(
+      () => _i557.GetCompletedWorkouts(gh<_i729.WorkoutRepository>()),
+    );
     gh.lazySingleton<_i256.StartWorkout>(
       () => _i256.StartWorkout(gh<_i729.WorkoutRepository>()),
     );
@@ -162,6 +169,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i917.SaveUserProfile>(
       () => _i917.SaveUserProfile(gh<_i651.UserProfileRepository>()),
+    );
+    gh.factory<_i1018.HistoryBloc>(
+      () => _i1018.HistoryBloc(
+        gh<_i557.GetCompletedWorkouts>(),
+        gh<_i158.GetExercises>(),
+      ),
     );
     gh.lazySingleton<_i1051.PrepareAiContext>(
       () => _i1051.PrepareAiContext(
