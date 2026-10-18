@@ -83,11 +83,10 @@ final GoRouter appRouter = GoRouter(
       path: '/select-exercises',
       name: 'selectExercises',
       builder: (context, state) {
-        final initialSelectedExerciseIds =
-            state.extra as List<String>? ?? const <String>[];
-
         return SelectExercisePage(
-          initialSelectedExerciseIds: initialSelectedExerciseIds,
+          initialSelectedExerciseIds:
+          (state.extra as List<String>?) ?? const [],
+          muscleGroup: state.uri.queryParameters['group'],
         );
       },
     ),

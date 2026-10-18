@@ -10,10 +10,12 @@ import '../bloc/exercise_catalog_state.dart';
 
 class SelectExercisePage extends StatelessWidget {
   final List<String> initialSelectedExerciseIds;
+  final String? muscleGroup;
 
   const SelectExercisePage({
     super.key,
     this.initialSelectedExerciseIds = const [],
+    this.muscleGroup,
   });
 
   @override
@@ -23,6 +25,7 @@ class SelectExercisePage extends StatelessWidget {
           getIt<ExerciseCatalogBloc>()..add(const ExerciseCatalogRequested()),
       child: _SelectExerciseView(
         initialSelectedExerciseIds: initialSelectedExerciseIds,
+        muscleGroup: muscleGroup,
       ),
     );
   }
@@ -30,8 +33,10 @@ class SelectExercisePage extends StatelessWidget {
 
 class _SelectExerciseView extends StatefulWidget {
   final List<String> initialSelectedExerciseIds;
+  final String? muscleGroup;
 
-  const _SelectExerciseView({required this.initialSelectedExerciseIds});
+
+  const _SelectExerciseView({required this.initialSelectedExerciseIds,  required this.muscleGroup,});
 
   @override
   State<_SelectExerciseView> createState() => _SelectExerciseViewState();
@@ -116,7 +121,18 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
           }
 
           if (state is ExerciseCatalogLoaded) {
-            return _buildExerciseList(state.exercises);
+            final filteredExercises = state.exercises.where((exercise) {
+              return switch (widget.muscleGroup) {
+                'Ngực' => exercise.muscleGroup == MuscleGroup.chest,
+                'Lưng' => exercise.muscleGroup == MuscleGroup.back,
+                'Chân' => exercise.muscleGroup == MuscleGroup.legs,
+                'Vai' => exercise.muscleGroup == MuscleGroup.shoulders,
+                'Tay' => exercise.muscleGroup == MuscleGroup.arms,
+                _ => true, // Toàn thân hoặc chưa chọn nhóm cơ
+              };
+            }).toList();
+
+            return _buildExerciseList(filteredExercises);
           }
 
           return const SizedBox.shrink();

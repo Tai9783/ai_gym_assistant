@@ -106,6 +106,8 @@ class _HomePageState extends State<HomePage> {
                             } else {
                               _selectedMuscleGroup = group;
                             }
+
+                            _selectedExercises.clear();
                           });
                         },
                         child: Container(
@@ -214,13 +216,12 @@ class _HomePageState extends State<HomePage> {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () async {
-                        final result = await context
-                            .push<List<ExerciseDefinition>>(
-                              '/select-exercises',
-                              extra: _selectedExercises
-                                  .map((exercise) => exercise.id)
-                                  .toList(),
-                            );
+                        final result = await context.push<List<ExerciseDefinition>>(
+                          '/select-exercises?group=${Uri.encodeComponent(_selectedMuscleGroup ?? 'Toàn thân')}',
+                          extra: _selectedExercises
+                              .map((exercise) => exercise.id)
+                              .toList(),
+                        );
 
                         if (result != null) {
                           setState(() {
