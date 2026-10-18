@@ -92,4 +92,23 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
     return sessions;
   }
+
+  @override
+  Future<List<WorkoutSession>> getCompletedWorkoutSessions() async {
+    final sessionIds =
+    await localDataSource.getCompletedWorkoutSessionIds();
+
+    final sessions = <WorkoutSession>[];
+
+    for (final sessionId in sessionIds) {
+      final session = await getWorkoutSessionById(sessionId);
+
+      if (session != null) {
+        sessions.add(session);
+      }
+    }
+
+    return sessions;
+  }
+
 }

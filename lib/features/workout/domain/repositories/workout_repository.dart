@@ -8,4 +8,5 @@ abstract class WorkoutRepository {
   Future<List<WorkoutSession>> getCompletedWorkoutSessionsByExerciseId(
     String exerciseId,
   );
+  Future<List<WorkoutSession>> getCompletedWorkoutSessions();
 }

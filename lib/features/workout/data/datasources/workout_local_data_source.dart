@@ -81,4 +81,21 @@ class WorkoutLocalDataSource {
 
     return rows.map((row) => row.read(database.workoutSessions.id)!).toList();
   }
+
+  Future<List<String>> getCompletedWorkoutSessionIds() async {
+    final records =
+    await (database.select(database.workoutSessions)
+      ..where(
+            (table) => table.status.equals(
+          WorkoutSessionStatus.completed.name,
+        ),
+      )
+      ..orderBy([
+            (table) => OrderingTerm.desc(table.startedAt),
+      ]))
+        .get();
+
+    return records.map((record) => record.id).toList();
+  }
+
 }
