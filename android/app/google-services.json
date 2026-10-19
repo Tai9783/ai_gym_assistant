@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1028241495582",
+    "project_id": "ai-gym-assistant-50e87",
+    "storage_bucket": "ai-gym-assistant-50e87.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028241495582:android:a2c1f350a78e67c783400f",
+        "android_client_info": {
+          "package_name": "com.example.ai_gym_assistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAt9bWC54D5XznVgN_ahmZ-7LrpIjDwQbM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
