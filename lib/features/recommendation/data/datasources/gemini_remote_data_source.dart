@@ -22,11 +22,9 @@ class GeminiRemoteDataSource {
       throw StateError('Gemini API key is missing');
     }
 
-    // Convert AI Context to JSON data.
     final contextJson = AiContextSerializer.toJson(context);
     final contextText = jsonEncode(contextJson);
 
-    // Prepare Gemini request.
     final requestBody = {
       'systemInstruction': {
         'parts': [
@@ -51,7 +49,6 @@ class GeminiRemoteDataSource {
       },
     };
 
-    // Send one request to Gemini.
     final response = await http
         .post(
           _url,
