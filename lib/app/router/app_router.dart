@@ -11,6 +11,7 @@ import '../../features/recommendation/presentation/bloc/recommendation_bloc.dart
 import '../../features/recommendation/presentation/bloc/recommendation_event.dart';
 import '../../features/recommendation/presentation/pages/recommendation_page.dart';
 import '../../features/workout/domain/entities/workout_exercise.dart';
+import '../../features/workout/presentation/pages/manual_workout_page.dart';
 import '../../features/workout/presentation/pages/workout_page.dart';
 import '../pages/home_page.dart';
 import '../pages/main_shell_page.dart';
@@ -121,6 +122,26 @@ final GoRouter appRouter = GoRouter(
         return WorkoutPage(
           initialExercises:
           extra is List<WorkoutExercise> ? extra : null,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/manual-workout',
+      name: 'manualWorkout',
+      builder: (context, state) {
+        final extra = state.extra;
+
+        if (extra is! WorkoutRequest) {
+          return const Scaffold(
+            body: Center(
+              child: Text('Thiếu thông tin tạo buổi tập'),
+            ),
+          );
+        }
+
+        return ManualWorkoutPage(
+          request: extra,
+          getExercises: GetIt.I<GetExercises>(),
         );
       },
     ),

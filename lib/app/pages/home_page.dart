@@ -26,6 +26,9 @@ class _HomePageState extends State<HomePage> {
   String? _selectedMuscleGroup;
 
   List<ExerciseDefinition> _selectedExercises = [];
+  bool get _canCreateManualWorkout =>
+      _selectedMuscleGroup != null &&
+          _selectedExercises.isNotEmpty;
 
   @override
   void dispose() {
@@ -325,27 +328,71 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 24),
 
-            // Generate Workout
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: _onGeneratePressed,
-                icon: const Icon(Icons.auto_awesome),
-                label: const Text('Tạo buổi tập với AI'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+            // Workout actions
+            Row(
+              children: [
+                // AI Workout
+                Expanded(
+                  child: SizedBox(
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: _onGeneratePressed,
+                      icon: const Icon(Icons.auto_awesome, size: 18),
+                      label: const Text(
+                        'AI đề xuất',
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+
+                const SizedBox(width: 10),
+
+                // Manual Workout
+                Expanded(
+                  child: SizedBox(
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: _canCreateManualWorkout
+                          ? _onManualWorkoutPressed
+                          : null,
+                      icon: const Icon(Icons.edit_note, size: 20),
+                      label: const Text(
+                        'Tự tạo buổi tập',
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF009E87),
+                        foregroundColor: Colors.white,
+                        disabledBackgroundColor: const Color(0xFFE6F2EF),
+                        disabledForegroundColor: const Color(0xFF8CAAA2),
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -366,18 +413,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _onGeneratePressed() {
-    // Require a muscle group or selected exercises.
-    if (_selectedMuscleGroup == null && _selectedExercises.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng chọn nhóm cơ hoặc bài tập cụ thể'),
-        ),
-      );
-      return;
-    }
-
-    // Convert the UI selection to WorkoutFocus.
+  WorkoutRequest _buildWorkoutRequest() {
     final focus = switch (_selectedMuscleGroup) {
       'Ngực' => WorkoutFocus.chest,
       'Lưng' => WorkoutFocus.back,
@@ -389,23 +425,47 @@ class _HomePageState extends State<HomePage> {
       _ => throw StateError('Unknown muscle group'),
     };
 
-    // Get selected exercise IDs.
     final exerciseIds = _selectedExercises
         .map((exercise) => exercise.id)
         .toSet()
         .toList();
 
-    // Get the user note.
     final note = _noteController.text.trim();
 
-    // Build a WorkoutRequest from Home input.
-    final request = WorkoutRequest(
+    return WorkoutRequest(
       focus: focus,
       exerciseIds: exerciseIds,
       note: note.isEmpty ? null : note,
     );
+  }
+  void _onGeneratePressed() {
+    if (_selectedMuscleGroup == null &&
+        _selectedExercises.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Vui lòng chọn nhóm cơ hoặc bài tập cụ thể',
+          ),
+        ),
+      );
+      return;
+    }
 
-    // Navigate to RecommendationPage.
-    context.push('/recommendation', extra: request);
+    final request = _buildWorkoutRequest();
+
+    context.push(
+      '/recommendation',
+      extra: request,
+    );
+  }
+  void _onManualWorkoutPressed() {
+    if (!_canCreateManualWorkout) return;
+
+    final request = _buildWorkoutRequest();
+
+    context.push(
+      '/manual-workout',
+      extra: request,
+    );
   }
 }
