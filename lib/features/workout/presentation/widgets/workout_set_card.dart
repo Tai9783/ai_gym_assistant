@@ -99,7 +99,7 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
               const Spacer(),
               if (!isCompleted)
                 Text(
-                  'AI: ${widget.set.suggestedWeight ?? '-'} kg'
+                  'Mục tiêu: ${widget.set.suggestedWeight ?? '-'} kg'
                       ' × ${widget.set.suggestedReps ?? '-'} reps',
                   style: const TextStyle(
                     fontSize: 12,

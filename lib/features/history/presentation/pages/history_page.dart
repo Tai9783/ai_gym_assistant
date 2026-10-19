@@ -369,7 +369,7 @@ class _HistoryExerciseDetails extends StatelessWidget {
               ),
               Expanded(
                 child: Text(
-                  'AI đề xuất',
+                  'Mục tiêu',
                   style: TextStyle(
                     fontSize: 11,
                     color: Colors.black54,
