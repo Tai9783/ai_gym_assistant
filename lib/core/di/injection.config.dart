@@ -10,7 +10,12 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
+import 'package:ai_gym_assistant/core/auth/anonymous_auth_service.dart'
+    as _i971;
+import 'package:ai_gym_assistant/core/auth/firebase_anonymous_auth_service.dart'
+    as _i879;
 import 'package:ai_gym_assistant/core/database/app_database.dart' as _i117;
+import 'package:ai_gym_assistant/core/di/firebase_module.dart' as _i57;
 import 'package:ai_gym_assistant/features/exercise_catalog/data/datasources/exercise_local_data_source.dart'
     as _i1019;
 import 'package:ai_gym_assistant/features/exercise_catalog/data/repositories/exercise_repository_impl.dart'
@@ -81,6 +86,7 @@ import 'package:ai_gym_assistant/features/workout/domain/usecases/update_exercis
     as _i811;
 import 'package:ai_gym_assistant/features/workout/presentation/bloc/workout_bloc.dart'
     as _i572;
+import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 
@@ -91,6 +97,7 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final firebaseModule = _$FirebaseModule();
     gh.factory<_i899.LongTermTrendCalculator>(
       () => _i899.LongTermTrendCalculator(),
     );
@@ -98,6 +105,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i338.SessionTargetClassifier(),
     );
     gh.lazySingleton<_i117.AppDatabase>(() => _i117.AppDatabase());
+    gh.lazySingleton<_i59.FirebaseAuth>(() => firebaseModule.firebaseAuth);
     gh.lazySingleton<_i147.ExerciseSessionSummarizer>(
       () => _i147.ExerciseSessionSummarizer(),
     );
@@ -134,6 +142,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i491.ExerciseRepository>(
       () => _i170.ExerciseRepositoryImpl(gh<_i1019.ExerciseLocalDataSource>()),
+    );
+    gh.lazySingleton<_i971.AnonymousAuthService>(
+      () => _i879.FirebaseAnonymousAuthService(gh<_i59.FirebaseAuth>()),
     );
     gh.lazySingleton<_i651.UserProfileRepository>(
       () => _i267.UserProfileRepositoryImpl(
@@ -221,3 +232,5 @@ extension GetItInjectableX on _i174.GetIt {
     return this;
   }
 }
+
+class _$FirebaseModule extends _i57.FirebaseModule {}
