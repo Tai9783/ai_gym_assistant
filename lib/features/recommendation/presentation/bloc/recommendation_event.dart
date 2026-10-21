@@ -9,3 +9,7 @@ final class RecommendationGenerateRequested extends RecommendationEvent {
 
   const RecommendationGenerateRequested(this.request);
 }
+final class RecommendationRestorePreviousRequested
+    extends RecommendationEvent {
+  const RecommendationRestorePreviousRequested();
+}

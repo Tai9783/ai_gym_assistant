@@ -6,6 +6,7 @@ import '../../../exercise_catalog/domain/entities/exercise_definition.dart';
 import '../../../exercise_catalog/domain/usecases/get_exercises.dart';
 import '../../domain/entities/workout_request.dart';
 import '../../domain/entities/workout_recommendation.dart';
+import '../../domain/exceptions/recommendation_rate_limited_exception.dart';
 import '../bloc/recommendation_bloc.dart';
 import '../bloc/recommendation_event.dart';
 import '../bloc/recommendation_state.dart';
@@ -73,7 +74,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
           }
 
           if (state is RecommendationFailure) {
-            return _buildFailure(state.message);
+            return _buildFailure(state);
           }
 
           if (state is RecommendationLoaded) {
@@ -122,36 +123,148 @@ class _RecommendationPageState extends State<RecommendationPage> {
     );
   }
 
-  Widget _buildFailure(String message) {
+
+  Widget _buildFailure(RecommendationFailure failure) {
+    final reason = failure.rateLimitReason;
+    final hasPrevious = failure.previousLoaded != null;
+    final isRateLimited = reason != null;
+    final isDailyLimit =
+        reason == RecommendationRateLimitReason.dailyLimit;
+    final isCooldown =
+        reason == RecommendationRateLimitReason.cooldown;
+
+    // Firebase/Cloudflare trả thời gian UTC.
+    // Chuyển sang giờ địa phương của thiết bị.
+    final resetAt = failure.resetAt?.toLocal();
+
+    String? resetMessage;
+
+    if (isDailyLimit && resetAt != null) {
+      final hour = resetAt.hour.toString().padLeft(2, '0');
+      final minute = resetAt.minute.toString().padLeft(2, '0');
+
+      resetMessage =
+      'Bạn có thể sử dụng lại lúc '
+          '$hour:$minute ngày '
+          '${resetAt.day}/${resetAt.month}/${resetAt.year}.';
+    }
+
+    String? cooldownMessage;
+
+    if (isCooldown && failure.retryAfterSeconds != null) {
+      cooldownMessage =
+      'Vui lòng chờ khoảng '
+          '${failure.retryAfterSeconds} giây.';
+    }
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.error_outline_rounded,
+            Icon(
+              isDailyLimit
+                  ? Icons.event_busy_rounded
+                  : isCooldown
+                  ? Icons.access_time_rounded
+                  : isRateLimited
+                  ? Icons.info_outline_rounded
+                  : Icons.error_outline_rounded,
               size: 52,
-              color: Colors.redAccent,
+              color: isRateLimited
+                  ? _primaryColor
+                  : Colors.redAccent,
             ),
+
             const SizedBox(height: 16),
-            const Text(
-              'Không thể tạo buổi tập',
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
+
             Text(
-              message,
+              isDailyLimit
+                  ? 'Đã hết lượt AI hôm nay'
+                  : isCooldown
+                  ? 'Vui lòng chờ một chút'
+                  : isRateLimited
+                  ? 'Giới hạn yêu cầu AI'
+                  : 'Không thể tạo buổi tập',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.black54),
+              style: const TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 20),
+
+            const SizedBox(height: 8),
+
+            Text(
+              failure.message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.black54,
+                fontSize: 14,
+              ),
+            ),
+
+            if (resetMessage != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                resetMessage,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: _primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+
+            if (cooldownMessage != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                cooldownMessage,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: _primaryColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 24),
+
+
             FilledButton.icon(
-              onPressed: _generateAgain,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Thử lại'),
-              style: FilledButton.styleFrom(backgroundColor: _primaryColor),
+              onPressed: () {
+                if (hasPrevious) {
+                  // Trở về danh sách đề xuất cũ.
+                  // Không gọi lại Gemini.
+                  context.read<RecommendationBloc>().add(
+                    const RecommendationRestorePreviousRequested(),
+                  );
+                } else if (isRateLimited) {
+                  // Không có đề xuất cũ: quay lại Home.
+                  context.pop();
+                } else {
+                  // Lỗi thông thường ở lần đề xuất đầu tiên.
+                  _generateAgain();
+                }
+              },
+              icon: Icon(
+                hasPrevious || isRateLimited
+                    ? Icons.arrow_back_rounded
+                    : Icons.refresh_rounded,
+              ),
+              label: Text(
+                hasPrevious
+                    ? 'Quay lại đề xuất'
+                    : isRateLimited
+                    ? 'Quay lại'
+                    : 'Thử lại',
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: _primaryColor,
+              ),
             ),
+
           ],
         ),
       ),
