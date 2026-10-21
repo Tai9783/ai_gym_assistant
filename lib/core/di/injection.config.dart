@@ -109,9 +109,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i147.ExerciseSessionSummarizer>(
       () => _i147.ExerciseSessionSummarizer(),
     );
-    gh.lazySingleton<_i489.GeminiRemoteDataSource>(
-      () => _i489.GeminiRemoteDataSource(),
-    );
     gh.lazySingleton<_i576.AiContextBuilder>(() => _i576.AiContextBuilder());
     gh.lazySingleton<_i288.RecommendationValidator>(
       () => _i288.RecommendationValidator(),
@@ -127,12 +124,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i915.WorkoutLocalDataSource>(
       () => _i915.WorkoutLocalDataSource(gh<_i117.AppDatabase>()),
-    );
-    gh.lazySingleton<_i938.RecommendationRepository>(
-      () => _i444.RecommendationRepositoryImpl(
-        gh<_i489.GeminiRemoteDataSource>(),
-        gh<_i288.RecommendationValidator>(),
-      ),
     );
     gh.factory<_i516.LongTermProgressAnalyzer>(
       () => _i516.LongTermProgressAnalyzer(
@@ -160,6 +151,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i147.ExerciseSessionSummarizer>(),
         gh<_i26.RecentProgressAnalyzer>(),
         gh<_i516.LongTermProgressAnalyzer>(),
+      ),
+    );
+    gh.lazySingleton<_i489.GeminiRemoteDataSource>(
+      () => _i489.GeminiRemoteDataSource(
+        gh<_i971.AnonymousAuthService>(),
+        gh<_i59.FirebaseAuth>(),
       ),
     );
     gh.lazySingleton<_i158.GetExercises>(
@@ -195,6 +192,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i329.GetExerciseProgress>(),
         gh<_i576.AiContextBuilder>(),
         gh<_i888.GetUserProfile>(),
+      ),
+    );
+    gh.lazySingleton<_i938.RecommendationRepository>(
+      () => _i444.RecommendationRepositoryImpl(
+        gh<_i489.GeminiRemoteDataSource>(),
+        gh<_i288.RecommendationValidator>(),
       ),
     );
     gh.factory<_i572.WorkoutBloc>(

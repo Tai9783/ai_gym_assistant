@@ -8,7 +8,9 @@ import 'package:ai_gym_assistant/features/recommendation/domain/entities/ai_cont
 import 'package:ai_gym_assistant/features/recommendation/domain/entities/workout_request.dart';
 import 'package:ai_gym_assistant/features/recommendation/domain/services/recommendation_validator.dart';
 
-class FakeGeminiRemoteDataSource extends GeminiRemoteDataSource {
+
+class FakeGeminiRemoteDataSource extends Fake
+    implements GeminiRemoteDataSource {
   final Map<String, dynamic> responseJson;
 
   FakeGeminiRemoteDataSource(this.responseJson);

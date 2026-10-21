@@ -1,147 +1,120 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 
+import '../../../../core/auth/anonymous_auth_service.dart';
 import '../../domain/entities/ai_context.dart';
-import '../prompts/recommendation_prompt.dart';
-import '../schemas/workout_recommendation_schema.dart';
+import '../../domain/exceptions/recommendation_rate_limited_exception.dart';
 import '../serializers/ai_context_serializer.dart';
 
 @lazySingleton
 class GeminiRemoteDataSource {
-  static const String _apiKey = String.fromEnvironment('GEMINI_API_KEY');
+  final AnonymousAuthService _authService;
+  final FirebaseAuth _firebaseAuth;
+
+  GeminiRemoteDataSource(
+      this._authService,
+      this._firebaseAuth,
+      );
 
   static final Uri _url = Uri.parse(
-    'https://generativelanguage.googleapis.com/'
-    'v1beta/models/gemini-3.8-flash:generateContent',
+    'https://ai-gym-assistant-api.votai130504.workers.dev/recommendation',
   );
 
   Future<Map<String, dynamic>> generate(AiContext context) async {
-    if (_apiKey.isEmpty) {
-      throw StateError('Gemini API key is missing');
-    }
+      await _authService.ensureSignedIn();
 
-    final contextJson = AiContextSerializer.toJson(context);
-    final contextText = jsonEncode(contextJson);
+      final user = _firebaseAuth.currentUser;
 
-    final requestBody = {
-      'systemInstruction': {
-        'parts': [
-          {'text': RecommendationPrompt.systemInstruction},
-        ],
-      },
-      'contents': [
-        {
-          'role': 'user',
-          'parts': [
-            {'text': contextText},
-          ],
+      if (user == null) {
+        throw StateError('Firebase user is missing');
+      }
+
+      final idToken = await user.getIdToken();
+
+      if (idToken == null || idToken.isEmpty) {
+        throw StateError('Firebase ID Token is missing');
+      }
+
+      final contextJson = AiContextSerializer.toJson(context);
+
+      final response = await http.post(
+        _url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $idToken',
         },
-      ],
-      'generationConfig': {
-        'responseFormat': {
-          'text': {
-            'mimeType': 'APPLICATION_JSON',
-            'schema': WorkoutRecommendationSchema.value,
-          },
-        },
-      },
-    };
+        body: jsonEncode({
+          'aiContext': contextJson,
+        }),
+      ).timeout(const Duration(seconds: 90));
 
-    final response = await http
-        .post(
-          _url,
-          headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': _apiKey,
-          },
-          body: jsonEncode(requestBody),
-        )
-        .timeout(const Duration(seconds: 90));
 
-    if (response.statusCode != 200) {
-      String message = 'Unknown API error';
+      if (response.statusCode == 429) {
+        Map<String, dynamic>? errorBody;
 
-      try {
-        final errorData = jsonDecode(response.body);
+        try {
+          final decoded = jsonDecode(
+            utf8.decode(response.bodyBytes),
+          );
 
-        if (errorData is Map<String, dynamic>) {
-          final error = errorData['error'];
-
-          if (error is Map<String, dynamic>) {
-            message = error['message']?.toString() ?? message;
+          if (decoded is Map<String, dynamic>) {
+            errorBody = decoded;
           }
+        } on FormatException {
+          // Phản hồi lỗi không phải JSON hợp lệ.
         }
-      } catch (_) {
+
+        final errorCode = errorBody?['error'];
+
+        if (errorCode == 'daily_limit_reached') {
+          final rawResetAt = errorBody?['resetAt'];
+
+          final resetAt = rawResetAt is String
+              ? DateTime.tryParse(rawResetAt)
+              : null;
+
+          throw RecommendationRateLimitedException(
+            reason: RecommendationRateLimitReason.dailyLimit,
+            resetAt: resetAt,
+          );
+        }
+
+        if (errorCode == 'cooldown_active') {
+          final rawSeconds = errorBody?['retryAfterSeconds'];
+
+          final seconds = rawSeconds is int && rawSeconds > 0
+              ? rawSeconds
+              : null;
+
+          throw RecommendationRateLimitedException(
+            reason: RecommendationRateLimitReason.cooldown,
+            retryAfterSeconds: seconds,
+          );
+        }
+
+        // Fallback nếu Worker trả HTTP 429 không rõ lý do.
+        throw const RecommendationRateLimitedException();
       }
 
-      throw Exception(
-        'Gemini HTTP ${response.statusCode}: $message',
-      );
-    }
 
-    // Decode Gemini HTTP response.
-    final responseData = jsonDecode(utf8.decode(response.bodyBytes));
-
-    if (responseData is! Map<String, dynamic>) {
-      throw const FormatException('Invalid Gemini response');
-    }
-
-    final candidates = responseData['candidates'];
-
-    if (candidates is! List || candidates.isEmpty) {
-      throw const FormatException('Gemini returned no candidates');
-    }
-
-    final candidate = candidates.first;
-
-    if (candidate is! Map<String, dynamic>) {
-      throw const FormatException('Invalid Gemini candidate');
-    }
-
-    final finishReason = candidate['finishReason'];
-
-    if (finishReason != null && finishReason != 'STOP') {
-      throw FormatException('Gemini stopped: $finishReason');
-    }
-
-    final content = candidate['content'];
-
-    if (content is! Map<String, dynamic>) {
-      throw const FormatException('Gemini returned no content');
-    }
-
-    final parts = content['parts'];
-
-    if (parts is! List || parts.isEmpty) {
-      throw const FormatException('Gemini returned no parts');
-    }
-
-    // Extract generated text.
-    final textBuffer = StringBuffer();
-
-    for (final part in parts) {
-      if (part is Map<String, dynamic> &&
-          part['thought'] != true &&
-          part['text'] is String) {
-        textBuffer.write(part['text'] as String);
+      if (response.statusCode != 200) {
+        throw Exception(
+          'AI backend error: HTTP ${response.statusCode}',
+        );
       }
+
+      final responseData =
+      jsonDecode(utf8.decode(response.bodyBytes));
+
+      if (responseData is! Map<String, dynamic>) {
+        throw const FormatException(
+          'Invalid recommendation response',
+        );
+      }
+
+      return responseData;
     }
-
-    final responseText = textBuffer.toString();
-
-    if (responseText.isEmpty) {
-      throw const FormatException('Gemini returned empty text');
-    }
-
-    // Convert generated JSON text to Map.
-    final recommendationJson = jsonDecode(responseText);
-
-    if (recommendationJson is! Map<String, dynamic>) {
-      throw const FormatException('Invalid recommendation JSON');
-    }
-
-    return recommendationJson;
-  }
 }
