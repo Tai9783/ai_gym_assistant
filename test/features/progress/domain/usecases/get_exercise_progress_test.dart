@@ -1,13 +1,24 @@
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ai_gym_assistant/core/database/app_database.dart';
+
+import 'package:ai_gym_assistant/features/progress/data/datasources/exercise_progress_cache_local_data_source.dart';
+import 'package:ai_gym_assistant/features/progress/data/repositories/progress_cache_synchronizer_impl.dart';
+import 'package:ai_gym_assistant/features/progress/data/services/exercise_progress_cache_initializer.dart';
+import 'package:ai_gym_assistant/features/progress/data/services/exercise_progress_cache_updater.dart';
+import 'package:ai_gym_assistant/features/progress/data/services/long_term_aggregate_state_updater.dart';
+import 'package:ai_gym_assistant/features/progress/data/services/long_term_progress_result_updater.dart';
+import 'package:ai_gym_assistant/features/progress/data/services/recent_progress_cache_updater.dart';
+
 import 'package:ai_gym_assistant/features/progress/domain/services/exercise_session_summarizer.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/recent_progress_analyzer.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart';
 import 'package:ai_gym_assistant/features/progress/domain/usecases/get_exercise_progress.dart';
+
 import 'package:ai_gym_assistant/features/workout/data/datasources/workout_local_data_source.dart';
 import 'package:ai_gym_assistant/features/workout/data/repositories/workout_repository_impl.dart';
 import 'package:ai_gym_assistant/features/workout/domain/entities/exercise_set.dart';
@@ -20,6 +31,7 @@ void main() {
   late GetExerciseProgress getExerciseProgress;
 
   setUp(() {
+    // SQLite in-memory dành riêng cho test.
     database = AppDatabase.forTesting(
       NativeDatabase.memory(),
     );
@@ -28,14 +40,53 @@ void main() {
 
     repository = WorkoutRepositoryImpl(localDataSource);
 
+    // Các service tính toán Progress.
     final classifier = SessionTargetClassifier();
+    final trendCalculator = LongTermTrendCalculator();
 
-    getExerciseProgress = GetExerciseProgress(
-      repository,
-      ExerciseSessionSummarizer(),
-      RecentProgressAnalyzer(classifier),
-      LongTermProgressAnalyzer(classifier, LongTermTrendCalculator()),
+    final recentAnalyzer = RecentProgressAnalyzer(classifier);
+
+    final longTermAnalyzer = LongTermProgressAnalyzer(
+      classifier,
+      trendCalculator,
     );
+
+    // Cache sử dụng cùng database in-memory.
+    final cacheDataSource =
+    ExerciseProgressCacheLocalDataSource(database);
+
+    final stateUpdater = LongTermAggregateStateUpdater();
+
+    // Service khởi tạo hoặc rebuild Cache.
+    final initializer = ExerciseProgressCacheInitializer(
+      dataSource: cacheDataSource,
+      recentAnalyzer: recentAnalyzer,
+      longTermAnalyzer: longTermAnalyzer,
+      stateUpdater: stateUpdater,
+    );
+
+    // Service cập nhật Cache tăng dần.
+    final updater = ExerciseProgressCacheUpdater(
+      dataSource: cacheDataSource,
+      recentUpdater: RecentProgressCacheUpdater(recentAnalyzer),
+      stateUpdater: stateUpdater,
+      resultUpdater: LongTermProgressResultUpdater(
+        classifier,
+        trendCalculator,
+      ),
+    );
+
+    // Sử dụng Synchronizer thật, không dùng Fake.
+    final synchronizer = ProgressCacheSynchronizerImpl(
+      repository,
+      cacheDataSource,
+      ExerciseSessionSummarizer(),
+      initializer,
+      updater,
+    );
+
+    // Constructor mới của GetExerciseProgress.
+    getExerciseProgress = GetExerciseProgress(synchronizer);
   });
 
   tearDown(() async {
@@ -44,7 +95,7 @@ void main() {
 
   test(
     'returns null Recent and LongTerm when there is no history for the '
-    'exerciseId',
+        'exerciseId',
         () async {
       final result = await getExerciseProgress(
         exerciseId: 'bench_press',
@@ -92,7 +143,7 @@ void main() {
 
   test(
     'builds Recent and LongTerm progress from multiple completed sessions, '
-    'excluding other exercises in the same workout',
+        'excluding other exercises in the same workout',
         () async {
       await repository.saveWorkoutSession(
         WorkoutSession(
@@ -177,10 +228,12 @@ void main() {
       expect(benchResult.longTerm!.exerciseId, 'bench_press');
       expect(benchResult.longTerm!.sessionCount, 2);
       expect(benchResult.longTerm!.bestActualMaxWeight, 42.5);
+
       expect(
         benchResult.longTerm!.firstPerformedAt,
         DateTime(2026, 10, 1),
       );
+
       expect(
         benchResult.longTerm!.lastPerformedAt,
         DateTime(2026, 10, 3),

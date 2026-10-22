@@ -92,6 +92,10 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
     return sessions;
   }
+  @override
+  Future<int> countCompletedWorkoutExercises(String exerciseId) {
+    return localDataSource.countCompletedWorkoutExercises(exerciseId);
+  }
 
   @override
   Future<List<WorkoutSession>> getCompletedWorkoutSessions() async {
@@ -109,6 +113,32 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     }
 
     return sessions;
+  }
+
+  @override
+  Future<WorkoutSession> completeWorkoutSession({
+    required String sessionId,
+  }) async {
+    return localDataSource.runInTransaction(() async {
+      final session = await getWorkoutSessionById(sessionId);
+
+      if (session == null) {
+        throw StateError('Workout session not found');
+      }
+
+      if (session.status == WorkoutSessionStatus.completed) {
+        return session;
+      }
+
+      final completedSession = session.copyWith(
+        endedAt: DateTime.now(),
+        status: WorkoutSessionStatus.completed,
+      );
+
+      await saveWorkoutSession(completedSession);
+
+      return completedSession;
+    });
   }
 
 }

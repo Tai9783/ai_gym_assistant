@@ -10,6 +10,13 @@ class WorkoutLocalDataSource {
 
   WorkoutLocalDataSource(this.database);
 
+  Future<T> runInTransaction<T>(
+      Future<T> Function() action,
+      ) {
+    return database.transaction(action);
+  }
+
+
   Future<void> upsertWorkoutSession({
     required WorkoutSessionsCompanion session,
     required List<WorkoutExercisesCompanion> exercises,
@@ -97,5 +104,36 @@ class WorkoutLocalDataSource {
 
     return records.map((record) => record.id).toList();
   }
+
+  //đếm số lần tập đã hoàn thành của bài tập để check cache đã cập nhật đủ hay thiếu.
+  Future<int> countCompletedWorkoutExercises(
+      String exerciseId,
+      ) async {
+    final countExpression = database.workoutExercises.id.count();
+
+    final query = database.selectOnly(database.workoutExercises)
+      ..addColumns([countExpression])
+      ..join([
+        innerJoin(
+          database.workoutSessions,
+          database.workoutSessions.id.equalsExp(
+            database.workoutExercises.sessionId,
+          ),
+        ),
+      ])
+      ..where(
+        database.workoutExercises.exerciseId.equals(exerciseId),
+      )
+      ..where(
+        database.workoutSessions.status.equals(
+          WorkoutSessionStatus.completed.name,
+        ),
+      );
+
+    final row = await query.getSingle();
+
+    return row.read(countExpression) ?? 0;
+  }
+
 
 }
