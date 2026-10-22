@@ -1830,6 +1830,641 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
   }
 }
 
+class $ExerciseProgressCachesTable extends ExerciseProgressCaches
+    with TableInfo<$ExerciseProgressCachesTable, ExerciseProgressCacheRecord> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExerciseProgressCachesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _exerciseIdMeta = const VerificationMeta(
+    'exerciseId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseId = GeneratedColumn<String>(
+    'exercise_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recentProgressJsonMeta =
+      const VerificationMeta('recentProgressJson');
+  @override
+  late final GeneratedColumn<String> recentProgressJson =
+      GeneratedColumn<String>(
+        'recent_progress_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _longTermProgressJsonMeta =
+      const VerificationMeta('longTermProgressJson');
+  @override
+  late final GeneratedColumn<String> longTermProgressJson =
+      GeneratedColumn<String>(
+        'long_term_progress_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _recentWindowJsonMeta = const VerificationMeta(
+    'recentWindowJson',
+  );
+  @override
+  late final GeneratedColumn<String> recentWindowJson = GeneratedColumn<String>(
+    'recent_window_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _longTermStateJsonMeta = const VerificationMeta(
+    'longTermStateJson',
+  );
+  @override
+  late final GeneratedColumn<String> longTermStateJson =
+      GeneratedColumn<String>(
+        'long_term_state_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _lastProcessedSessionIdMeta =
+      const VerificationMeta('lastProcessedSessionId');
+  @override
+  late final GeneratedColumn<String> lastProcessedSessionId =
+      GeneratedColumn<String>(
+        'last_processed_session_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _calculationVersionMeta =
+      const VerificationMeta('calculationVersion');
+  @override
+  late final GeneratedColumn<int> calculationVersion = GeneratedColumn<int>(
+    'calculation_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _needsRebuildMeta = const VerificationMeta(
+    'needsRebuild',
+  );
+  @override
+  late final GeneratedColumn<bool> needsRebuild = GeneratedColumn<bool>(
+    'needs_rebuild',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("needs_rebuild" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    exerciseId,
+    recentProgressJson,
+    longTermProgressJson,
+    recentWindowJson,
+    longTermStateJson,
+    lastProcessedSessionId,
+    calculationVersion,
+    needsRebuild,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exercise_progress_caches';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExerciseProgressCacheRecord> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('exercise_id')) {
+      context.handle(
+        _exerciseIdMeta,
+        exerciseId.isAcceptableOrUnknown(data['exercise_id']!, _exerciseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciseIdMeta);
+    }
+    if (data.containsKey('recent_progress_json')) {
+      context.handle(
+        _recentProgressJsonMeta,
+        recentProgressJson.isAcceptableOrUnknown(
+          data['recent_progress_json']!,
+          _recentProgressJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('long_term_progress_json')) {
+      context.handle(
+        _longTermProgressJsonMeta,
+        longTermProgressJson.isAcceptableOrUnknown(
+          data['long_term_progress_json']!,
+          _longTermProgressJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('recent_window_json')) {
+      context.handle(
+        _recentWindowJsonMeta,
+        recentWindowJson.isAcceptableOrUnknown(
+          data['recent_window_json']!,
+          _recentWindowJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recentWindowJsonMeta);
+    }
+    if (data.containsKey('long_term_state_json')) {
+      context.handle(
+        _longTermStateJsonMeta,
+        longTermStateJson.isAcceptableOrUnknown(
+          data['long_term_state_json']!,
+          _longTermStateJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_longTermStateJsonMeta);
+    }
+    if (data.containsKey('last_processed_session_id')) {
+      context.handle(
+        _lastProcessedSessionIdMeta,
+        lastProcessedSessionId.isAcceptableOrUnknown(
+          data['last_processed_session_id']!,
+          _lastProcessedSessionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('calculation_version')) {
+      context.handle(
+        _calculationVersionMeta,
+        calculationVersion.isAcceptableOrUnknown(
+          data['calculation_version']!,
+          _calculationVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('needs_rebuild')) {
+      context.handle(
+        _needsRebuildMeta,
+        needsRebuild.isAcceptableOrUnknown(
+          data['needs_rebuild']!,
+          _needsRebuildMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {exerciseId};
+  @override
+  ExerciseProgressCacheRecord map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExerciseProgressCacheRecord(
+      exerciseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_id'],
+      )!,
+      recentProgressJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recent_progress_json'],
+      ),
+      longTermProgressJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}long_term_progress_json'],
+      ),
+      recentWindowJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recent_window_json'],
+      )!,
+      longTermStateJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}long_term_state_json'],
+      )!,
+      lastProcessedSessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_processed_session_id'],
+      ),
+      calculationVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}calculation_version'],
+      )!,
+      needsRebuild: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}needs_rebuild'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ExerciseProgressCachesTable createAlias(String alias) {
+    return $ExerciseProgressCachesTable(attachedDatabase, alias);
+  }
+}
+
+class ExerciseProgressCacheRecord extends DataClass
+    implements Insertable<ExerciseProgressCacheRecord> {
+  final String exerciseId;
+  final String? recentProgressJson;
+  final String? longTermProgressJson;
+  final String recentWindowJson;
+  final String longTermStateJson;
+  final String? lastProcessedSessionId;
+  final int calculationVersion;
+  final bool needsRebuild;
+  final DateTime updatedAt;
+  const ExerciseProgressCacheRecord({
+    required this.exerciseId,
+    this.recentProgressJson,
+    this.longTermProgressJson,
+    required this.recentWindowJson,
+    required this.longTermStateJson,
+    this.lastProcessedSessionId,
+    required this.calculationVersion,
+    required this.needsRebuild,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['exercise_id'] = Variable<String>(exerciseId);
+    if (!nullToAbsent || recentProgressJson != null) {
+      map['recent_progress_json'] = Variable<String>(recentProgressJson);
+    }
+    if (!nullToAbsent || longTermProgressJson != null) {
+      map['long_term_progress_json'] = Variable<String>(longTermProgressJson);
+    }
+    map['recent_window_json'] = Variable<String>(recentWindowJson);
+    map['long_term_state_json'] = Variable<String>(longTermStateJson);
+    if (!nullToAbsent || lastProcessedSessionId != null) {
+      map['last_processed_session_id'] = Variable<String>(
+        lastProcessedSessionId,
+      );
+    }
+    map['calculation_version'] = Variable<int>(calculationVersion);
+    map['needs_rebuild'] = Variable<bool>(needsRebuild);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  ExerciseProgressCachesCompanion toCompanion(bool nullToAbsent) {
+    return ExerciseProgressCachesCompanion(
+      exerciseId: Value(exerciseId),
+      recentProgressJson: recentProgressJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recentProgressJson),
+      longTermProgressJson: longTermProgressJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longTermProgressJson),
+      recentWindowJson: Value(recentWindowJson),
+      longTermStateJson: Value(longTermStateJson),
+      lastProcessedSessionId: lastProcessedSessionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastProcessedSessionId),
+      calculationVersion: Value(calculationVersion),
+      needsRebuild: Value(needsRebuild),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ExerciseProgressCacheRecord.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExerciseProgressCacheRecord(
+      exerciseId: serializer.fromJson<String>(json['exerciseId']),
+      recentProgressJson: serializer.fromJson<String?>(
+        json['recentProgressJson'],
+      ),
+      longTermProgressJson: serializer.fromJson<String?>(
+        json['longTermProgressJson'],
+      ),
+      recentWindowJson: serializer.fromJson<String>(json['recentWindowJson']),
+      longTermStateJson: serializer.fromJson<String>(json['longTermStateJson']),
+      lastProcessedSessionId: serializer.fromJson<String?>(
+        json['lastProcessedSessionId'],
+      ),
+      calculationVersion: serializer.fromJson<int>(json['calculationVersion']),
+      needsRebuild: serializer.fromJson<bool>(json['needsRebuild']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'exerciseId': serializer.toJson<String>(exerciseId),
+      'recentProgressJson': serializer.toJson<String?>(recentProgressJson),
+      'longTermProgressJson': serializer.toJson<String?>(longTermProgressJson),
+      'recentWindowJson': serializer.toJson<String>(recentWindowJson),
+      'longTermStateJson': serializer.toJson<String>(longTermStateJson),
+      'lastProcessedSessionId': serializer.toJson<String?>(
+        lastProcessedSessionId,
+      ),
+      'calculationVersion': serializer.toJson<int>(calculationVersion),
+      'needsRebuild': serializer.toJson<bool>(needsRebuild),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  ExerciseProgressCacheRecord copyWith({
+    String? exerciseId,
+    Value<String?> recentProgressJson = const Value.absent(),
+    Value<String?> longTermProgressJson = const Value.absent(),
+    String? recentWindowJson,
+    String? longTermStateJson,
+    Value<String?> lastProcessedSessionId = const Value.absent(),
+    int? calculationVersion,
+    bool? needsRebuild,
+    DateTime? updatedAt,
+  }) => ExerciseProgressCacheRecord(
+    exerciseId: exerciseId ?? this.exerciseId,
+    recentProgressJson: recentProgressJson.present
+        ? recentProgressJson.value
+        : this.recentProgressJson,
+    longTermProgressJson: longTermProgressJson.present
+        ? longTermProgressJson.value
+        : this.longTermProgressJson,
+    recentWindowJson: recentWindowJson ?? this.recentWindowJson,
+    longTermStateJson: longTermStateJson ?? this.longTermStateJson,
+    lastProcessedSessionId: lastProcessedSessionId.present
+        ? lastProcessedSessionId.value
+        : this.lastProcessedSessionId,
+    calculationVersion: calculationVersion ?? this.calculationVersion,
+    needsRebuild: needsRebuild ?? this.needsRebuild,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ExerciseProgressCacheRecord copyWithCompanion(
+    ExerciseProgressCachesCompanion data,
+  ) {
+    return ExerciseProgressCacheRecord(
+      exerciseId: data.exerciseId.present
+          ? data.exerciseId.value
+          : this.exerciseId,
+      recentProgressJson: data.recentProgressJson.present
+          ? data.recentProgressJson.value
+          : this.recentProgressJson,
+      longTermProgressJson: data.longTermProgressJson.present
+          ? data.longTermProgressJson.value
+          : this.longTermProgressJson,
+      recentWindowJson: data.recentWindowJson.present
+          ? data.recentWindowJson.value
+          : this.recentWindowJson,
+      longTermStateJson: data.longTermStateJson.present
+          ? data.longTermStateJson.value
+          : this.longTermStateJson,
+      lastProcessedSessionId: data.lastProcessedSessionId.present
+          ? data.lastProcessedSessionId.value
+          : this.lastProcessedSessionId,
+      calculationVersion: data.calculationVersion.present
+          ? data.calculationVersion.value
+          : this.calculationVersion,
+      needsRebuild: data.needsRebuild.present
+          ? data.needsRebuild.value
+          : this.needsRebuild,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExerciseProgressCacheRecord(')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('recentProgressJson: $recentProgressJson, ')
+          ..write('longTermProgressJson: $longTermProgressJson, ')
+          ..write('recentWindowJson: $recentWindowJson, ')
+          ..write('longTermStateJson: $longTermStateJson, ')
+          ..write('lastProcessedSessionId: $lastProcessedSessionId, ')
+          ..write('calculationVersion: $calculationVersion, ')
+          ..write('needsRebuild: $needsRebuild, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    exerciseId,
+    recentProgressJson,
+    longTermProgressJson,
+    recentWindowJson,
+    longTermStateJson,
+    lastProcessedSessionId,
+    calculationVersion,
+    needsRebuild,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExerciseProgressCacheRecord &&
+          other.exerciseId == this.exerciseId &&
+          other.recentProgressJson == this.recentProgressJson &&
+          other.longTermProgressJson == this.longTermProgressJson &&
+          other.recentWindowJson == this.recentWindowJson &&
+          other.longTermStateJson == this.longTermStateJson &&
+          other.lastProcessedSessionId == this.lastProcessedSessionId &&
+          other.calculationVersion == this.calculationVersion &&
+          other.needsRebuild == this.needsRebuild &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ExerciseProgressCachesCompanion
+    extends UpdateCompanion<ExerciseProgressCacheRecord> {
+  final Value<String> exerciseId;
+  final Value<String?> recentProgressJson;
+  final Value<String?> longTermProgressJson;
+  final Value<String> recentWindowJson;
+  final Value<String> longTermStateJson;
+  final Value<String?> lastProcessedSessionId;
+  final Value<int> calculationVersion;
+  final Value<bool> needsRebuild;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const ExerciseProgressCachesCompanion({
+    this.exerciseId = const Value.absent(),
+    this.recentProgressJson = const Value.absent(),
+    this.longTermProgressJson = const Value.absent(),
+    this.recentWindowJson = const Value.absent(),
+    this.longTermStateJson = const Value.absent(),
+    this.lastProcessedSessionId = const Value.absent(),
+    this.calculationVersion = const Value.absent(),
+    this.needsRebuild = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExerciseProgressCachesCompanion.insert({
+    required String exerciseId,
+    this.recentProgressJson = const Value.absent(),
+    this.longTermProgressJson = const Value.absent(),
+    required String recentWindowJson,
+    required String longTermStateJson,
+    this.lastProcessedSessionId = const Value.absent(),
+    this.calculationVersion = const Value.absent(),
+    this.needsRebuild = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : exerciseId = Value(exerciseId),
+       recentWindowJson = Value(recentWindowJson),
+       longTermStateJson = Value(longTermStateJson),
+       updatedAt = Value(updatedAt);
+  static Insertable<ExerciseProgressCacheRecord> custom({
+    Expression<String>? exerciseId,
+    Expression<String>? recentProgressJson,
+    Expression<String>? longTermProgressJson,
+    Expression<String>? recentWindowJson,
+    Expression<String>? longTermStateJson,
+    Expression<String>? lastProcessedSessionId,
+    Expression<int>? calculationVersion,
+    Expression<bool>? needsRebuild,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (exerciseId != null) 'exercise_id': exerciseId,
+      if (recentProgressJson != null)
+        'recent_progress_json': recentProgressJson,
+      if (longTermProgressJson != null)
+        'long_term_progress_json': longTermProgressJson,
+      if (recentWindowJson != null) 'recent_window_json': recentWindowJson,
+      if (longTermStateJson != null) 'long_term_state_json': longTermStateJson,
+      if (lastProcessedSessionId != null)
+        'last_processed_session_id': lastProcessedSessionId,
+      if (calculationVersion != null) 'calculation_version': calculationVersion,
+      if (needsRebuild != null) 'needs_rebuild': needsRebuild,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExerciseProgressCachesCompanion copyWith({
+    Value<String>? exerciseId,
+    Value<String?>? recentProgressJson,
+    Value<String?>? longTermProgressJson,
+    Value<String>? recentWindowJson,
+    Value<String>? longTermStateJson,
+    Value<String?>? lastProcessedSessionId,
+    Value<int>? calculationVersion,
+    Value<bool>? needsRebuild,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ExerciseProgressCachesCompanion(
+      exerciseId: exerciseId ?? this.exerciseId,
+      recentProgressJson: recentProgressJson ?? this.recentProgressJson,
+      longTermProgressJson: longTermProgressJson ?? this.longTermProgressJson,
+      recentWindowJson: recentWindowJson ?? this.recentWindowJson,
+      longTermStateJson: longTermStateJson ?? this.longTermStateJson,
+      lastProcessedSessionId:
+          lastProcessedSessionId ?? this.lastProcessedSessionId,
+      calculationVersion: calculationVersion ?? this.calculationVersion,
+      needsRebuild: needsRebuild ?? this.needsRebuild,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (exerciseId.present) {
+      map['exercise_id'] = Variable<String>(exerciseId.value);
+    }
+    if (recentProgressJson.present) {
+      map['recent_progress_json'] = Variable<String>(recentProgressJson.value);
+    }
+    if (longTermProgressJson.present) {
+      map['long_term_progress_json'] = Variable<String>(
+        longTermProgressJson.value,
+      );
+    }
+    if (recentWindowJson.present) {
+      map['recent_window_json'] = Variable<String>(recentWindowJson.value);
+    }
+    if (longTermStateJson.present) {
+      map['long_term_state_json'] = Variable<String>(longTermStateJson.value);
+    }
+    if (lastProcessedSessionId.present) {
+      map['last_processed_session_id'] = Variable<String>(
+        lastProcessedSessionId.value,
+      );
+    }
+    if (calculationVersion.present) {
+      map['calculation_version'] = Variable<int>(calculationVersion.value);
+    }
+    if (needsRebuild.present) {
+      map['needs_rebuild'] = Variable<bool>(needsRebuild.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExerciseProgressCachesCompanion(')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('recentProgressJson: $recentProgressJson, ')
+          ..write('longTermProgressJson: $longTermProgressJson, ')
+          ..write('recentWindowJson: $recentWindowJson, ')
+          ..write('longTermStateJson: $longTermStateJson, ')
+          ..write('lastProcessedSessionId: $lastProcessedSessionId, ')
+          ..write('calculationVersion: $calculationVersion, ')
+          ..write('needsRebuild: $needsRebuild, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1843,6 +2478,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ExerciseDefinitionsTable exerciseDefinitions =
       $ExerciseDefinitionsTable(this);
   late final $UserProfilesTable userProfiles = $UserProfilesTable(this);
+  late final $ExerciseProgressCachesTable exerciseProgressCaches =
+      $ExerciseProgressCachesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1853,6 +2490,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     exerciseSets,
     exerciseDefinitions,
     userProfiles,
+    exerciseProgressCaches,
   ];
 }
 
@@ -3365,6 +4003,329 @@ typedef $$UserProfilesTableProcessedTableManager =
       UserProfile,
       PrefetchHooks Function()
     >;
+typedef $$ExerciseProgressCachesTableCreateCompanionBuilder =
+    ExerciseProgressCachesCompanion Function({
+      required String exerciseId,
+      Value<String?> recentProgressJson,
+      Value<String?> longTermProgressJson,
+      required String recentWindowJson,
+      required String longTermStateJson,
+      Value<String?> lastProcessedSessionId,
+      Value<int> calculationVersion,
+      Value<bool> needsRebuild,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ExerciseProgressCachesTableUpdateCompanionBuilder =
+    ExerciseProgressCachesCompanion Function({
+      Value<String> exerciseId,
+      Value<String?> recentProgressJson,
+      Value<String?> longTermProgressJson,
+      Value<String> recentWindowJson,
+      Value<String> longTermStateJson,
+      Value<String?> lastProcessedSessionId,
+      Value<int> calculationVersion,
+      Value<bool> needsRebuild,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$ExerciseProgressCachesTableFilterComposer
+    extends Composer<_$AppDatabase, $ExerciseProgressCachesTable> {
+  $$ExerciseProgressCachesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recentProgressJson => $composableBuilder(
+    column: $table.recentProgressJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get longTermProgressJson => $composableBuilder(
+    column: $table.longTermProgressJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recentWindowJson => $composableBuilder(
+    column: $table.recentWindowJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get longTermStateJson => $composableBuilder(
+    column: $table.longTermStateJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastProcessedSessionId => $composableBuilder(
+    column: $table.lastProcessedSessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get calculationVersion => $composableBuilder(
+    column: $table.calculationVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get needsRebuild => $composableBuilder(
+    column: $table.needsRebuild,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExerciseProgressCachesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExerciseProgressCachesTable> {
+  $$ExerciseProgressCachesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recentProgressJson => $composableBuilder(
+    column: $table.recentProgressJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get longTermProgressJson => $composableBuilder(
+    column: $table.longTermProgressJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recentWindowJson => $composableBuilder(
+    column: $table.recentWindowJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get longTermStateJson => $composableBuilder(
+    column: $table.longTermStateJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastProcessedSessionId => $composableBuilder(
+    column: $table.lastProcessedSessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get calculationVersion => $composableBuilder(
+    column: $table.calculationVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get needsRebuild => $composableBuilder(
+    column: $table.needsRebuild,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExerciseProgressCachesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExerciseProgressCachesTable> {
+  $$ExerciseProgressCachesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recentProgressJson => $composableBuilder(
+    column: $table.recentProgressJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get longTermProgressJson => $composableBuilder(
+    column: $table.longTermProgressJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recentWindowJson => $composableBuilder(
+    column: $table.recentWindowJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get longTermStateJson => $composableBuilder(
+    column: $table.longTermStateJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastProcessedSessionId => $composableBuilder(
+    column: $table.lastProcessedSessionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get calculationVersion => $composableBuilder(
+    column: $table.calculationVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get needsRebuild => $composableBuilder(
+    column: $table.needsRebuild,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ExerciseProgressCachesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExerciseProgressCachesTable,
+          ExerciseProgressCacheRecord,
+          $$ExerciseProgressCachesTableFilterComposer,
+          $$ExerciseProgressCachesTableOrderingComposer,
+          $$ExerciseProgressCachesTableAnnotationComposer,
+          $$ExerciseProgressCachesTableCreateCompanionBuilder,
+          $$ExerciseProgressCachesTableUpdateCompanionBuilder,
+          (
+            ExerciseProgressCacheRecord,
+            BaseReferences<
+              _$AppDatabase,
+              $ExerciseProgressCachesTable,
+              ExerciseProgressCacheRecord
+            >,
+          ),
+          ExerciseProgressCacheRecord,
+          PrefetchHooks Function()
+        > {
+  $$ExerciseProgressCachesTableTableManager(
+    _$AppDatabase db,
+    $ExerciseProgressCachesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExerciseProgressCachesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$ExerciseProgressCachesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ExerciseProgressCachesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> exerciseId = const Value.absent(),
+                Value<String?> recentProgressJson = const Value.absent(),
+                Value<String?> longTermProgressJson = const Value.absent(),
+                Value<String> recentWindowJson = const Value.absent(),
+                Value<String> longTermStateJson = const Value.absent(),
+                Value<String?> lastProcessedSessionId = const Value.absent(),
+                Value<int> calculationVersion = const Value.absent(),
+                Value<bool> needsRebuild = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ExerciseProgressCachesCompanion(
+                exerciseId: exerciseId,
+                recentProgressJson: recentProgressJson,
+                longTermProgressJson: longTermProgressJson,
+                recentWindowJson: recentWindowJson,
+                longTermStateJson: longTermStateJson,
+                lastProcessedSessionId: lastProcessedSessionId,
+                calculationVersion: calculationVersion,
+                needsRebuild: needsRebuild,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String exerciseId,
+                Value<String?> recentProgressJson = const Value.absent(),
+                Value<String?> longTermProgressJson = const Value.absent(),
+                required String recentWindowJson,
+                required String longTermStateJson,
+                Value<String?> lastProcessedSessionId = const Value.absent(),
+                Value<int> calculationVersion = const Value.absent(),
+                Value<bool> needsRebuild = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ExerciseProgressCachesCompanion.insert(
+                exerciseId: exerciseId,
+                recentProgressJson: recentProgressJson,
+                longTermProgressJson: longTermProgressJson,
+                recentWindowJson: recentWindowJson,
+                longTermStateJson: longTermStateJson,
+                lastProcessedSessionId: lastProcessedSessionId,
+                calculationVersion: calculationVersion,
+                needsRebuild: needsRebuild,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $ExerciseProgressCachesTable,
+                    ExerciseProgressCacheRecord
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ExerciseProgressCachesTable,
+                    ExerciseProgressCacheRecord
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExerciseProgressCachesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExerciseProgressCachesTable,
+      ExerciseProgressCacheRecord,
+      $$ExerciseProgressCachesTableFilterComposer,
+      $$ExerciseProgressCachesTableOrderingComposer,
+      $$ExerciseProgressCachesTableAnnotationComposer,
+      $$ExerciseProgressCachesTableCreateCompanionBuilder,
+      $$ExerciseProgressCachesTableUpdateCompanionBuilder,
+      (
+        ExerciseProgressCacheRecord,
+        BaseReferences<
+          _$AppDatabase,
+          $ExerciseProgressCachesTable,
+          ExerciseProgressCacheRecord
+        >,
+      ),
+      ExerciseProgressCacheRecord,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3379,4 +4340,9 @@ class $AppDatabaseManager {
       $$ExerciseDefinitionsTableTableManager(_db, _db.exerciseDefinitions);
   $$UserProfilesTableTableManager get userProfiles =>
       $$UserProfilesTableTableManager(_db, _db.userProfiles);
+  $$ExerciseProgressCachesTableTableManager get exerciseProgressCaches =>
+      $$ExerciseProgressCachesTableTableManager(
+        _db,
+        _db.exerciseProgressCaches,
+      );
 }
