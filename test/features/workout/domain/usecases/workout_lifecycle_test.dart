@@ -1,7 +1,13 @@
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ai_gym_assistant/core/database/app_database.dart';
+
+import 'package:ai_gym_assistant/features/progress/domain/entities/recent_exercise_progress.dart';
+import 'package:ai_gym_assistant/features/progress/domain/entities/long_term_exercise_progress.dart';
+import 'package:ai_gym_assistant/features/progress/domain/repositories/progress_cache_synchronizer.dart';
+
 import 'package:ai_gym_assistant/features/workout/data/datasources/workout_local_data_source.dart';
 import 'package:ai_gym_assistant/features/workout/data/repositories/workout_repository_impl.dart';
 import 'package:ai_gym_assistant/features/workout/domain/entities/exercise_set.dart';
@@ -10,6 +16,25 @@ import 'package:ai_gym_assistant/features/workout/domain/entities/workout_sessio
 import 'package:ai_gym_assistant/features/workout/domain/usecases/finish_workout.dart';
 import 'package:ai_gym_assistant/features/workout/domain/usecases/start_workout.dart';
 import 'package:ai_gym_assistant/features/workout/domain/usecases/update_exercise_set.dart';
+
+// Fake chỉ phục vụ test Workout Lifecycle.
+class _FakeProgressCacheSynchronizer
+    implements ProgressCacheSynchronizer {
+  @override
+  Future<void> syncAfterWorkout(
+      WorkoutSession completedSession,
+      ) async {
+    // Không xử lý Progress Cache trong test này.
+  }
+
+  @override
+  Future<({
+  RecentExerciseProgress? recent,
+  LongTermExerciseProgress? longTerm,
+  })> readValidProgress(String exerciseId) async {
+    return (recent: null, longTerm: null);
+  }
+}
 
 void main() {
   late AppDatabase database;
@@ -30,7 +55,12 @@ void main() {
 
     startWorkout = StartWorkout(repository);
     updateExerciseSet = UpdateExerciseSet(repository);
-    finishWorkout = FinishWorkout(repository);
+
+    // Constructor mới có thêm Cache Synchronizer.
+    finishWorkout = FinishWorkout(
+      repository,
+      _FakeProgressCacheSynchronizer(),
+    );
   });
 
   tearDown(() async {
@@ -38,7 +68,7 @@ void main() {
   });
 
   test('should complete full workout lifecycle', () async {
-    //Start workout
+    // Start workout.
     final startedSession = await startWorkout(
       exercises: [
         WorkoutExercise(
@@ -67,7 +97,7 @@ void main() {
     );
     expect(startedSession.endedAt, isNull);
 
-    //Update actual workout result
+    // Update actual workout result.
     final updatedSession = await updateExerciseSet(
       sessionId: startedSession.id,
       workoutExerciseId: 'workout_exercise_001',
@@ -77,8 +107,7 @@ void main() {
       status: ExerciseSetStatus.completed,
     );
 
-    final updatedSet =
-        updatedSession.exercises.first.sets.first;
+    final updatedSet = updatedSession.exercises.first.sets.first;
 
     expect(updatedSet.suggestedWeight, 40);
     expect(updatedSet.suggestedReps, 10);
@@ -89,7 +118,7 @@ void main() {
       ExerciseSetStatus.completed,
     );
 
-    //Finish workout
+    // Finish workout.
     final completedSession = await finishWorkout(
       sessionId: startedSession.id,
     );
@@ -100,21 +129,20 @@ void main() {
     );
     expect(completedSession.endedAt, isNotNull);
 
-    //Read again from database
-    final savedSession =
-    await repository.getWorkoutSessionById(
+    // Read again from database.
+    final savedSession = await repository.getWorkoutSessionById(
       startedSession.id,
     );
 
     expect(savedSession, isNotNull);
+
     expect(
       savedSession!.status,
       WorkoutSessionStatus.completed,
     );
     expect(savedSession.endedAt, isNotNull);
 
-    final savedSet =
-        savedSession.exercises.first.sets.first;
+    final savedSet = savedSession.exercises.first.sets.first;
 
     expect(savedSet.suggestedReps, 10);
     expect(savedSet.actualReps, 8);

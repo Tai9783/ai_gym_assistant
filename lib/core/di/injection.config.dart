@@ -40,6 +40,22 @@ import 'package:ai_gym_assistant/features/profile/domain/usecases/save_user_prof
     as _i917;
 import 'package:ai_gym_assistant/features/profile/presentation/bloc/profile_bloc.dart'
     as _i165;
+import 'package:ai_gym_assistant/features/progress/data/datasources/exercise_progress_cache_local_data_source.dart'
+    as _i346;
+import 'package:ai_gym_assistant/features/progress/data/repositories/progress_cache_synchronizer_impl.dart'
+    as _i661;
+import 'package:ai_gym_assistant/features/progress/data/services/exercise_progress_cache_initializer.dart'
+    as _i219;
+import 'package:ai_gym_assistant/features/progress/data/services/exercise_progress_cache_updater.dart'
+    as _i498;
+import 'package:ai_gym_assistant/features/progress/data/services/long_term_aggregate_state_updater.dart'
+    as _i548;
+import 'package:ai_gym_assistant/features/progress/data/services/long_term_progress_result_updater.dart'
+    as _i214;
+import 'package:ai_gym_assistant/features/progress/data/services/recent_progress_cache_updater.dart'
+    as _i155;
+import 'package:ai_gym_assistant/features/progress/domain/repositories/progress_cache_synchronizer.dart'
+    as _i398;
 import 'package:ai_gym_assistant/features/progress/domain/services/exercise_session_summarizer.dart'
     as _i147;
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart'
@@ -106,6 +122,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i117.AppDatabase>(() => _i117.AppDatabase());
     gh.lazySingleton<_i59.FirebaseAuth>(() => firebaseModule.firebaseAuth);
+    gh.lazySingleton<_i548.LongTermAggregateStateUpdater>(
+      () => const _i548.LongTermAggregateStateUpdater(),
+    );
     gh.lazySingleton<_i147.ExerciseSessionSummarizer>(
       () => _i147.ExerciseSessionSummarizer(),
     );
@@ -119,6 +138,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i976.UserProfileLocalDataSource>(
       () => _i976.UserProfileLocalDataSource(gh<_i117.AppDatabase>()),
     );
+    gh.lazySingleton<_i346.ExerciseProgressCacheLocalDataSource>(
+      () => _i346.ExerciseProgressCacheLocalDataSource(gh<_i117.AppDatabase>()),
+    );
     gh.lazySingleton<_i1019.ExerciseLocalDataSource>(
       () => _i1019.ExerciseLocalDataSource(gh<_i117.AppDatabase>()),
     );
@@ -131,11 +153,28 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i899.LongTermTrendCalculator>(),
       ),
     );
+    gh.lazySingleton<_i214.LongTermProgressResultUpdater>(
+      () => _i214.LongTermProgressResultUpdater(
+        gh<_i338.SessionTargetClassifier>(),
+        gh<_i899.LongTermTrendCalculator>(),
+      ),
+    );
+    gh.lazySingleton<_i219.ExerciseProgressCacheInitializer>(
+      () => _i219.ExerciseProgressCacheInitializer(
+        dataSource: gh<_i346.ExerciseProgressCacheLocalDataSource>(),
+        recentAnalyzer: gh<_i26.RecentProgressAnalyzer>(),
+        longTermAnalyzer: gh<_i516.LongTermProgressAnalyzer>(),
+        stateUpdater: gh<_i548.LongTermAggregateStateUpdater>(),
+      ),
+    );
     gh.lazySingleton<_i491.ExerciseRepository>(
       () => _i170.ExerciseRepositoryImpl(gh<_i1019.ExerciseLocalDataSource>()),
     );
     gh.lazySingleton<_i971.AnonymousAuthService>(
       () => _i879.FirebaseAnonymousAuthService(gh<_i59.FirebaseAuth>()),
+    );
+    gh.lazySingleton<_i155.RecentProgressCacheUpdater>(
+      () => _i155.RecentProgressCacheUpdater(gh<_i26.RecentProgressAnalyzer>()),
     );
     gh.lazySingleton<_i651.UserProfileRepository>(
       () => _i267.UserProfileRepositoryImpl(
@@ -144,14 +183,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i729.WorkoutRepository>(
       () => _i769.WorkoutRepositoryImpl(gh<_i915.WorkoutLocalDataSource>()),
-    );
-    gh.lazySingleton<_i329.GetExerciseProgress>(
-      () => _i329.GetExerciseProgress(
-        gh<_i729.WorkoutRepository>(),
-        gh<_i147.ExerciseSessionSummarizer>(),
-        gh<_i26.RecentProgressAnalyzer>(),
-        gh<_i516.LongTermProgressAnalyzer>(),
-      ),
     );
     gh.lazySingleton<_i489.GeminiRemoteDataSource>(
       () => _i489.GeminiRemoteDataSource(
@@ -162,8 +193,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i158.GetExercises>(
       () => _i158.GetExercises(gh<_i491.ExerciseRepository>()),
     );
-    gh.lazySingleton<_i679.FinishWorkout>(
-      () => _i679.FinishWorkout(gh<_i729.WorkoutRepository>()),
+    gh.lazySingleton<_i498.ExerciseProgressCacheUpdater>(
+      () => _i498.ExerciseProgressCacheUpdater(
+        dataSource: gh<_i346.ExerciseProgressCacheLocalDataSource>(),
+        recentUpdater: gh<_i155.RecentProgressCacheUpdater>(),
+        stateUpdater: gh<_i548.LongTermAggregateStateUpdater>(),
+        resultUpdater: gh<_i214.LongTermProgressResultUpdater>(),
+      ),
     );
     gh.lazySingleton<_i557.GetCompletedWorkouts>(
       () => _i557.GetCompletedWorkouts(gh<_i729.WorkoutRepository>()),
@@ -186,12 +222,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i158.GetExercises>(),
       ),
     );
-    gh.lazySingleton<_i1051.PrepareAiContext>(
-      () => _i1051.PrepareAiContext(
-        gh<_i158.GetExercises>(),
-        gh<_i329.GetExerciseProgress>(),
-        gh<_i576.AiContextBuilder>(),
-        gh<_i888.GetUserProfile>(),
+    gh.lazySingleton<_i398.ProgressCacheSynchronizer>(
+      () => _i661.ProgressCacheSynchronizerImpl(
+        gh<_i729.WorkoutRepository>(),
+        gh<_i346.ExerciseProgressCacheLocalDataSource>(),
+        gh<_i147.ExerciseSessionSummarizer>(),
+        gh<_i219.ExerciseProgressCacheInitializer>(),
+        gh<_i498.ExerciseProgressCacheUpdater>(),
+      ),
+    );
+    gh.lazySingleton<_i679.FinishWorkout>(
+      () => _i679.FinishWorkout(
+        gh<_i729.WorkoutRepository>(),
+        gh<_i398.ProgressCacheSynchronizer>(),
       ),
     );
     gh.lazySingleton<_i938.RecommendationRepository>(
@@ -207,14 +250,11 @@ extension GetItInjectableX on _i174.GetIt {
         finishWorkout: gh<_i679.FinishWorkout>(),
       ),
     );
-    gh.lazySingleton<_i573.GenerateRecommendation>(
-      () => _i573.GenerateRecommendation(
-        gh<_i1051.PrepareAiContext>(),
-        gh<_i938.RecommendationRepository>(),
-      ),
-    );
     gh.factory<_i534.ExerciseCatalogBloc>(
       () => _i534.ExerciseCatalogBloc(getExercises: gh<_i158.GetExercises>()),
+    );
+    gh.lazySingleton<_i329.GetExerciseProgress>(
+      () => _i329.GetExerciseProgress(gh<_i398.ProgressCacheSynchronizer>()),
     );
     gh.factory<_i165.ProfileBloc>(
       () => _i165.ProfileBloc(
@@ -227,6 +267,20 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i557.GetCompletedWorkouts>(),
         gh<_i158.GetExercises>(),
         gh<_i329.GetExerciseProgress>(),
+      ),
+    );
+    gh.lazySingleton<_i1051.PrepareAiContext>(
+      () => _i1051.PrepareAiContext(
+        gh<_i158.GetExercises>(),
+        gh<_i329.GetExerciseProgress>(),
+        gh<_i576.AiContextBuilder>(),
+        gh<_i888.GetUserProfile>(),
+      ),
+    );
+    gh.lazySingleton<_i573.GenerateRecommendation>(
+      () => _i573.GenerateRecommendation(
+        gh<_i1051.PrepareAiContext>(),
+        gh<_i938.RecommendationRepository>(),
       ),
     );
     gh.factory<_i650.RecommendationBloc>(
