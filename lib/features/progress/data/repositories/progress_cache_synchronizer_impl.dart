@@ -172,7 +172,6 @@ class ProgressCacheSynchronizerImpl
       final historyCount = await _workoutRepository
           .countCompletedWorkoutExercises(exerciseId);
 
-      // Bài tập chưa có History thì không có Progress.
       if (historyCount == 0) {
         return (recent: null, longTerm: null);
       }
@@ -194,17 +193,12 @@ class ProgressCacheSynchronizerImpl
             cache.longTermProgressJson!,
           );
 
-          // Kiểm tra cả dữ liệu phục vụ incremental.
-          RecentWindowCacheCodec.decode(cache.recentWindowJson);
-          LongTermStateCacheCodec.decode(cache.longTermStateJson);
-
           if (recent.exerciseId == exerciseId &&
               longTerm.exerciseId == exerciseId &&
               longTerm.sessionCount == historyCount) {
             return (recent: recent, longTerm: longTerm);
           }
         } catch (_) {
-          //Cache lỗi hoặc JSON hỏng: rebuild bên dưới.
         }
       }
 

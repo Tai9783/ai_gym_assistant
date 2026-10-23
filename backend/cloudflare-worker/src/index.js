@@ -2,7 +2,6 @@ const DAILY_AI_LIMIT = 12;
 const AI_COOLDOWN_MS = 60_000;
 const GEMINI_MODEL = 'gemini-3.8-flash';
 
-// System Instruction chuyển từ recommendation_prompt.dart
 const SYSTEM_INSTRUCTION = `
 You are an AI workout recommendation assistant.
 
@@ -84,7 +83,6 @@ OUTPUT RULES:
     or additional fields outside the schema.
 `;
 
-// Schema chuyển từ workout_recommendation_schema.dart
 const RECOMMENDATION_SCHEMA = {
   type: 'object',
   properties: {
@@ -662,7 +660,6 @@ try {
     status: 200,
   });
 } catch (error) {
-  // Không ghi API key, token hay AI Context vào log.
   console.error(
     'Gemini generation failed:',
     error?.message ?? 'Unknown error'
