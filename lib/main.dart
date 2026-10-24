@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_theme.dart';
 import 'package:ai_gym_assistant/app/router/app_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
+      theme: AppTheme.light,
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,9 +9,9 @@ import '../bloc/history_bloc.dart';
 import '../bloc/history_event.dart';
 import '../bloc/history_state.dart';
 
-const _primary = Color(0xFF5B6CFF);
-const _background = Color(0xFFF7F8FA);
-const _borderColor = Color(0xFFE5E7EB);
+const _primary = AppColors.primary;
+const _background = AppColors.background;
+const _borderColor = AppColors.border;
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -275,7 +276,7 @@ class _HistorySessionCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 7,
-              backgroundColor: const Color(0xFFE8EAF4),
+              backgroundColor: AppColors.track,
               color: _primary,
             ),
           ),
@@ -321,7 +322,7 @@ class _HistoryExerciseDetails extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FC),
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

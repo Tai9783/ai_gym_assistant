@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class WorkoutSetCard extends StatefulWidget {
 }
 
 class _WorkoutSetCardState extends State<WorkoutSetCard> {
-  static const _primary = Color(0xFF5B6CFF);
+  static const _primary = AppColors.primary;
 
   late final TextEditingController _weightController;
   late final TextEditingController _repsController;
@@ -190,7 +191,7 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
                   icon: const Icon(Icons.check_rounded),
                   tooltip: 'Hoàn thành set',
                   style: IconButton.styleFrom(
-                    backgroundColor: const Color(0xFFE9EDFF),
+                    backgroundColor: AppColors.selected,
                     foregroundColor: _primary,
                     minimumSize: const Size(48, 48),
                     shape: RoundedRectangleBorder(

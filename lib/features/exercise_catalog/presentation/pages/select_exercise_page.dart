@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import '../../domain/entities/exercise_definition.dart';
 import '../bloc/exercise_catalog_bloc.dart';
 import '../bloc/exercise_catalog_event.dart';
 import '../bloc/exercise_catalog_state.dart';
+import '../widgets/exercise_thumbnail.dart';
 
 class SelectExercisePage extends StatelessWidget {
   final List<String> initialSelectedExerciseIds;
@@ -93,7 +95,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FA),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -176,13 +178,18 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: isSelected
-                          ? const Color(0xFF5B6CFF)
-                          : const Color(0xFFE5E7EB),
+                          ? AppColors.primary
+                          : AppColors.border,
                       width: isSelected ? 1.5 : 1,
                     ),
                   ),
                   child: Row(
                     children: [
+                      ExerciseThumbnail(
+                        exerciseId: exercise.id,
+                        size: 76,
+                      ),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +206,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
                               _muscleGroupLabel(exercise.muscleGroup),
                               style: const TextStyle(
                                 fontSize: 13,
-                                color: Color(0xFF6B7280),
+                                color: AppColors.muted,
                               ),
                             ),
                           ],
@@ -231,7 +238,7 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
                     ? () => _confirmSelection(exercises)
                     : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5B6CFF),
+                  backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(

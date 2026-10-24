@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -27,9 +28,9 @@ class RecommendationPage extends StatefulWidget {
 }
 
 class _RecommendationPageState extends State<RecommendationPage> {
-  static const _primaryColor = Color(0xFF5C63F6);
-  static const _backgroundColor = Color(0xFFF8F9FC);
-  static const _borderColor = Color(0xFFE8EAF0);
+  static const _primaryColor = AppColors.primary;
+  static const _backgroundColor = AppColors.background;
+  static const _borderColor = AppColors.border;
 
   late final Future<List<ExerciseDefinition>> _catalogFuture;
 
@@ -286,7 +287,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF252836),
+                  color: AppColors.text,
                 ),
               ),
               const SizedBox(height: 6),
@@ -328,7 +329,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0EFFF),
+        color: AppColors.selected,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -386,7 +387,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
                 height: 36,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECEBFF),
+                  color: AppColors.selected,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(

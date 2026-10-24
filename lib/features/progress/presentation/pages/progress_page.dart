@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,11 +9,11 @@ import '../bloc/progress_bloc.dart';
 import '../bloc/progress_event.dart';
 import '../bloc/progress_state.dart';
 
-const _primary = Color(0xFF5B6CFF);
-const _background = Color(0xFFF7F8FA);
-const _borderColor = Color(0xFFE5E7EB);
-const _textColor = Color(0xFF1F2430);
-const _subTextColor = Color(0xFF6B7280);
+const _primary = AppColors.primary;
+const _background = AppColors.background;
+const _borderColor = AppColors.border;
+const _textColor = AppColors.text;
+const _subTextColor = AppColors.muted;
 
 class ProgressPage extends StatelessWidget {
   const ProgressPage({super.key});
@@ -226,7 +227,7 @@ class _ProgressContent extends StatelessWidget {
                 size: 20,
               ),
               filled: true,
-              fillColor: const Color(0xFFF8F9FC),
+              fillColor: AppColors.background,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -466,7 +467,7 @@ class _ProgressSection extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEEF0FF),
+                  color: AppColors.selected,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: _primary, size: 22),
@@ -520,7 +521,7 @@ class _MetricCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F6FB),
+        color: AppColors.tile,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -591,7 +592,7 @@ class _TargetRateView extends StatelessWidget {
           child: LinearProgressIndicator(
             value: validRate ?? 0,
             minHeight: 9,
-            backgroundColor: const Color(0xFFE8EAF4),
+            backgroundColor: AppColors.track,
             color: _primary,
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -24,8 +25,8 @@ class ManualWorkoutPage extends StatefulWidget {
 }
 
 class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
-  static const _primaryColor = Color(0xFF009E87);
-  static const _backgroundColor = Color(0xFFF7F8FA);
+  static const _primaryColor = AppColors.primary;
+  static const _backgroundColor = AppColors.background;
 
   final _formKey = GlobalKey<FormState>();
   final Map<String, List<ManualSetDraft>> _targets = {};
@@ -156,7 +157,7 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFE5E7EB)),
+        side: const BorderSide(color: AppColors.border),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),

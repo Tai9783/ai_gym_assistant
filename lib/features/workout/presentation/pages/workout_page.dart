@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,8 +12,8 @@ import '../bloc/workout_event.dart';
 import '../bloc/workout_state.dart';
 import '../widgets/workout_set_card.dart';
 
-const _primary = Color(0xFF5B6CFF);
-const _background = Color(0xFFF7F8FA);
+const _primary = AppColors.primary;
+const _background = AppColors.background;
 
 class WorkoutPage extends StatelessWidget {
   final List<WorkoutExercise>? initialExercises;
@@ -198,7 +199,7 @@ class _WorkoutContent extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 9,
-                        backgroundColor: const Color(0xFFE8EAF4),
+                        backgroundColor: AppColors.track,
                         color: _primary,
                       ),
                     ),
@@ -243,7 +244,7 @@ class _WorkoutContent extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             decoration: const BoxDecoration(
               color: Colors.white,
-              border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+              border: Border(top: BorderSide(color: AppColors.border)),
             ),
             child: SizedBox(
               width: double.infinity,
@@ -289,7 +290,7 @@ class _WorkoutExerciseSection extends StatelessWidget {
       color: Colors.white,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color(0xFFE5E7EB)),
+        side: const BorderSide(color: AppColors.border),
         borderRadius: BorderRadius.circular(16),
       ),
       child: ExpansionTile(
@@ -305,7 +306,7 @@ class _WorkoutExerciseSection extends StatelessWidget {
         tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
         leading: CircleAvatar(
-          backgroundColor: const Color(0xFFEEF0FF),
+          backgroundColor: AppColors.selected,
           child: Text(
             '$order',
             style: const TextStyle(
@@ -442,7 +443,7 @@ class _WorkoutCompletedView extends StatelessWidget {
                       Text(
                         '$completedSets / $totalSets sets',
                         style: const TextStyle(
-                          color: Color(0xFF5B6CFF),
+                          color: AppColors.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -456,8 +457,8 @@ class _WorkoutCompletedView extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: progress,
                       minHeight: 9,
-                      backgroundColor: const Color(0xFFE8EAF4),
-                      color: const Color(0xFF5B6CFF),
+                      backgroundColor: AppColors.track,
+                      color: AppColors.primary,
                     ),
                   ),
 
@@ -482,7 +483,7 @@ class _WorkoutCompletedView extends StatelessWidget {
                 icon: const Icon(Icons.history_rounded),
                 label: const Text('Xem lịch sử tập luyện'),
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF5B6CFF),
+                  backgroundColor: AppColors.primary,
                   minimumSize: const Size.fromHeight(52),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -502,7 +503,7 @@ class _WorkoutCompletedView extends StatelessWidget {
                 icon: const Icon(Icons.home_outlined),
                 label: const Text('Về trang chủ'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF5B6CFF),
+                  foregroundColor: AppColors.primary,
                   minimumSize: const Size.fromHeight(52),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -530,7 +531,7 @@ class _WorkoutCompletedView extends StatelessWidget {
             style: const TextStyle(
               fontSize: 23,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF5B6CFF),
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(height: 6),

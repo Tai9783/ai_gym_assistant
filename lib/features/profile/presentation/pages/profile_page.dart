@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,9 +15,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  static const _primaryColor = Color(0xFF5C63F6);
-  static const _backgroundColor = Color(0xFFF8F9FC);
-  static const _borderColor = Color(0xFFE8EAF0);
+  static const _primaryColor = AppColors.primary;
+  static const _backgroundColor = AppColors.background;
+  static const _borderColor = AppColors.border;
 
   static const _goalNames = {
     'muscleGain': 'Tăng cơ',
@@ -213,7 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF252836),
+                  color: AppColors.text,
                 ),
               ),
 
@@ -250,7 +251,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFFF0EFFF),
+            color: AppColors.selected,
             borderRadius: BorderRadius.circular(18),
           ),
           child: Column(
@@ -282,7 +283,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: const TextStyle(
                   fontSize: 23,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF35338F),
+                  color: AppColors.primaryDark,
                 ),
               ),
             ],
@@ -380,13 +381,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   return ChoiceChip(
                     label: Text(entry.value),
                     selected: selected,
-                    selectedColor: const Color(0xFFECEBFF),
+                    selectedColor: AppColors.selected,
                     backgroundColor: Colors.white,
                     side: BorderSide(
                       color: selected ? _primaryColor : _borderColor,
                     ),
                     labelStyle: TextStyle(
-                      color: selected ? _primaryColor : const Color(0xFF333544),
+                      color: selected ? _primaryColor : AppColors.text,
                       fontWeight: selected
                           ? FontWeight.w600
                           : FontWeight.normal,
@@ -452,15 +453,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ],
           ),
-
-          const SizedBox(height: 12),
-
-          const Text(
-            'Cân nặng, chiều cao và tuổi có thể '
-            'để trống nếu bạn chưa muốn cung cấp.',
-            style: TextStyle(fontSize: 12, color: Colors.black54),
-          ),
-
           const SizedBox(height: 22),
 
           SizedBox(
