@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../app/utils/app_date_formatter.dart';
 import '../../../exercise_catalog/domain/entities/exercise_definition.dart';
 import '../../../exercise_catalog/domain/usecases/get_exercises.dart';
 import '../../domain/entities/workout_request.dart';
@@ -45,14 +46,13 @@ class _RecommendationPageState extends State<RecommendationPage> {
       RecommendationGenerateRequested(widget.request),
     );
   }
-  void _startWorkout(WorkoutRecommendation recommendation) {
-    final exercises =
-    RecommendationWorkoutMapper.toWorkoutExercises(recommendation);
 
-    context.pushReplacement(
-      '/workout',
-      extra: exercises,
+  void _startWorkout(WorkoutRecommendation recommendation) {
+    final exercises = RecommendationWorkoutMapper.toWorkoutExercises(
+      recommendation,
     );
+
+    context.pushReplacement('/workout', extra: exercises);
   }
 
   @override
@@ -124,37 +124,29 @@ class _RecommendationPageState extends State<RecommendationPage> {
     );
   }
 
-
   Widget _buildFailure(RecommendationFailure failure) {
     final reason = failure.rateLimitReason;
     final hasPrevious = failure.previousLoaded != null;
     final isRateLimited = reason != null;
-    final isDailyLimit =
-        reason == RecommendationRateLimitReason.dailyLimit;
-    final isCooldown =
-        reason == RecommendationRateLimitReason.cooldown;
+    final isDailyLimit = reason == RecommendationRateLimitReason.dailyLimit;
+    final isCooldown = reason == RecommendationRateLimitReason.cooldown;
 
-    // Firebase/Cloudflare trả thời gian UTC.
-    // Chuyển sang giờ địa phương của thiết bị.
-    final resetAt = failure.resetAt?.toLocal();
+    final resetAt = failure.resetAt;
 
     String? resetMessage;
 
     if (isDailyLimit && resetAt != null) {
-      final hour = resetAt.hour.toString().padLeft(2, '0');
-      final minute = resetAt.minute.toString().padLeft(2, '0');
-
       resetMessage =
-      'Bạn có thể sử dụng lại lúc '
-          '$hour:$minute ngày '
-          '${resetAt.day}/${resetAt.month}/${resetAt.year}.';
+          'Bạn có thể sử dụng lại lúc '
+          '${AppDateFormatter.time(resetAt)} ngày '
+          '${AppDateFormatter.date(resetAt)}.';
     }
 
     String? cooldownMessage;
 
     if (isCooldown && failure.retryAfterSeconds != null) {
       cooldownMessage =
-      'Vui lòng chờ khoảng '
+          'Vui lòng chờ khoảng '
           '${failure.retryAfterSeconds} giây.';
     }
 
@@ -173,9 +165,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
                   ? Icons.info_outline_rounded
                   : Icons.error_outline_rounded,
               size: 52,
-              color: isRateLimited
-                  ? _primaryColor
-                  : Colors.redAccent,
+              color: isRateLimited ? _primaryColor : Colors.redAccent,
             ),
 
             const SizedBox(height: 16),
@@ -189,10 +179,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
                   ? 'Giới hạn yêu cầu AI'
                   : 'Không thể tạo buổi tập',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 8),
@@ -200,10 +187,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
             Text(
               failure.message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Colors.black54,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Colors.black54, fontSize: 14),
             ),
 
             if (resetMessage != null) ...[
@@ -231,7 +215,6 @@ class _RecommendationPageState extends State<RecommendationPage> {
             ],
 
             const SizedBox(height: 24),
-
 
             FilledButton.icon(
               onPressed: () {
@@ -261,11 +244,8 @@ class _RecommendationPageState extends State<RecommendationPage> {
                     ? 'Quay lại'
                     : 'Thử lại',
               ),
-              style: FilledButton.styleFrom(
-                backgroundColor: _primaryColor,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: _primaryColor),
             ),
-
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../app/utils/app_date_formatter.dart';
 import '../../../../core/di/injection.dart';
 import '../../domain/entities/recent_exercise_progress.dart';
 import '../../domain/entities/long_term_exercise_progress.dart';
@@ -397,13 +398,13 @@ class _LongTermProgressSection extends StatelessWidget {
 
         _InfoRow(
           label: 'Lần tập đầu tiên',
-          value: _formatDate(progress.firstPerformedAt),
+          value: AppDateFormatter.date(progress.firstPerformedAt),
         ),
         const SizedBox(height: 12),
 
         _InfoRow(
           label: 'Lần tập gần nhất',
-          value: _formatDate(progress.lastPerformedAt),
+          value: AppDateFormatter.date(progress.firstPerformedAt),
         ),
         const SizedBox(height: 12),
 
@@ -718,14 +719,4 @@ String _formatWeight(double? weight) {
       : weight.toString();
 
   return '$value kg';
-}
-
-String _formatDate(DateTime date) {
-  final local = date.toLocal();
-
-  String twoDigits(int value) => value.toString().padLeft(2, '0');
-
-  return '${twoDigits(local.day)}/'
-      '${twoDigits(local.month)}/'
-      '${local.year}';
 }
