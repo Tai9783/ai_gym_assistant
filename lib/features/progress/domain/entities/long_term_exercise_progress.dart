@@ -1,6 +1,4 @@
 import 'package:ai_gym_assistant/features/progress/domain/entities/progress_trend.dart';
-import 'package:ai_gym_assistant/features/progress/domain/entities/recent_exercise_progress.dart';
-
 class LongTermExerciseProgress {
   final String exerciseId;
 

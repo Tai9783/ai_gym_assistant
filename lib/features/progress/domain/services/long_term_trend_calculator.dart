@@ -1,8 +1,6 @@
 import 'package:injectable/injectable.dart';
 
 import '../entities/progress_trend.dart';
-import '../entities/recent_exercise_progress.dart';
-
 @injectable
 class LongTermTrendCalculator {
   ProgressTrend calculate({

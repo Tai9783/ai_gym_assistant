@@ -3,7 +3,6 @@ import 'package:ai_gym_assistant/features/progress/domain/services/session_targe
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ai_gym_assistant/features/progress/domain/entities/exercise_session_summary.dart';
-import 'package:ai_gym_assistant/features/progress/domain/entities/recent_exercise_progress.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/recent_progress_analyzer.dart';
 
 void main() {

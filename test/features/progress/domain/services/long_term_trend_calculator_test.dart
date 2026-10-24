@@ -1,7 +1,5 @@
 import 'package:ai_gym_assistant/features/progress/domain/entities/progress_trend.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:ai_gym_assistant/features/progress/domain/entities/recent_exercise_progress.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart';
 
 void main() {
