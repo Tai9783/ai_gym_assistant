@@ -47,9 +47,8 @@ class PrepareAiContext {
       // TH2: The list has been filtered based on focus.
       exercises.addAll(
         catalogExercises.where(
-          (exercise) =>
-              request.focus.name == 'fullBody' ||
-              exercise.muscleGroup.name == request.focus.name,
+              (exercise) =>
+          exercise.muscleGroup.name == request.focus.name,
         ),
       );
     }

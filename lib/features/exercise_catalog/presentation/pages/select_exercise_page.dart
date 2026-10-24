@@ -89,6 +89,8 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
 
       case MuscleGroup.arms:
         return 'Tay';
+      case MuscleGroup.fullBody:
+        return 'Toàn thân';
     }
   }
 
@@ -124,17 +126,11 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
           }
 
           if (state is ExerciseCatalogLoaded) {
-            final focus = WorkoutFocus.values.firstWhere(
-                  (value) => value.name == widget.muscleGroup,
-              orElse: () => WorkoutFocus.fullBody,
-            );
-
-            final filteredExercises = state.exercises.where((exercise) {
-              if (focus == WorkoutFocus.fullBody) {
-                return true;
-              }
-
-              return exercise.muscleGroup.name == focus.name;
+            final filteredExercises = widget.muscleGroup == null
+                ? state.exercises
+                : state.exercises.where((exercise) {
+              return exercise.muscleGroup.name ==
+                  widget.muscleGroup;
             }).toList();
 
             return _buildExerciseList(filteredExercises);

@@ -70,6 +70,21 @@ class ExerciseLocalDataSource {
           name: 'Triceps Pushdown',
           muscleGroup: 'arms',
         ),
+        ExerciseDefinitionsCompanion.insert(
+          id: 'burpee',
+          name: 'Burpee',
+          muscleGroup: 'fullBody',
+        ),
+        ExerciseDefinitionsCompanion.insert(
+          id: 'dumbbell_thruster',
+          name: 'Dumbbell Thruster',
+          muscleGroup: 'fullBody',
+        ),
+        ExerciseDefinitionsCompanion.insert(
+          id: 'mountain_climber',
+          name: 'Mountain Climber',
+          muscleGroup: 'fullBody',
+        ),
       ]);
     });
   }
