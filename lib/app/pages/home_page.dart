@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/exercise_catalog/domain/entities/exercise_definition.dart';
 import '../../features/recommendation/domain/entities/workout_request.dart';
+import '../extensions/workout_focus_label.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,16 +15,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _noteController = TextEditingController();
 
-  final List<String> _muscleGroups = const [
-    'Ngực',
-    'Lưng',
-    'Chân',
-    'Vai',
-    'Tay',
-    'Toàn thân',
-  ];
+  final List<WorkoutFocus> _muscleGroups =
+      WorkoutFocus.values;
 
-  String? _selectedMuscleGroup;
+  WorkoutFocus? _selectedMuscleGroup;
 
   List<ExerciseDefinition> _selectedExercises = [];
   bool get _canCreateManualWorkout =>
@@ -128,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           child: Text(
-                            group,
+                            group.label,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -220,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                     child: OutlinedButton.icon(
                       onPressed: () async {
                         final result = await context.push<List<ExerciseDefinition>>(
-                          '/select-exercises?group=${Uri.encodeComponent(_selectedMuscleGroup ?? 'Toàn thân')}',
+                            '/select-exercises?group=${(_selectedMuscleGroup ?? WorkoutFocus.fullBody).name}',
                           extra: _selectedExercises
                               .map((exercise) => exercise.id)
                               .toList(),
@@ -414,16 +409,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   WorkoutRequest _buildWorkoutRequest() {
-    final focus = switch (_selectedMuscleGroup) {
-      'Ngực' => WorkoutFocus.chest,
-      'Lưng' => WorkoutFocus.back,
-      'Chân' => WorkoutFocus.legs,
-      'Vai' => WorkoutFocus.shoulders,
-      'Tay' => WorkoutFocus.arms,
-      'Toàn thân' => WorkoutFocus.fullBody,
-      null => WorkoutFocus.fullBody,
-      _ => throw StateError('Unknown muscle group'),
-    };
+    final focus =
+        _selectedMuscleGroup ?? WorkoutFocus.fullBody;
 
     final exerciseIds = _selectedExercises
         .map((exercise) => exercise.id)

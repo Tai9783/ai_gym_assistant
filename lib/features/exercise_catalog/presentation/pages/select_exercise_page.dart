@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection.dart';
+import '../../../recommendation/domain/entities/workout_request.dart';
 import '../../domain/entities/exercise_definition.dart';
 import '../bloc/exercise_catalog_bloc.dart';
 import '../bloc/exercise_catalog_event.dart';
@@ -121,15 +122,17 @@ class _SelectExerciseViewState extends State<_SelectExerciseView> {
           }
 
           if (state is ExerciseCatalogLoaded) {
+            final focus = WorkoutFocus.values.firstWhere(
+                  (value) => value.name == widget.muscleGroup,
+              orElse: () => WorkoutFocus.fullBody,
+            );
+
             final filteredExercises = state.exercises.where((exercise) {
-              return switch (widget.muscleGroup) {
-                'Ngực' => exercise.muscleGroup == MuscleGroup.chest,
-                'Lưng' => exercise.muscleGroup == MuscleGroup.back,
-                'Chân' => exercise.muscleGroup == MuscleGroup.legs,
-                'Vai' => exercise.muscleGroup == MuscleGroup.shoulders,
-                'Tay' => exercise.muscleGroup == MuscleGroup.arms,
-                _ => true, // Toàn thân hoặc chưa chọn nhóm cơ
-              };
+              if (focus == WorkoutFocus.fullBody) {
+                return true;
+              }
+
+              return exercise.muscleGroup.name == focus.name;
             }).toList();
 
             return _buildExerciseList(filteredExercises);
