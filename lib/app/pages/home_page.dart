@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/widgets/app_notice.dart';
 import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -446,9 +447,7 @@ class _HomePageState extends State<HomePage> {
 
   void _onGeneratePressed() {
     if (_selectedMuscleGroup == null && _selectedExercises.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn nhóm cơ hoặc bài tập cụ thể')),
-      );
+      AppNotice.warning(context, 'Vui lòng chọn nhóm cơ hoặc bài tập cụ thể');
       return;
     }
 

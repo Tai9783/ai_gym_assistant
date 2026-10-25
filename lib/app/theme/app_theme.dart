@@ -20,6 +20,17 @@ abstract final class AppTheme {
       useMaterial3: true,
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.background,
+      // Kiểu Floating Snackbar mặc định cho cả app,
+      // kể cả những thông báo được thêm vào trong tương lai.
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.text,
+        contentTextStyle: const TextStyle(color: Colors.white),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 5,
+      ),
       splashColor: AppColors.selected,
       appBarTheme: const AppBarThemeData(
         backgroundColor: AppColors.surface,

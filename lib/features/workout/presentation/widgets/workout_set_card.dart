@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/widgets/app_notice.dart';
 import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 
 import 'package:flutter/material.dart';
@@ -62,13 +63,7 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
         weight < 0 ||
         reps == null ||
         reps <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Vui lòng nhập tạ và số reps hợp lệ',
-          ),
-        ),
-      );
+      AppNotice.warning(context, 'Vui lòng nhập tạ và số reps hợp lệ');
       return;
     }
 

@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/widgets/app_notice.dart';
 import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 
 import 'package:flutter/material.dart';
@@ -291,11 +292,7 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
       final draftSets = _targets[exercise.id];
 
       if (draftSets == null || draftSets.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Bài ${exercise.name} chưa có set'),
-          ),
-        );
+        AppNotice.warning(context, 'Bài ${exercise.name} chưa có set');
         return;
       }
 
@@ -315,13 +312,9 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
             weight < 0 ||
             reps == null ||
             reps <= 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Mục tiêu không hợp lệ: '
-                    '${exercise.name}, set ${i + 1}',
-              ),
-            ),
+          AppNotice.warning(
+            context,
+            'Mục tiêu không hợp lệ: ${exercise.name}, set ${i + 1}',
           );
           return;
         }

@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/widgets/app_notice.dart';
 import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -169,18 +170,13 @@ class _ProfilePageState extends State<ProfilePage> {
               _isEditing = false;
             });
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Đã lưu hồ sơ thành công')),
-            );
+            AppNotice.success(context, 'Đã lưu hồ sơ thành công');
           }
 
           if (state is ProfileFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  _hasLoaded ? 'Không thể lưu hồ sơ' : 'Không thể tải hồ sơ',
-                ),
-              ),
+            AppNotice.error(
+              context,
+              _hasLoaded ? 'Không thể lưu hồ sơ' : 'Không thể tải hồ sơ',
             );
           }
         },
@@ -223,9 +219,9 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 _isEditing
                     ? 'Cập nhật thông tin để AI đề xuất '
-                          'buổi tập phù hợp với bạn.'
+                    'buổi tập phù hợp với bạn.'
                     : 'Thông tin cá nhân và mục tiêu '
-                          'tập luyện của bạn.',
+                    'tập luyện của bạn.',
                 style: const TextStyle(fontSize: 13, color: Colors.black54),
               ),
 
@@ -395,11 +391,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     onSelected: isSaving
                         ? null
                         : (_) {
-                            setState(() {
-                              _selectedGoal = entry.key;
-                              _goalError = false;
-                            });
-                          },
+                      setState(() {
+                        _selectedGoal = entry.key;
+                        _goalError = false;
+                      });
+                    },
                   );
                 }).toList(),
               ),
@@ -461,13 +457,13 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: isSaving ? null : _saveProfile,
               icon: isSaving
                   ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
                   : const Icon(Icons.check_rounded),
               label: Text(isSaving ? 'Đang lưu...' : 'Lưu thông tin'),
               style: FilledButton.styleFrom(

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection.dart';
-import '../../../recommendation/domain/entities/workout_request.dart';
 import '../../domain/entities/exercise_definition.dart';
 import '../bloc/exercise_catalog_bloc.dart';
 import '../bloc/exercise_catalog_event.dart';

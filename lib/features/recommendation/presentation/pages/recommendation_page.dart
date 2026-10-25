@@ -1,3 +1,4 @@
+import 'package:ai_gym_assistant/app/widgets/app_notice.dart';
 import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +36,52 @@ class _RecommendationPageState extends State<RecommendationPage> {
 
   late final Future<List<ExerciseDefinition>> _catalogFuture;
 
+  // Chỉnh kế hoạch cục bộ, không sửa đối tượng AI trả về.
+  // Giữ đúng lựa chọn nếu quay lại đề xuất cũ sau lỗi "Tạo lại".
+  WorkoutRecommendation? _editedSource;
+  Set<String> _removedExerciseIds = <String>{};
+
+  Set<String> _removedIdsFor(WorkoutRecommendation recommendation) {
+    return identical(_editedSource, recommendation)
+        ? _removedExerciseIds
+        : <String>{};
+  }
+
+  WorkoutRecommendation _visibleRecommendation(
+      WorkoutRecommendation recommendation,
+      ) {
+    final removedIds = _removedIdsFor(recommendation);
+    return WorkoutRecommendation(
+      exercises: recommendation.exercises
+          .where((exercise) => !removedIds.contains(exercise.exerciseId))
+          .toList(),
+    );
+  }
+
+  void _removeExercise(
+      WorkoutRecommendation original,
+      RecommendedExercise exercise,
+      String exerciseName,
+      ) {
+    final remaining = _visibleRecommendation(original).exercises;
+
+    // Không cho xóa bài cuối cùng, kể cả khi danh sách chỉ có 1 bài.
+    if (remaining.length <= 1) {
+      AppNotice.warning(context, 'Cần giữ lại ít nhất 1 bài tập.');
+      return;
+    }
+
+    setState(() {
+      _removedExerciseIds = {
+        ..._removedIdsFor(original),
+        exercise.exerciseId,
+      };
+      _editedSource = original;
+    });
+
+    AppNotice.success(context, 'Đã bỏ bài $exerciseName khỏi kế hoạch.');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,8 +95,15 @@ class _RecommendationPageState extends State<RecommendationPage> {
   }
 
   void _startWorkout(WorkoutRecommendation recommendation) {
+    // Chỉ những bài người dùng giữ lại mới được chuyển thành WorkoutExercise.
+    final editedRecommendation = _visibleRecommendation(recommendation);
+    if (editedRecommendation.exercises.isEmpty) {
+      AppNotice.warning(context, 'Hãy giữ lại ít nhất 1 bài tập.');
+      return;
+    }
+
     final exercises = RecommendationWorkoutMapper.toWorkoutExercises(
-      recommendation,
+      editedRecommendation,
     );
 
     context.pushReplacement('/workout', extra: exercises);
@@ -84,7 +138,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
               builder: (context, snapshot) {
                 final exerciseNames = {
                   for (final exercise
-                      in snapshot.data ?? <ExerciseDefinition>[])
+                  in snapshot.data ?? <ExerciseDefinition>[])
                     exercise.id: exercise.name,
                 };
 
@@ -137,7 +191,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
 
     if (isDailyLimit && resetAt != null) {
       resetMessage =
-          'Bạn có thể sử dụng lại lúc '
+      'Bạn có thể sử dụng lại lúc '
           '${AppDateFormatter.time(resetAt)} ngày '
           '${AppDateFormatter.date(resetAt)}.';
     }
@@ -146,7 +200,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
 
     if (isCooldown && failure.retryAfterSeconds != null) {
       cooldownMessage =
-          'Vui lòng chờ khoảng '
+      'Vui lòng chờ khoảng '
           '${failure.retryAfterSeconds} giây.';
     }
 
@@ -253,9 +307,11 @@ class _RecommendationPageState extends State<RecommendationPage> {
   }
 
   Widget _buildRecommendation(
-    WorkoutRecommendation recommendation,
-    Map<String, String> exerciseNames,
-  ) {
+      WorkoutRecommendation recommendation,
+      Map<String, String> exerciseNames,
+      ) {
+    final editedRecommendation = _visibleRecommendation(recommendation);
+
     return Column(
       children: [
         Expanded(
@@ -273,22 +329,24 @@ class _RecommendationPageState extends State<RecommendationPage> {
               const SizedBox(height: 6),
               const Text(
                 'Được AI đề xuất dựa trên hồ sơ '
-                'và tiến độ tập luyện của bạn.',
+                    'và tiến độ tập luyện của bạn. '
+                    'Bạn có thể bỏ bài không muốn tập.',
                 style: TextStyle(fontSize: 13, color: Colors.black54),
               ),
               const SizedBox(height: 20),
-              _buildSummary(recommendation),
+              _buildSummary(editedRecommendation),
               const SizedBox(height: 20),
               const Text(
                 'Danh sách bài tập',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
-              for (var i = 0; i < recommendation.exercises.length; i++) ...[
+              for (var i = 0; i < editedRecommendation.exercises.length; i++) ...[
                 _buildExerciseCard(
-                  recommendation.exercises[i],
-                  exerciseNames,
-                  i + 1,
+                  original: recommendation,
+                  exercise: editedRecommendation.exercises[i],
+                  exerciseNames: exerciseNames,
+                  order: i + 1,
                 ),
                 const SizedBox(height: 12),
               ],
@@ -303,7 +361,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
   Widget _buildSummary(WorkoutRecommendation recommendation) {
     final totalSets = recommendation.exercises.fold<int>(
       0,
-      (sum, exercise) => sum + exercise.sets.length,
+          (sum, exercise) => sum + exercise.sets.length,
     );
 
     return Container(
@@ -331,7 +389,7 @@ class _RecommendationPageState extends State<RecommendationPage> {
                 const SizedBox(height: 4),
                 Text(
                   '${recommendation.exercises.length} bài tập'
-                  '  •  $totalSets sets',
+                      '  •  $totalSets sets',
                   style: const TextStyle(color: Colors.black54, fontSize: 13),
                 ),
               ],
@@ -342,11 +400,12 @@ class _RecommendationPageState extends State<RecommendationPage> {
     );
   }
 
-  Widget _buildExerciseCard(
-    RecommendedExercise exercise,
-    Map<String, String> exerciseNames,
-    int order,
-  ) {
+  Widget _buildExerciseCard({
+    required WorkoutRecommendation original,
+    required RecommendedExercise exercise,
+    required Map<String, String> exerciseNames,
+    required int order,
+  }) {
     final exerciseName =
         exerciseNames[exercise.exerciseId] ?? exercise.exerciseId;
 
@@ -387,6 +446,16 @@ class _RecommendationPageState extends State<RecommendationPage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+              ),
+              IconButton(
+                tooltip: 'Bỏ bài $exerciseName',
+                onPressed: () => _removeExercise(
+                  original,
+                  exercise,
+                  exerciseName,
+                ),
+                icon: const Icon(Icons.close_rounded),
+                color: AppColors.muted,
               ),
             ],
           ),
