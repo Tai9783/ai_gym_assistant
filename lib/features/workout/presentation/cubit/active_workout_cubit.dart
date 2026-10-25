@@ -4,16 +4,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../domain/entities/workout_session.dart';
+import '../../domain/usecases/cancel_workout.dart';
 import '../../domain/usecases/watch_in_progress_workout_sessions.dart';
 import 'active_workout_state.dart';
 
 @injectable
 class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
   final WatchInProgressWorkoutSessions _watchInProgressWorkoutSessions;
+  final CancelWorkout _cancelWorkout;
 
   StreamSubscription<List<WorkoutSession>>? _subscription;
 
-  ActiveWorkoutCubit(this._watchInProgressWorkoutSessions)
+  ActiveWorkoutCubit(
+      this._watchInProgressWorkoutSessions,
+      this._cancelWorkout,)
       : super(const ActiveWorkoutInitial());
 
   void startWatching() {
@@ -38,7 +42,9 @@ class ActiveWorkoutCubit extends Cubit<ActiveWorkoutState> {
       },
     );
   }
-
+  Future<void> cancelWorkout(String sessionId) async {
+    await _cancelWorkout(sessionId: sessionId);
+  }
   @override
   Future<void> close() async {
     await _subscription?.cancel();

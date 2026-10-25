@@ -92,6 +92,8 @@ import 'package:ai_gym_assistant/features/workout/data/repositories/workout_repo
     as _i769;
 import 'package:ai_gym_assistant/features/workout/domain/repositories/workout_repository.dart'
     as _i729;
+import 'package:ai_gym_assistant/features/workout/domain/usecases/cancel_workout.dart'
+    as _i187;
 import 'package:ai_gym_assistant/features/workout/domain/usecases/finish_workout.dart'
     as _i679;
 import 'package:ai_gym_assistant/features/workout/domain/usecases/get_completed_workouts.dart'
@@ -209,6 +211,9 @@ extension GetItInjectableX on _i174.GetIt {
         resultUpdater: gh<_i214.LongTermProgressResultUpdater>(),
       ),
     );
+    gh.lazySingleton<_i187.CancelWorkout>(
+      () => _i187.CancelWorkout(gh<_i729.WorkoutRepository>()),
+    );
     gh.lazySingleton<_i557.GetCompletedWorkouts>(
       () => _i557.GetCompletedWorkouts(gh<_i729.WorkoutRepository>()),
     );
@@ -239,10 +244,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i158.GetExercises>(),
       ),
     );
-    gh.factory<_i500.ActiveWorkoutCubit>(
-      () =>
-          _i500.ActiveWorkoutCubit(gh<_i270.WatchInProgressWorkoutSessions>()),
-    );
     gh.lazySingleton<_i398.ProgressCacheSynchronizer>(
       () => _i661.ProgressCacheSynchronizerImpl(
         gh<_i729.WorkoutRepository>(),
@@ -262,6 +263,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i444.RecommendationRepositoryImpl(
         gh<_i489.GeminiRemoteDataSource>(),
         gh<_i288.RecommendationValidator>(),
+      ),
+    );
+    gh.factory<_i500.ActiveWorkoutCubit>(
+      () => _i500.ActiveWorkoutCubit(
+        gh<_i270.WatchInProgressWorkoutSessions>(),
+        gh<_i187.CancelWorkout>(),
       ),
     );
     gh.factory<_i534.ExerciseCatalogBloc>(

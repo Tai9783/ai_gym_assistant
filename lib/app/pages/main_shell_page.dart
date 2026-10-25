@@ -6,6 +6,7 @@ import '../../core/di/injection.dart';
 import '../../features/workout/presentation/cubit/active_workout_cubit.dart';
 import '../../features/workout/presentation/cubit/active_workout_state.dart';
 import '../theme/app_colors.dart';
+import '../widgets/app_notice.dart';
 
 class MainShellPage extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -17,6 +18,55 @@ class MainShellPage extends StatelessWidget {
       index,
       initialLocation: index == navigationShell.currentIndex,
     );
+  }
+  Future<void> _confirmCancelWorkout(
+      BuildContext context,
+      String sessionId,
+      ) async {
+    final activeWorkoutCubit = context.read<ActiveWorkoutCubit>();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Hủy buổi tập đang dở?'),
+          content: const Text(
+            'Nếu hủy, toàn bộ kết quả của buổi tập này '
+                'sẽ không được tính vào lịch sử và tiến độ tập luyện.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false);
+              },
+              child: const Text('Giữ lại'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.red.shade700,
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true);
+              },
+              child: const Text('Hủy buổi tập'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      await activeWorkoutCubit.cancelWorkout(sessionId);
+    } catch (error) {
+      if (!context.mounted) return;
+
+      AppNotice.error(
+        context,
+        'Không thể hủy buổi tập. Vui lòng thử lại.',
+      );
+    }
   }
 
   @override
@@ -52,15 +102,15 @@ class MainShellPage extends StatelessWidget {
                             '/workout?sessionId=${Uri.encodeQueryComponent(session.id)}',
                           );
                         },
-
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
                           child: Row(
                             children: [
                               const Icon(
                                 Icons.fitness_center,
                                 color: Colors.white,
                               ),
+
                               const SizedBox(width: 12),
 
                               Expanded(
@@ -79,9 +129,25 @@ class MainShellPage extends StatelessWidget {
                                 Icons.chevron_right,
                                 color: Colors.white,
                               ),
+
+                              IconButton(
+                                tooltip: 'Hủy buổi tập',
+                                icon: const Icon(
+                                  Icons.close_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  _confirmCancelWorkout(
+                                    context,
+                                    session.id,
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         ),
+
                       ),
                     ),
                   ),
@@ -90,7 +156,18 @@ class MainShellPage extends StatelessWidget {
             ),
 
             Expanded(
-              child: navigationShell,
+              child: BlocBuilder<ActiveWorkoutCubit, ActiveWorkoutState>(
+                builder: (context, state) {
+                  final hasActiveWorkout =
+                      state is ActiveWorkoutLoaded && state.sessions.isNotEmpty;
+
+                  return MediaQuery.removePadding(
+                    context: context,
+                    removeTop: hasActiveWorkout,
+                    child: navigationShell,
+                  );
+                },
+              ),
             ),
           ],
         ),

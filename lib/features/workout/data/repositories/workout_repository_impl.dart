@@ -149,6 +149,35 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       return sessions;
     });
   }
+  @override
+  Future<WorkoutSession> cancelWorkoutSession({
+    required String sessionId,
+  }) async {
+    return localDataSource.runInTransaction(() async {
+      final session = await getWorkoutSessionById(sessionId);
+
+      if (session == null) {
+        throw StateError('Không tìm thấy buổi tập.');
+      }
+
+      if (session.status == WorkoutSessionStatus.cancelled) {
+        return session;
+      }
+
+      if (session.status != WorkoutSessionStatus.inProgress) {
+        throw StateError('Chỉ có thể hủy buổi tập đang dở.');
+      }
+
+      final cancelledSession = session.copyWith(
+        status: WorkoutSessionStatus.cancelled,
+        endedAt: DateTime.now(),
+      );
+
+      await saveWorkoutSession(cancelledSession);
+
+      return cancelledSession;
+    });
+  }
 
   @override
   Future<WorkoutSession> completeWorkoutSession({
