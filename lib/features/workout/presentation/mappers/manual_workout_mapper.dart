@@ -6,8 +6,8 @@ import '../models/manual_workout_target.dart';
 
 class ManualWorkoutMapper {
   static List<WorkoutExercise> toWorkoutExercises(
-      List<ManualExerciseTarget> targets,
-      ) {
+    List<ManualExerciseTarget> targets,
+  ) {
     const uuid = Uuid();
 
     final workoutExercises = <WorkoutExercise>[];

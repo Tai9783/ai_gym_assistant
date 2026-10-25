@@ -62,7 +62,7 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
     for (final exercise in selectedExercises) {
       _targets[exercise.id] = List.generate(
         3,
-            (_) => ManualSetDraft(id: _nextSetId++),
+        (_) => ManualSetDraft(id: _nextSetId++),
       );
     }
 
@@ -97,9 +97,7 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
           final exercises = snapshot.data!;
 
           if (exercises.isEmpty) {
-            return const Center(
-              child: Text('Bạn chưa chọn bài tập nào'),
-            );
+            return const Center(child: Text('Bạn chưa chọn bài tập nào'));
           }
 
           return Form(
@@ -109,10 +107,7 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
               children: [
                 const Text(
                   'Thiết lập mục tiêu cho buổi tập',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -167,10 +162,7 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
           children: [
             Text(
               exercise.name,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
@@ -187,9 +179,7 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
               },
               icon: const Icon(Icons.add),
               label: const Text('Thêm set'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: _primaryColor,
-              ),
+              style: OutlinedButton.styleFrom(foregroundColor: _primaryColor),
             ),
           ],
         ),
@@ -215,9 +205,7 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
           child: TextFormField(
             key: ValueKey('weight-${draft.id}'),
             initialValue: draft.weight,
-            keyboardType: const TextInputType.numberWithOptions(
-              decimal: true,
-            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: const InputDecoration(
               labelText: 'Kg',
               border: OutlineInputBorder(),
@@ -268,16 +256,15 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
           icon: const Icon(Icons.remove_circle_outline),
           onPressed: sets.length > 1
               ? () {
-            setState(() {
-              sets.removeAt(index);
-            });
-          }
+                  setState(() {
+                    sets.removeAt(index);
+                  });
+                }
               : null,
         ),
       ],
     );
   }
-
 
   void _startWorkout(List<ExerciseDefinition> exercises) {
     FocusScope.of(context).unfocus();
@@ -319,32 +306,16 @@ class _ManualWorkoutPageState extends State<ManualWorkoutPage> {
           return;
         }
 
-        sets.add(
-          ManualSetTarget(
-            weight: weight,
-            reps: reps,
-          ),
-        );
+        sets.add(ManualSetTarget(weight: weight, reps: reps));
       }
 
-      targets.add(
-        ManualExerciseTarget(
-          exerciseId: exercise.id,
-          sets: sets,
-        ),
-      );
+      targets.add(ManualExerciseTarget(exerciseId: exercise.id, sets: sets));
     }
 
     if (targets.isEmpty) return;
 
-    final workoutExercises =
-    ManualWorkoutMapper.toWorkoutExercises(targets);
+    final workoutExercises = ManualWorkoutMapper.toWorkoutExercises(targets);
 
-    context.pushReplacement(
-      '/workout',
-      extra: workoutExercises,
-    );
+    context.pushReplacement('/workout', extra: workoutExercises);
   }
-
 }
-

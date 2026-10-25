@@ -8,10 +8,8 @@ import '../../domain/entities/exercise_set.dart';
 class WorkoutSetCard extends StatefulWidget {
   final ExerciseSet set;
 
-  final void Function({
-  required double actualWeight,
-  required int actualReps,
-  }) onComplete;
+  final void Function({required double actualWeight, required int actualReps})
+  onComplete;
 
   const WorkoutSetCard({
     super.key,
@@ -50,13 +48,9 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
   }
 
   void _completeSet() {
-    final weight = double.tryParse(
-      _weightController.text.trim(),
-    );
+    final weight = double.tryParse(_weightController.text.trim());
 
-    final reps = int.tryParse(
-      _repsController.text.trim(),
-    );
+    final reps = int.tryParse(_repsController.text.trim());
 
     if (weight == null ||
         !weight.isFinite ||
@@ -67,16 +61,12 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
       return;
     }
 
-    widget.onComplete(
-      actualWeight: weight,
-      actualReps: reps,
-    );
+    widget.onComplete(actualWeight: weight, actualReps: reps);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted =
-        widget.set.status == ExerciseSetStatus.completed;
+    final isCompleted = widget.set.status == ExerciseSetStatus.completed;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -96,11 +86,8 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
               if (!isCompleted)
                 Text(
                   'Mục tiêu: ${widget.set.suggestedWeight ?? '-'} kg'
-                      ' × ${widget.set.suggestedReps ?? '-'} reps',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black54,
-                  ),
+                  ' × ${widget.set.suggestedReps ?? '-'} reps',
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
                 ),
             ],
           ),
@@ -118,18 +105,13 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
                 const SizedBox(width: 8),
                 Text(
                   '${widget.set.actualWeight ?? '-'} kg'
-                      ' × ${widget.set.actualReps ?? '-'} reps',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  ' × ${widget.set.actualReps ?? '-'} reps',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 const Spacer(),
                 const Text(
                   'Đã xong',
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.green, fontSize: 12),
                 ),
               ],
             )
@@ -139,18 +121,15 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
                 Expanded(
                   child: TextField(
                     controller: _weightController,
-                    keyboardType:
-                    const TextInputType.numberWithOptions(
+                    keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
                     decoration: InputDecoration(
                       labelText: 'Tạ (kg)',
-                      hintText:
-                      widget.set.suggestedWeight?.toString(),
+                      hintText: widget.set.suggestedWeight?.toString(),
                       isDense: true,
                       border: const OutlineInputBorder(),
-                      contentPadding:
-                      const EdgeInsets.symmetric(
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 10,
                         vertical: 12,
                       ),
@@ -166,12 +145,10 @@ class _WorkoutSetCardState extends State<WorkoutSetCard> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: 'Reps',
-                      hintText:
-                      widget.set.suggestedReps?.toString(),
+                      hintText: widget.set.suggestedReps?.toString(),
                       isDense: true,
                       border: const OutlineInputBorder(),
-                      contentPadding:
-                      const EdgeInsets.symmetric(
+                      contentPadding: const EdgeInsets.symmetric(
                         horizontal: 10,
                         vertical: 12,
                       ),

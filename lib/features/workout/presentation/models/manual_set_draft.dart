@@ -3,9 +3,5 @@ class ManualSetDraft {
   String weight;
   String reps;
 
-  ManualSetDraft({
-    required this.id,
-    this.weight = '0',
-    this.reps = '10',
-  });
+  ManualSetDraft({required this.id, this.weight = '0', this.reps = '10'});
 }
