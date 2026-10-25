@@ -36,3 +36,8 @@ final class WorkoutFinished extends WorkoutEvent {
 
   const WorkoutFinished({required this.sessionId});
 }
+final class WorkoutResumed extends WorkoutEvent {
+  final String sessionId;
+
+  const WorkoutResumed({required this.sessionId});
+}

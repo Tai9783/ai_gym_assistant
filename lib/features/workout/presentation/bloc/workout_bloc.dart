@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../domain/usecases/finish_workout.dart';
+import '../../domain/usecases/resume_workout.dart';
 import '../../domain/usecases/start_workout.dart';
 import '../../domain/usecases/update_exercise_set.dart';
 import 'workout_event.dart';
@@ -12,13 +13,16 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
   final StartWorkout startWorkout;
   final UpdateExerciseSet updateExerciseSet;
   final FinishWorkout finishWorkout;
+  final ResumeWorkout resumeWorkout;
 
   WorkoutBloc({
     required this.startWorkout,
+    required this.resumeWorkout,
     required this.updateExerciseSet,
     required this.finishWorkout,
   }) : super(const WorkoutInitial()) {
     on<WorkoutStarted>(_onWorkoutStarted);
+    on<WorkoutResumed>(_onWorkoutResumed);
     on<ExerciseSetUpdated>(_onExerciseSetUpdated);
     on<WorkoutFinished>(_onWorkoutFinished);
   }
@@ -37,6 +41,21 @@ class WorkoutBloc extends Bloc<WorkoutEvent, WorkoutState> {
       emit(WorkoutFailure(message: e.toString()));
     }
   }
+  Future<void> _onWorkoutResumed(
+      WorkoutResumed event,
+      Emitter<WorkoutState> emit,
+      ) async {
+    emit(const WorkoutLoading());
+
+    try {
+      final session = await resumeWorkout(event.sessionId);
+
+      emit(WorkoutInProgress(session: session));
+    } catch (e) {
+      emit(WorkoutFailure(message: e.toString()));
+    }
+  }
+
 
   Future<void> _onExerciseSetUpdated(
     ExerciseSetUpdated event,

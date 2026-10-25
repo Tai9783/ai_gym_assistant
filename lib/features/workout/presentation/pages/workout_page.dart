@@ -17,8 +17,16 @@ const _background = AppColors.background;
 
 class WorkoutPage extends StatelessWidget {
   final List<WorkoutExercise>? initialExercises;
+  final String? resumeSessionId;
 
-  const WorkoutPage({super.key, this.initialExercises});
+  const WorkoutPage({
+    super.key,
+    this.initialExercises,
+    this.resumeSessionId,
+  }): assert(
+        initialExercises == null || resumeSessionId == null,
+  'Không được bắt đầu mới và resume cùng lúc.',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +34,15 @@ class WorkoutPage extends StatelessWidget {
       create: (_) {
         final bloc = getIt<WorkoutBloc>();
 
-        if (initialExercises != null && initialExercises!.isNotEmpty) {
-          bloc.add(WorkoutStarted(exercises: initialExercises!));
+        if (resumeSessionId != null) {
+          bloc.add(
+            WorkoutResumed(sessionId: resumeSessionId!),
+          );
+        } else if (initialExercises != null &&
+            initialExercises!.isNotEmpty) {
+          bloc.add(
+            WorkoutStarted(exercises: initialExercises!),
+          );
         }
 
         return bloc;

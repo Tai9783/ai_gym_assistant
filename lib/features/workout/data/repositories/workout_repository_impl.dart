@@ -92,6 +92,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
     return sessions;
   }
+
   @override
   Future<int> countCompletedWorkoutExercises(String exerciseId) {
     return localDataSource.countCompletedWorkoutExercises(exerciseId);
@@ -99,8 +100,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
   @override
   Future<List<WorkoutSession>> getCompletedWorkoutSessions() async {
-    final sessionIds =
-    await localDataSource.getCompletedWorkoutSessionIds();
+    final sessionIds = await localDataSource.getCompletedWorkoutSessionIds();
 
     final sessions = <WorkoutSession>[];
 
@@ -113,6 +113,41 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     }
 
     return sessions;
+  }
+
+  @override
+  Future<List<WorkoutSession>> getInProgressWorkoutSessions() async {
+    final sessionIds = await localDataSource.getInProgressWorkoutSessionIds();
+
+    final sessions = <WorkoutSession>[];
+
+    for (final sessionId in sessionIds) {
+      final session = await getWorkoutSessionById(sessionId);
+
+      if (session != null) {
+        sessions.add(session);
+      }
+    }
+
+    return sessions;
+  }
+  @override
+  Stream<List<WorkoutSession>> watchInProgressWorkoutSessions() {
+    return localDataSource
+        .watchInProgressWorkoutSessionIds()
+        .asyncMap((sessionIds) async {
+      final sessions = <WorkoutSession>[];
+
+      for (final sessionId in sessionIds) {
+        final session = await getWorkoutSessionById(sessionId);
+
+        if (session != null) {
+          sessions.add(session);
+        }
+      }
+
+      return sessions;
+    });
   }
 
   @override
@@ -140,5 +175,4 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       return completedSession;
     });
   }
-
 }

@@ -119,9 +119,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra;
 
+        final resumeSessionId =
+        state.uri.queryParameters['sessionId'];
+
         return WorkoutPage(
           initialExercises:
           extra is List<WorkoutExercise> ? extra : null,
+          resumeSessionId: resumeSessionId,
         );
       },
     ),

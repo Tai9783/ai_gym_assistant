@@ -96,12 +96,20 @@ import 'package:ai_gym_assistant/features/workout/domain/usecases/finish_workout
     as _i679;
 import 'package:ai_gym_assistant/features/workout/domain/usecases/get_completed_workouts.dart'
     as _i557;
+import 'package:ai_gym_assistant/features/workout/domain/usecases/get_in_progress_workout_sessions.dart'
+    as _i850;
+import 'package:ai_gym_assistant/features/workout/domain/usecases/resume_workout.dart'
+    as _i722;
 import 'package:ai_gym_assistant/features/workout/domain/usecases/start_workout.dart'
     as _i256;
 import 'package:ai_gym_assistant/features/workout/domain/usecases/update_exercise_set.dart'
     as _i811;
+import 'package:ai_gym_assistant/features/workout/domain/usecases/watch_in_progress_workout_sessions.dart'
+    as _i270;
 import 'package:ai_gym_assistant/features/workout/presentation/bloc/workout_bloc.dart'
     as _i572;
+import 'package:ai_gym_assistant/features/workout/presentation/cubit/active_workout_cubit.dart'
+    as _i500;
 import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -204,11 +212,20 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i557.GetCompletedWorkouts>(
       () => _i557.GetCompletedWorkouts(gh<_i729.WorkoutRepository>()),
     );
+    gh.lazySingleton<_i850.GetInProgressWorkoutSessions>(
+      () => _i850.GetInProgressWorkoutSessions(gh<_i729.WorkoutRepository>()),
+    );
+    gh.lazySingleton<_i722.ResumeWorkout>(
+      () => _i722.ResumeWorkout(gh<_i729.WorkoutRepository>()),
+    );
     gh.lazySingleton<_i256.StartWorkout>(
       () => _i256.StartWorkout(gh<_i729.WorkoutRepository>()),
     );
     gh.lazySingleton<_i811.UpdateExerciseSet>(
       () => _i811.UpdateExerciseSet(gh<_i729.WorkoutRepository>()),
+    );
+    gh.lazySingleton<_i270.WatchInProgressWorkoutSessions>(
+      () => _i270.WatchInProgressWorkoutSessions(gh<_i729.WorkoutRepository>()),
     );
     gh.lazySingleton<_i888.GetUserProfile>(
       () => _i888.GetUserProfile(gh<_i651.UserProfileRepository>()),
@@ -221,6 +238,10 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i557.GetCompletedWorkouts>(),
         gh<_i158.GetExercises>(),
       ),
+    );
+    gh.factory<_i500.ActiveWorkoutCubit>(
+      () =>
+          _i500.ActiveWorkoutCubit(gh<_i270.WatchInProgressWorkoutSessions>()),
     );
     gh.lazySingleton<_i398.ProgressCacheSynchronizer>(
       () => _i661.ProgressCacheSynchronizerImpl(
@@ -243,18 +264,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i288.RecommendationValidator>(),
       ),
     );
-    gh.factory<_i572.WorkoutBloc>(
-      () => _i572.WorkoutBloc(
-        startWorkout: gh<_i256.StartWorkout>(),
-        updateExerciseSet: gh<_i811.UpdateExerciseSet>(),
-        finishWorkout: gh<_i679.FinishWorkout>(),
-      ),
-    );
     gh.factory<_i534.ExerciseCatalogBloc>(
       () => _i534.ExerciseCatalogBloc(getExercises: gh<_i158.GetExercises>()),
     );
     gh.lazySingleton<_i329.GetExerciseProgress>(
       () => _i329.GetExerciseProgress(gh<_i398.ProgressCacheSynchronizer>()),
+    );
+    gh.factory<_i572.WorkoutBloc>(
+      () => _i572.WorkoutBloc(
+        startWorkout: gh<_i256.StartWorkout>(),
+        resumeWorkout: gh<_i722.ResumeWorkout>(),
+        updateExerciseSet: gh<_i811.UpdateExerciseSet>(),
+        finishWorkout: gh<_i679.FinishWorkout>(),
+      ),
     );
     gh.factory<_i165.ProfileBloc>(
       () => _i165.ProfileBloc(

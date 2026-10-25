@@ -10,12 +10,9 @@ class WorkoutLocalDataSource {
 
   WorkoutLocalDataSource(this.database);
 
-  Future<T> runInTransaction<T>(
-      Future<T> Function() action,
-      ) {
+  Future<T> runInTransaction<T>(Future<T> Function() action) {
     return database.transaction(action);
   }
-
 
   Future<void> upsertWorkoutSession({
     required WorkoutSessionsCompanion session,
@@ -91,24 +88,47 @@ class WorkoutLocalDataSource {
 
   Future<List<String>> getCompletedWorkoutSessionIds() async {
     final records =
-    await (database.select(database.workoutSessions)
-      ..where(
-            (table) => table.status.equals(
-          WorkoutSessionStatus.completed.name,
-        ),
-      )
-      ..orderBy([
-            (table) => OrderingTerm.desc(table.startedAt),
-      ]))
-        .get();
+        await (database.select(database.workoutSessions)
+              ..where(
+                (table) =>
+                    table.status.equals(WorkoutSessionStatus.completed.name),
+              )
+              ..orderBy([(table) => OrderingTerm.desc(table.startedAt)]))
+            .get();
 
     return records.map((record) => record.id).toList();
   }
 
+  Future<List<String>> getInProgressWorkoutSessionIds() async {
+    final records =
+        await (database.select(database.workoutSessions)
+              ..where(
+                (table) =>
+                    table.status.equals(WorkoutSessionStatus.inProgress.name),
+              )
+              ..orderBy([(table) => OrderingTerm.desc(table.startedAt)]))
+            .get();
+
+    return records.map((record) => record.id).toList();
+  }
+  Stream<List<String>> watchInProgressWorkoutSessionIds() {
+    final query = database.select(database.workoutSessions)
+      ..where(
+            (table) => table.status.equals(
+          WorkoutSessionStatus.inProgress.name,
+        ),
+      )
+      ..orderBy([
+            (table) => OrderingTerm.desc(table.startedAt),
+      ]);
+
+    return query.watch().map(
+          (records) => records.map((record) => record.id).toList(),
+    );
+  }
+
   //đếm số lần tập đã hoàn thành của bài tập để check cache đã cập nhật đủ hay thiếu.
-  Future<int> countCompletedWorkoutExercises(
-      String exerciseId,
-      ) async {
+  Future<int> countCompletedWorkoutExercises(String exerciseId) async {
     final countExpression = database.workoutExercises.id.count();
 
     final query = database.selectOnly(database.workoutExercises)
@@ -121,9 +141,7 @@ class WorkoutLocalDataSource {
           ),
         ),
       ])
-      ..where(
-        database.workoutExercises.exerciseId.equals(exerciseId),
-      )
+      ..where(database.workoutExercises.exerciseId.equals(exerciseId))
       ..where(
         database.workoutSessions.status.equals(
           WorkoutSessionStatus.completed.name,
@@ -134,6 +152,4 @@ class WorkoutLocalDataSource {
 
     return row.read(countExpression) ?? 0;
   }
-
-
 }
