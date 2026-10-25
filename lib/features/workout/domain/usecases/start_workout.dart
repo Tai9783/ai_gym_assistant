@@ -14,6 +14,15 @@ class StartWorkout {
   Future<WorkoutSession> call({
     required List<WorkoutExercise> exercises,
   }) async {
+    final inProgressSessions =
+    await repository.getInProgressWorkoutSessions();
+
+    if (inProgressSessions.isNotEmpty) {
+      throw StateError(
+        'Bạn đang có buổi tập chưa kết thúc. '
+            'Vui lòng tiếp tục hoặc xử lý buổi tập hiện tại.',
+      );
+    }
     final session = WorkoutSession(
       id: const Uuid().v4(),
       startedAt: DateTime.now(),

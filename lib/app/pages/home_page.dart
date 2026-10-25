@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/di/injection.dart';
+import '../../features/workout/domain/usecases/get_in_progress_workout_sessions.dart';
 import '../extensions/workout_focus_image.dart';
 import '../extensions/workout_focus_label.dart';
 import '../../features/exercise_catalog/domain/entities/exercise_definition.dart';
@@ -18,6 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _isCheckingActiveWorkout = false;
   // Bảng màu thống nhất với giao diện sáng của AI Gym Assistant.
   static const Color _background = AppColors.background;
   static const Color _surface = Colors.white;
@@ -381,7 +384,7 @@ class _HomePageState extends State<HomePage> {
           child: SizedBox(
             height: 54,
             child: ElevatedButton.icon(
-              onPressed: _onGeneratePressed,
+              onPressed: _isCheckingActiveWorkout ? null : _onGeneratePressed,
               icon: const Icon(Icons.auto_awesome_rounded, size: 18),
               label: const Text('AI đề xuất', maxLines: 1),
               style: ElevatedButton.styleFrom(
@@ -405,7 +408,7 @@ class _HomePageState extends State<HomePage> {
           child: SizedBox(
             height: 54,
             child: OutlinedButton.icon(
-              onPressed: _canCreateManualWorkout
+              onPressed: !_isCheckingActiveWorkout && _canCreateManualWorkout
                   ? _onManualWorkoutPressed
                   : null,
               icon: const Icon(Icons.edit_note_rounded, size: 19),
@@ -445,17 +448,68 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _onGeneratePressed() {
+  Future<void> _onGeneratePressed() async {
     if (_selectedMuscleGroup == null && _selectedExercises.isEmpty) {
-      AppNotice.warning(context, 'Vui lòng chọn nhóm cơ hoặc bài tập cụ thể');
+      AppNotice.warning(
+        context,
+        'Vui lòng chọn nhóm cơ hoặc bài tập cụ thể',
+      );
       return;
     }
 
-    context.push('/recommendation', extra: _buildWorkoutRequest());
+    final canStart = await _canStartNewWorkout();
+
+    if (!mounted || !canStart) return;
+
+    context.push(
+      '/recommendation',
+      extra: _buildWorkoutRequest(),
+    );
   }
 
-  void _onManualWorkoutPressed() {
+  Future<void> _onManualWorkoutPressed() async {
     if (!_canCreateManualWorkout) return;
-    context.push('/manual-workout', extra: _buildWorkoutRequest());
+
+    final canStart = await _canStartNewWorkout();
+
+    if (!mounted || !canStart) return;
+
+    context.push(
+      '/manual-workout',
+      extra: _buildWorkoutRequest(),
+    );
+  }
+  Future<bool> _canStartNewWorkout() async {
+    if (_isCheckingActiveWorkout) return false;
+
+    setState(() => _isCheckingActiveWorkout = true);
+
+    try {
+      final sessions = await getIt<GetInProgressWorkoutSessions>()();
+
+      if (!mounted) return false;
+
+      if (sessions.isNotEmpty) {
+        AppNotice.warning(
+          context,
+          'Bạn đang có buổi tập dở. Hãy tiếp tục hoặc kết thúc buổi tập hiện tại.',
+        );
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      if (mounted) {
+        AppNotice.error(
+          context,
+          'Không thể kiểm tra buổi tập đang dở. Vui lòng thử lại.',
+        );
+      }
+      return false;
+    } finally {
+      if (mounted) {
+        setState(() => _isCheckingActiveWorkout = false);
+      }
+    }
   }
 }
