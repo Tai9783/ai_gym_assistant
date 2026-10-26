@@ -33,7 +33,7 @@ class RecentProgressCacheUpdater {
       throw StateError('Session already exists in recent window');
     }
 
-    // 3. Ghép Window cũ với Summary mới.
+    //Ghép Window cũ với Summary mới.
     final allSummaries = [
       ...previousWindow,
       newSummary,
@@ -48,7 +48,6 @@ class RecentProgressCacheUpdater {
         ? allSummaries
         : allSummaries.sublist(allSummaries.length - limit);
 
-    //sử dụng Analyzer hiện tại.
     final updatedProgress = _analyzer.analyze(
       exerciseId: exerciseId,
       summaries: updatedWindow,

@@ -46,6 +46,5 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
-/gemini.local.json
 /lib/firebase_options.dart
 /android/build/
