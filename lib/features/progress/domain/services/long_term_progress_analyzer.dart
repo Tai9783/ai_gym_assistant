@@ -4,12 +4,12 @@ import '../entities/exercise_session_summary.dart';
 import '../entities/long_term_exercise_progress.dart';
 
 import 'session_target_classifier.dart';
-import 'long_term_trend_calculator.dart';
+import 'progress_trend_calculator.dart';
 
 @injectable
 class LongTermProgressAnalyzer {
   final SessionTargetClassifier _classifier;
-  final LongTermTrendCalculator _trendCalculator;
+  final ProgressTrendCalculator _trendCalculator;
 
   LongTermProgressAnalyzer(this._classifier, this._trendCalculator);
 

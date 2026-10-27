@@ -1,5 +1,5 @@
 import 'package:ai_gym_assistant/features/progress/domain/entities/progress_trend.dart';
-import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart';
+import 'package:ai_gym_assistant/features/progress/domain/services/progress_trend_calculator.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,7 +8,7 @@ import 'package:ai_gym_assistant/features/progress/domain/services/recent_progre
 
 void main() {
   late RecentProgressAnalyzer analyzer;
-  final trendCalculator = LongTermTrendCalculator();
+  final trendCalculator = ProgressTrendCalculator();
 
   setUp(() {
     analyzer = RecentProgressAnalyzer(SessionTargetClassifier(),trendCalculator);

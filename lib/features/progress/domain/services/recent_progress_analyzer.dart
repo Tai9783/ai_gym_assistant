@@ -3,13 +3,13 @@ import 'package:injectable/injectable.dart';
 
 import '../entities/exercise_session_summary.dart';
 import '../entities/recent_exercise_progress.dart';
-import 'long_term_trend_calculator.dart';
+import 'progress_trend_calculator.dart';
 
 @injectable
 class RecentProgressAnalyzer {
   static const int recentSessionLimit = 5;
   final SessionTargetClassifier _classifier;
-  final LongTermTrendCalculator _trendCalculator;
+  final ProgressTrendCalculator _trendCalculator;
 
   RecentProgressAnalyzer(this._classifier,this._trendCalculator,);
 

@@ -1,12 +1,12 @@
 import 'package:ai_gym_assistant/features/progress/domain/entities/progress_trend.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart';
+import 'package:ai_gym_assistant/features/progress/domain/services/progress_trend_calculator.dart';
 
 void main() {
-  late LongTermTrendCalculator calculator;
+  late ProgressTrendCalculator calculator;
 
   setUp(() {
-    calculator = LongTermTrendCalculator();
+    calculator = ProgressTrendCalculator();
   });
 
   test('should calculate increasing trend with fewer than 10 values', () {

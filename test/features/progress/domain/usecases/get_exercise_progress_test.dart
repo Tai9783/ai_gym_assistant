@@ -14,7 +14,7 @@ import 'package:ai_gym_assistant/features/progress/data/services/recent_progress
 
 import 'package:ai_gym_assistant/features/progress/domain/services/exercise_session_summarizer.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart';
-import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart';
+import 'package:ai_gym_assistant/features/progress/domain/services/progress_trend_calculator.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/recent_progress_analyzer.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart';
 import 'package:ai_gym_assistant/features/progress/domain/usecases/get_exercise_progress.dart';
@@ -42,7 +42,7 @@ void main() {
 
     // Các service tính toán Progress.
     final classifier = SessionTargetClassifier();
-    final trendCalculator = LongTermTrendCalculator();
+    final trendCalculator = ProgressTrendCalculator();
 
     final recentAnalyzer = RecentProgressAnalyzer(classifier,trendCalculator);
 

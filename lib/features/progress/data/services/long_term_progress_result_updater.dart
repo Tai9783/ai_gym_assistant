@@ -3,14 +3,14 @@ import 'package:injectable/injectable.dart';
 
 import '../../domain/entities/exercise_session_summary.dart';
 import '../../domain/entities/long_term_exercise_progress.dart';
-import '../../domain/services/long_term_trend_calculator.dart';
+import '../../domain/services/progress_trend_calculator.dart';
 import '../../domain/services/session_target_classifier.dart';
 import '../mapper/long_term_state_cache_codec.dart';
 
 @lazySingleton
 class LongTermProgressResultUpdater {
   final SessionTargetClassifier _classifier;
-  final LongTermTrendCalculator _trendCalculator;
+  final ProgressTrendCalculator _trendCalculator;
 
   const LongTermProgressResultUpdater(
       this._classifier,

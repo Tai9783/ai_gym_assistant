@@ -60,8 +60,8 @@ import 'package:ai_gym_assistant/features/progress/domain/services/exercise_sess
     as _i147;
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart'
     as _i516;
-import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart'
-    as _i899;
+import 'package:ai_gym_assistant/features/progress/domain/services/progress_trend_calculator.dart'
+    as _i287;
 import 'package:ai_gym_assistant/features/progress/domain/services/recent_progress_analyzer.dart'
     as _i26;
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart'
@@ -124,8 +124,8 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final firebaseModule = _$FirebaseModule();
-    gh.factory<_i899.LongTermTrendCalculator>(
-      () => _i899.LongTermTrendCalculator(),
+    gh.factory<_i287.ProgressTrendCalculator>(
+      () => _i287.ProgressTrendCalculator(),
     );
     gh.factory<_i338.SessionTargetClassifier>(
       () => _i338.SessionTargetClassifier(),
@@ -148,29 +148,29 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i346.ExerciseProgressCacheLocalDataSource>(
       () => _i346.ExerciseProgressCacheLocalDataSource(gh<_i117.AppDatabase>()),
     );
-    gh.lazySingleton<_i1019.ExerciseLocalDataSource>(
-      () => _i1019.ExerciseLocalDataSource(gh<_i117.AppDatabase>()),
-    );
-    gh.lazySingleton<_i915.WorkoutLocalDataSource>(
-      () => _i915.WorkoutLocalDataSource(gh<_i117.AppDatabase>()),
+    gh.lazySingleton<_i214.LongTermProgressResultUpdater>(
+      () => _i214.LongTermProgressResultUpdater(
+        gh<_i338.SessionTargetClassifier>(),
+        gh<_i287.ProgressTrendCalculator>(),
+      ),
     );
     gh.factory<_i516.LongTermProgressAnalyzer>(
       () => _i516.LongTermProgressAnalyzer(
         gh<_i338.SessionTargetClassifier>(),
-        gh<_i899.LongTermTrendCalculator>(),
+        gh<_i287.ProgressTrendCalculator>(),
       ),
     );
     gh.factory<_i26.RecentProgressAnalyzer>(
       () => _i26.RecentProgressAnalyzer(
         gh<_i338.SessionTargetClassifier>(),
-        gh<_i899.LongTermTrendCalculator>(),
+        gh<_i287.ProgressTrendCalculator>(),
       ),
     );
-    gh.lazySingleton<_i214.LongTermProgressResultUpdater>(
-      () => _i214.LongTermProgressResultUpdater(
-        gh<_i338.SessionTargetClassifier>(),
-        gh<_i899.LongTermTrendCalculator>(),
-      ),
+    gh.lazySingleton<_i1019.ExerciseLocalDataSource>(
+      () => _i1019.ExerciseLocalDataSource(gh<_i117.AppDatabase>()),
+    );
+    gh.lazySingleton<_i915.WorkoutLocalDataSource>(
+      () => _i915.WorkoutLocalDataSource(gh<_i117.AppDatabase>()),
     );
     gh.lazySingleton<_i219.ExerciseProgressCacheInitializer>(
       () => _i219.ExerciseProgressCacheInitializer(

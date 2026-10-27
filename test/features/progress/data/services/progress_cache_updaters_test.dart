@@ -5,7 +5,7 @@ import 'package:ai_gym_assistant/features/progress/domain/entities/exercise_sess
 import 'package:ai_gym_assistant/features/progress/domain/entities/long_term_exercise_progress.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/recent_progress_analyzer.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart';
-import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart';
+import 'package:ai_gym_assistant/features/progress/domain/services/progress_trend_calculator.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart';
 
 import 'package:ai_gym_assistant/features/progress/data/mapper/recent_progress_cache_codec.dart';
@@ -21,7 +21,7 @@ void main() {
     const exerciseId = 'squat_001';
 
     final classifier = SessionTargetClassifier();
-    final trendCalculator = LongTermTrendCalculator();
+    final trendCalculator = ProgressTrendCalculator();
 
     final recentAnalyzer = RecentProgressAnalyzer(classifier,trendCalculator);
     final longTermAnalyzer = LongTermProgressAnalyzer(

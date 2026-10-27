@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ai_gym_assistant/features/progress/domain/entities/exercise_session_summary.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/long_term_progress_analyzer.dart';
-import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart';
+import 'package:ai_gym_assistant/features/progress/domain/services/progress_trend_calculator.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart';
 
 void main() {
@@ -12,7 +12,7 @@ void main() {
   setUp(() {
     analyzer = LongTermProgressAnalyzer(
       SessionTargetClassifier(),
-      LongTermTrendCalculator(),
+      ProgressTrendCalculator(),
     );
   });
 

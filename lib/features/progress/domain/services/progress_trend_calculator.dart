@@ -2,7 +2,7 @@ import 'package:injectable/injectable.dart';
 
 import '../entities/progress_trend.dart';
 @injectable
-class LongTermTrendCalculator {
+class ProgressTrendCalculator  {
   ProgressTrend calculate({
     required List<double> chronologicalValues,
     required double thresholdRatio,
