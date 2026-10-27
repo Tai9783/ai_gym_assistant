@@ -53,6 +53,11 @@ void main() {
         name: 'Squat',
         muscleGroup: MuscleGroup.legs,
       ),
+      ExerciseDefinition(
+        id: 'burpee',
+        name: 'Burpee',
+        muscleGroup: MuscleGroup.fullBody,
+      ),
     ];
 
     // Return all catalog exercises.
@@ -146,7 +151,7 @@ void main() {
     );
   });
 
-  test('Should use all exercises for full body', () async {
+  test('Should use only full body exercises', () async {
     final request = WorkoutRequest(
       focus: WorkoutFocus.fullBody,
       exerciseIds: [],
@@ -157,11 +162,35 @@ void main() {
       request: request,
     );
 
-    expect(context.exercises.length, 3);
+    expect(context.exercises.length, 1);
 
     expect(
       context.exercises.map((e) => e.exercise.id).toList(),
-      ['bench_press', 'chest_fly', 'squat'],
+      ['burpee'],
+    );
+
+    verify(
+          () => getExerciseProgress(
+        exerciseId: 'burpee',
+      ),
+    ).called(1);
+
+    verifyNever(
+          () => getExerciseProgress(
+        exerciseId: 'bench_press',
+      ),
+    );
+
+    verifyNever(
+          () => getExerciseProgress(
+        exerciseId: 'chest_fly',
+      ),
+    );
+
+    verifyNever(
+          () => getExerciseProgress(
+        exerciseId: 'squat',
+      ),
     );
   });
 
