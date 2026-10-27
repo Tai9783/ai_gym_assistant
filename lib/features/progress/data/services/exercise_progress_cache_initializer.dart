@@ -7,6 +7,7 @@ import '../../domain/entities/exercise_session_summary.dart';
 import '../../domain/services/recent_progress_analyzer.dart';
 import '../../domain/services/long_term_progress_analyzer.dart';
 
+import '../constants/progress_cache_version.dart';
 import '../datasources/exercise_progress_cache_local_data_source.dart';
 import '../mapper/recent_progress_cache_codec.dart';
 import '../mapper/long_term_progress_cache_codec.dart';
@@ -96,7 +97,7 @@ class ExerciseProgressCacheInitializer {
         lastProcessedSessionId: Value(
           ordered.last.sessionId,
         ),
-        calculationVersion: const Value(1),
+        calculationVersion: const Value(ProgressCacheVersion.current),
         needsRebuild: const Value(false),
         updatedAt: DateTime.now(),
       ),

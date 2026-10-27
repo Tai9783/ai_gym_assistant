@@ -1,4 +1,5 @@
 import 'package:ai_gym_assistant/features/progress/domain/entities/progress_trend.dart';
+import 'package:ai_gym_assistant/features/progress/domain/services/long_term_trend_calculator.dart';
 import 'package:ai_gym_assistant/features/progress/domain/services/session_target_classifier.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -7,9 +8,10 @@ import 'package:ai_gym_assistant/features/progress/domain/services/recent_progre
 
 void main() {
   late RecentProgressAnalyzer analyzer;
+  final trendCalculator = LongTermTrendCalculator();
 
   setUp(() {
-    analyzer = RecentProgressAnalyzer(SessionTargetClassifier());
+    analyzer = RecentProgressAnalyzer(SessionTargetClassifier(),trendCalculator);
   });
 
   test('should analyze recent exercise progress correctly', () {
@@ -164,7 +166,7 @@ void main() {
     expect(progress.latestActualTotalReps, 22);
     expect(progress.weightTrend, ProgressTrend.increasing);
 
-    expect(progress.volumeTrend, ProgressTrend.increasing);
+    expect(progress.volumeTrend, ProgressTrend.stable);
   });
   test('should return null when no summary matches exerciseId', () {
     final summaries = <ExerciseSessionSummary>[

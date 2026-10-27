@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import '../../../../core/database/app_database.dart';
 import '../../domain/entities/exercise_session_summary.dart';
 
+import '../constants/progress_cache_version.dart';
 import '../datasources/exercise_progress_cache_local_data_source.dart';
 import '../mapper/recent_window_cache_codec.dart';
 import '../mapper/recent_progress_cache_codec.dart';
@@ -45,7 +46,7 @@ class ExerciseProgressCacheUpdater {
     }
 
     //Chỉ cập nhật cache có phiên bản hợp lệ.
-    if (cache.needsRebuild || cache.calculationVersion != 1) {
+    if (cache.needsRebuild || cache.calculationVersion != ProgressCacheVersion.current) {
       throw StateError('Progress cache requires rebuild');
     }
 
@@ -106,7 +107,7 @@ class ExerciseProgressCacheUpdater {
         longTermStateJson:
         LongTermStateCacheCodec.encode(newState),
         lastProcessedSessionId: Value(newSummary.sessionId),
-        calculationVersion: const Value(1),
+        calculationVersion: const Value(ProgressCacheVersion.current),
         needsRebuild: const Value(false),
         updatedAt: DateTime.now(),
       ),

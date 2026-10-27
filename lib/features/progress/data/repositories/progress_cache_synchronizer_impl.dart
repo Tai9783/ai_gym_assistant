@@ -10,6 +10,7 @@ import '../../domain/entities/recent_exercise_progress.dart';
 import '../../domain/repositories/progress_cache_synchronizer.dart';
 import '../../domain/services/exercise_session_summarizer.dart';
 
+import '../constants/progress_cache_version.dart';
 import '../datasources/exercise_progress_cache_local_data_source.dart';
 import '../mapper/long_term_progress_cache_codec.dart';
 import '../mapper/long_term_state_cache_codec.dart';
@@ -75,7 +76,7 @@ class ProgressCacheSynchronizerImpl
     // Kiểm tra dữ liệu Cache hiện tại có đọc được không.
     if (cache != null &&
         !cache.needsRebuild &&
-        cache.calculationVersion == 1 &&
+        cache.calculationVersion == ProgressCacheVersion.current &&
         cache.recentProgressJson != null &&
         cache.longTermProgressJson != null) {
       try {
@@ -181,7 +182,7 @@ class ProgressCacheSynchronizerImpl
 
       if (cache != null &&
           !cache.needsRebuild &&
-          cache.calculationVersion == 1 &&
+          cache.calculationVersion == ProgressCacheVersion.current &&
           cache.recentProgressJson != null &&
           cache.longTermProgressJson != null) {
         try {

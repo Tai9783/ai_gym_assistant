@@ -23,7 +23,7 @@ void main() {
     final classifier = SessionTargetClassifier();
     final trendCalculator = LongTermTrendCalculator();
 
-    final recentAnalyzer = RecentProgressAnalyzer(classifier);
+    final recentAnalyzer = RecentProgressAnalyzer(classifier,trendCalculator);
     final longTermAnalyzer = LongTermProgressAnalyzer(
       classifier,
       trendCalculator,

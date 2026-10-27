@@ -2,15 +2,16 @@ import 'package:ai_gym_assistant/features/progress/domain/services/session_targe
 import 'package:injectable/injectable.dart';
 
 import '../entities/exercise_session_summary.dart';
-import '../entities/progress_trend.dart';
 import '../entities/recent_exercise_progress.dart';
+import 'long_term_trend_calculator.dart';
 
 @injectable
 class RecentProgressAnalyzer {
   static const int recentSessionLimit = 5;
   final SessionTargetClassifier _classifier;
+  final LongTermTrendCalculator _trendCalculator;
 
-  RecentProgressAnalyzer(this._classifier);
+  RecentProgressAnalyzer(this._classifier,this._trendCalculator,);
 
   RecentExerciseProgress? analyze({
     required String exerciseId,
@@ -94,18 +95,29 @@ class RecentProgressAnalyzer {
 
     final latestActualTotalReps = latestSummary.actualTotalReps;
 
-    final actualWeights = recentSummaries
+    // Chỉ lấy những buổi có ít nhất một set hoàn thành.
+    final trendSummaries = recentSummaries
+        .where((summary) => summary.completedSetCount > 0)
+        .toList();
+
+    final actualWeights = trendSummaries
         .map((summary) => summary.actualMaxWeight)
         .whereType<double>()
         .toList();
 
-    final weightTrend = _calculateTrend(actualWeights);
-
-    final actualVolumes = recentSummaries
+    final actualVolumes = trendSummaries
         .map((summary) => summary.actualVolume)
         .toList();
 
-    final volumeTrend = _calculateTrend(actualVolumes);
+    final weightTrend = _trendCalculator.calculate(
+      chronologicalValues: actualWeights,
+      thresholdRatio: 0.05,
+    );
+
+    final volumeTrend = _trendCalculator.calculate(
+      chronologicalValues: actualVolumes,
+      thresholdRatio: 0.10,
+    );
     return RecentExerciseProgress(
       exerciseId: exerciseId,
 
@@ -130,24 +142,5 @@ class RecentProgressAnalyzer {
       weightTrend: weightTrend,
       volumeTrend: volumeTrend,
     );
-  }
-
-  ProgressTrend _calculateTrend(List<double> values) {
-    if (values.length < 2) {
-      return ProgressTrend.insufficientData;
-    }
-
-    final firstValue = values.first;
-    final lastValue = values.last;
-
-    if (lastValue > firstValue) {
-      return ProgressTrend.increasing;
-    }
-
-    if (lastValue < firstValue) {
-      return ProgressTrend.decreasing;
-    }
-
-    return ProgressTrend.stable;
   }
 }

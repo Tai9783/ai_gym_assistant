@@ -142,9 +142,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i288.RecommendationValidator>(
       () => _i288.RecommendationValidator(),
     );
-    gh.factory<_i26.RecentProgressAnalyzer>(
-      () => _i26.RecentProgressAnalyzer(gh<_i338.SessionTargetClassifier>()),
-    );
     gh.lazySingleton<_i976.UserProfileLocalDataSource>(
       () => _i976.UserProfileLocalDataSource(gh<_i117.AppDatabase>()),
     );
@@ -159,6 +156,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i516.LongTermProgressAnalyzer>(
       () => _i516.LongTermProgressAnalyzer(
+        gh<_i338.SessionTargetClassifier>(),
+        gh<_i899.LongTermTrendCalculator>(),
+      ),
+    );
+    gh.factory<_i26.RecentProgressAnalyzer>(
+      () => _i26.RecentProgressAnalyzer(
         gh<_i338.SessionTargetClassifier>(),
         gh<_i899.LongTermTrendCalculator>(),
       ),
