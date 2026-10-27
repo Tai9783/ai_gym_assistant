@@ -1,6 +1,7 @@
 import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/utils/app_date_formatter.dart';
 import '../../../../core/di/injection.dart';
@@ -28,8 +29,52 @@ class ProgressPage extends StatelessWidget {
   }
 }
 
-class _ProgressView extends StatelessWidget {
+class _ProgressView extends StatefulWidget  {
   const _ProgressView();
+
+  @override
+  State<_ProgressView> createState() => _ProgressViewState();
+
+}
+class _ProgressViewState extends State<_ProgressView> {
+  GoRouter? _router;
+  String? _previousPath;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final router = GoRouter.of(context);
+
+    if (identical(_router, router)) return;
+
+    _router?.routeInformationProvider.removeListener(_onRouteChanged);
+
+    _router = router;
+    _previousPath = router.routeInformationProvider.value.uri.path;
+
+    router.routeInformationProvider.addListener(_onRouteChanged);
+  }
+
+  void _onRouteChanged() {
+    final path = _router?.routeInformationProvider.value.uri.path;
+
+    final wasOnProgress = _previousPath == '/progress';
+
+    _previousPath = path;
+
+    if (mounted && path == '/progress' && !wasOnProgress) {
+      context.read<ProgressBloc>().add(
+        const ProgressLoadRequested(),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _router?.routeInformationProvider.removeListener(_onRouteChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

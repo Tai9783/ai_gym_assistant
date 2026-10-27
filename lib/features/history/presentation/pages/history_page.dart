@@ -2,6 +2,7 @@ import 'package:ai_gym_assistant/app/theme/app_colors.dart';
 import 'package:ai_gym_assistant/app/utils/app_date_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/injection.dart';
 import '../../../workout/domain/entities/exercise_set.dart';
@@ -22,8 +23,48 @@ class HistoryPage extends StatelessWidget {
   }
 }
 
-class _HistoryView extends StatelessWidget {
+class _HistoryView extends StatefulWidget  {
   const _HistoryView();
+  @override
+  State<_HistoryView> createState() => _HistoryViewState();
+}
+class _HistoryViewState extends State<_HistoryView>{
+  GoRouter? _router;
+  String? _previousPath;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final router = GoRouter.of(context);
+    if (identical(_router, router)) return;
+
+    _router?.routeInformationProvider.removeListener(_onRouteChanged);
+
+    _router = router;
+    _previousPath = router.routeInformationProvider.value.uri.path;
+
+    router.routeInformationProvider.addListener(_onRouteChanged);
+  }
+
+  void _onRouteChanged() {
+    final path = _router?.routeInformationProvider.value.uri.path;
+    final wasOnHistory = _previousPath == '/history';
+
+    _previousPath = path;
+
+    if (mounted && path == '/history' && !wasOnHistory) {
+      context.read<HistoryBloc>().add(
+        const HistoryLoadRequested(),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _router?.routeInformationProvider.removeListener(_onRouteChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +111,7 @@ class _HistoryView extends StatelessWidget {
     );
   }
 }
+
 
 class _HistoryEmptyView extends StatelessWidget {
   const _HistoryEmptyView();
