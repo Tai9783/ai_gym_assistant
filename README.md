@@ -1,271 +1,295 @@
 # AI Gym Assistant
 
-A Flutter application that helps users plan, track, and progressively improve their gym workouts. It combines a local-first SQLite data store with AI-generated workout recommendations (via the Gemini API) and a deterministic progress-analysis engine that turns raw workout history into actionable trends.
+**AI Gym Assistant** is a Flutter fitness application for planning workouts, recording actual exercise performance, and tracking progress over time. It supports both **AI-assisted recommendations** and **fully manual workout planning**, with workout data stored locally using Drift/SQLite.
 
-> This is a learning / mini-project. The codebase favors clarity and correctness over production-grade hardening (see [Current Implementation Status](#current-implementation-status)).
+The project combines a feature-first, Clean Architecture-inspired Flutter codebase with a small **Cloudflare Workers backend** that securely connects to the Google Gemini API.
 
-## Key Features
+> **Project type:** Personal / Flutter portfolio project. It demonstrates mobile architecture, local persistence, workout business logic, progress analytics, and serverless AI integration. It is not a medical or professional fitness coaching service.
 
-### AI-Powered Workout Recommendations
-- The user picks a muscle group focus (chest, back, legs, shoulders, arms, or full body), optionally selects specific exercises from the catalog, and may add a free-text note.
-- The app assembles an **AI Context** from the request, the exercise catalog, the user's profile, and that user's **Recent** and **Long-Term** progress for each candidate exercise.
-- The context is sent to the Gemini API with a structured JSON response schema. The model returns a workout plan (exercises, sets, suggested weight/reps).
-- The response is validated against the original context (every returned exercise must come from the allowed catalog list, no duplicates, positive reps, non-negative weight, and — when specific exercises were requested — the response must match them exactly) before it is ever shown to the user or turned into a workout.
+## Features
 
-### Manual Workout Creation
-- As an alternative to the AI flow, the user can select exercises and manually set the target number of sets, weight, and reps for each one.
-- Manual targets are converted into the same `WorkoutExercise` / `ExerciseSet` structure produced by the AI flow, so both paths share the exact same downstream execution, tracking, and history logic.
+### 1. AI-Assisted Workout Recommendations
 
-### Workout Tracking (Suggested vs. Actual)
-- Each set tracks a **suggested** weight/reps (from AI or manual input) separately from the **actual** weight/reps the user performs.
-- Sets start as `pending` and must be explicitly marked `completed` (with real actual values) by the user — pre-filled suggested values are never silently treated as a completed set.
-- A workout session can be finished at any time; a confirmation dialog warns the user if sets are still incomplete.
+- Choose a workout focus (chest, back, legs, shoulders, arms, or full body), optionally select specific exercises, and add a note. The seeded catalog includes exercises specifically categorized as Full Body.
+- Build an **AI Context** from the workout request, exercise catalog, optional user profile, and available recent/long-term exercise progress.
+- Request suggested exercises, sets, repetitions, and weights from Gemini **through a Cloudflare Worker**, rather than calling Gemini directly from Flutter.
+- Use a structured JSON response schema and validate the generated plan against allowed exercise IDs and set constraints before presenting it to the user.
+- When exercises are explicitly selected, the recommendation must use that selection rather than silently adding or removing exercises.
 
-### Workout History & Progress Analysis
-- Completed sessions are persisted to SQLite and browsable in the History tab, showing suggested vs. actual values per set.
-- A deterministic (non-AI) analysis pipeline summarizes each exercise occurrence, then computes:
-  - **Recent progress** — based on the last 5 sessions for a given exercise (hit/miss streaks, target-hit set rate, latest weight/reps, short-term weight & volume trend).
-  - **Long-term progress** — based on the exercise's entire completed history (lifetime session count, best weight ever achieved, overall hit/miss counts, long-term weight & volume trend).
-- This same analysis feeds both the Progress tab UI and the AI Context used for recommendations, so the AI reasons over pre-computed statistics rather than raw historical data.
+### 2. Manual Workout Planning
 
-### Exercise Catalog
-- A local SQLite-backed catalog of exercises (seeded on first launch with 10 sample exercises across chest, back, legs, shoulders, and arms).
-- Used for exercise selection, muscle-group filtering, and resolving exercise IDs to display names throughout the app.
+- Select exercises and configure target sets, weights, and repetitions without generating an AI recommendation.
+- Convert manual and AI-generated plans into the same `WorkoutExercise` / `ExerciseSet` domain structure.
+- Use a shared workout execution, persistence, and history flow regardless of how a workout was created.
 
-### User Profile
-- Stores a fitness goal (`muscleGain`, `fatLoss`, or `strength`) plus optional weight, height, and age.
-- Included in the AI Context so recommendations can be tailored to the user's stated goal.
+### 3. Workout Tracking and Resume
 
-## Technology Stack
+- Record **suggested vs. actual** weight and repetitions for each set.
+- Explicitly mark individual sets as completed; completed results are persisted to local SQLite during the workout.
+- Resume an unfinished workout with previously saved exercises and set results.
+- Prevent starting another workout while a session remains `inProgress`.
+- Finish or cancel a workout; cancelled sessions are excluded from completed workout history and progress analysis.
 
-| Concern | Choice |
+### 4. History and Progress Analytics
+
+- Browse completed workouts and review individual exercise/set results. History and Progress refresh when users return to their tabs.
+- View **Recent Progress** for up to the last five exercise sessions, including target-hit rates, missed-target streaks, recent weights, and weight/volume trends.
+- View **Long-Term Progress** across completed exercise history, including total sessions, best recorded weight, target-hit rates, and long-term trends.
+- Calculate trends from chronological performance data using early/late averages and configurable percentage thresholds rather than only comparing the first and last values.
+- Display a **recent weight chart** with up to five sessions per exercise, showing recorded weights over time.
+
+### 5. Versioned Local Progress Cache
+
+- Store derived progress results in the `ExerciseProgressCaches` table, separately from the original workout history.
+- Preserve a recent summary window (up to five sessions) and long-term aggregate state for efficient incremental updates after completed workouts.
+- Detect stale, incompatible, or invalid cache data and **rebuild from completed workout history** when needed.
+- Keep the cache calculation version centralized so algorithm changes can invalidate older computed results without deleting the original sessions.
+
+### 6. Firebase-Authenticated AI Backend
+
+- Use **Firebase Anonymous Authentication** to obtain a user identity and ID token for AI requests.
+- Verify Firebase ID tokens in the Cloudflare Worker before accepting recommendation requests.
+- Keep the Gemini API key in a **Cloudflare Worker Secret**, not in Flutter code or a `--dart-define` value.
+- Use Cloudflare D1 to enforce per-user request limits and cooldowns.
+- Handle authentication failures, invalid requests, rate limits, and upstream AI failures; the manual workout flow remains independent of Gemini requests.
+
+## Tech Stack
+
+**Flutter SDK:** `3.44.0` (pinned in `.fvmrc`) · **Dart SDK constraint:** `^3.11.1` (in `pubspec.yaml`)
+
+| Area | Technologies / versions declared in `pubspec.yaml` |
 |---|---|
-| Framework | Flutter (SDK `^3.11.1`), managed via [FVM](https://fvm.app) (pinned to Flutter `3.44.0`) |
-| State management | [`flutter_bloc`](https://pub.dev/packages/flutter_bloc) |
-| Local persistence | [`drift`](https://pub.dev/packages/drift) (SQLite) + [`drift_flutter`](https://pub.dev/packages/drift_flutter) |
-| Dependency injection | [`get_it`](https://pub.dev/packages/get_it) + [`injectable`](https://pub.dev/packages/injectable) (code-generated) |
-| Routing | [`go_router`](https://pub.dev/packages/go_router) with a `StatefulShellRoute` for bottom-tab navigation |
-| AI recommendations | Google **Gemini** API (`gemini-3.8-flash`), called directly over HTTP via the [`http`](https://pub.dev/packages/http) package |
-| IDs | [`uuid`](https://pub.dev/packages/uuid) |
-| Testing | `flutter_test` + [`mocktail`](https://pub.dev/packages/mocktail) (for the Gemini/HTTP boundary) |
+| Mobile | Flutter, Dart |
+| Architecture | Feature-first; Clean Architecture-inspired Domain / Data / Presentation layering |
+| State management | `flutter_bloc: ^9.1.1`, `equatable: ^3.0.0` |
+| Local persistence | `drift: ^2.35.2`, `drift_flutter: ^0.3.1`, SQLite |
+| Dependency injection | `get_it: ^9.3.0`, `injectable: ^3.0.0` |
+| Navigation | `go_router: ^18.1.0` (`StatefulShellRoute.indexedStack`) |
+| Networking & identifiers | `http: ^1.6.0`, `uuid: ^4.6.0` |
+| Firebase | `firebase_core: ^5.0.0`, `firebase_auth: ^7.0.0` (anonymous authentication) |
+| UI / assets | `flutter_svg: ^2.3.0`, local exercise and muscle-group images |
+| AI integration | Google Gemini API; structured JSON output and client-side validation |
+| Serverless backend | JavaScript, Cloudflare Workers, Cloudflare D1 |
+| Testing & code generation | `flutter_test`, `mocktail: ^1.0.5`, `drift_dev`, `build_runner`, `injectable_generator` |
+
+> Package numbers above are **version constraints**, not necessarily the exact versions resolved in `pubspec.lock`.
 
 ## Architecture
 
-The project follows a **feature-first, Clean Architecture-inspired** structure. Each feature under `lib/features/<feature>/` is split into three layers:
+The Flutter project is organized **by feature**, with Domain, Data, and Presentation layers. Domain entities and use cases hold business rules; Data implements persistence and remote requests; Presentation manages BLoC/Cubit state and UI.
 
-- **`domain/`** — framework-agnostic business logic: entities, repository *interfaces*, use cases, and pure calculation services. Nothing here imports Flutter, Drift, or `http`.
-- **`data/`** — implements the domain repository interfaces using Drift (`datasources/`), maps between Drift rows/companions and domain entities (`mappers/`), and (for `recommendation`) calls the Gemini HTTP API and validates its output.
-- **`presentation/`** — BLoCs (`flutter_bloc`) that orchestrate use cases and expose UI state, plus the pages/widgets that render it.
-
-Cross-feature dependencies flow through domain repository **interfaces**, injected via constructor injection — a feature never reaches into another feature's Drift tables directly. For example, the `progress` feature depends on `WorkoutRepository` (owned by the `workout` feature) to read raw history, but has no knowledge of its SQLite schema.
-
-### Dependency Injection
-
-`get_it` + `injectable` wire the whole dependency graph. Classes are annotated with `@injectable` (new instance per resolution) or `@LazySingleton()` / `@LazySingleton(as: SomeInterface)` (singleton, optionally bound to an abstract type). Running the build step (see [Testing and Code Quality](#testing-and-code-quality)) regenerates `lib/core/di/injection.config.dart`, which is committed to the repository. `lib/core/di/injection.dart` exposes the global `getIt` instance used by pages and the router to resolve BLoCs and use cases.
-
-### Local Persistence
-
-A single Drift `AppDatabase` (`lib/core/database/app_database.dart`) defines all tables:
-
-- `WorkoutSessions`, `WorkoutExercises`, `ExerciseSets` — raw workout history (the source of truth).
-- `ExerciseDefinitions` — the exercise catalog.
-- `UserProfiles` — the single-row user profile.
-
-Schema changes are handled through `schemaVersion` and `MigrationStrategy.onUpgrade`. Tests use `AppDatabase.forTesting(NativeDatabase.memory())` for isolated in-memory databases.
-
-### Progress Analysis Pipeline
-
-```
-WorkoutRepository (Drift)
-        │  raw WorkoutSession / WorkoutExercise / ExerciseSet
-        ▼
-ExerciseSessionSummarizer        — one exercise occurrence → ExerciseSessionSummary
-        │
-        ▼
-GetExerciseProgress (use case)   — orchestrates the summarizer + analyzers below
-        │
-        ├──► RecentProgressAnalyzer    → RecentExerciseProgress   (last 5 sessions)
-        └──► LongTermProgressAnalyzer  → LongTermExerciseProgress (entire history)
-```
-
-`SessionTargetClassifier` (hit / miss / unknown) and `LongTermTrendCalculator` are shared, pure domain services injected into both analyzers so hit/miss and trend semantics stay consistent between Recent and Long-Term results. `GetExerciseProgress` is reused by both the Progress tab (`ProgressBloc`) and the recommendation flow (`PrepareAiContext`), so the UI and the AI always see the same numbers.
-
-### AI Recommendation Pipeline
-
-```
-WorkoutRequest (focus, exerciseIds, note)
-        │
-        ▼
-PrepareAiContext        — resolves exercises from the catalog, fetches Recent/LongTerm
-        │                  progress per exercise, loads the user profile
-        ▼
-AiContextBuilder        — assembles the AiContext value object
-        │
-        ▼
-AiContextSerializer     — AiContext → JSON (allowlisted fields only)
-        │
-        ▼
-GeminiRemoteDataSource  — POSTs to the Gemini API with a structured output schema
-        │
-        ▼
-WorkoutRecommendationMapper  — JSON → WorkoutRecommendation
-        │
-        ▼
-RecommendationValidator — rejects disallowed/duplicate/invalid exercises or sets
-        │
-        ▼
-WorkoutRecommendation
-```
-
-### How AI and Manual Workouts Converge
-
-Both entry points on the Home page build a `WorkoutRequest` and ultimately produce a `List<WorkoutExercise>`:
-
-- **AI path**: `RecommendationBloc` → `GenerateRecommendation` → `WorkoutRecommendation`, converted to `List<WorkoutExercise>` by `RecommendationWorkoutMapper`.
-- **Manual path**: `ManualWorkoutPage` collects per-set targets into `ManualExerciseTarget`, converted to `List<WorkoutExercise>` by `ManualWorkoutMapper`.
-
-From that point on, both paths pass the same `List<WorkoutExercise>` into the shared `WorkoutPage`/`WorkoutBloc`, which calls `StartWorkout`, `UpdateExerciseSet`, and `FinishWorkout` against the same `WorkoutRepository` — there is only one execution and persistence path for a workout, regardless of how it was planned.
-
-## Project Structure
-
-```
+```text
 lib/
-├── app/
-│   ├── pages/                 # HomePage, MainShellPage (bottom-tab shell)
-│   └── router/                # go_router configuration (app_router.dart)
+├── app/                         # Navigation, shared pages, theme, utilities
 ├── core/
-│   ├── database/              # AppDatabase (Drift) + table definitions
-│   └── di/                    # GetIt/Injectable setup (injection.dart, injection.config.dart)
+│   ├── auth/                    # Firebase anonymous sign-in abstraction
+│   ├── database/                # Drift database and table definitions
+│   └── di/                      # GetIt / Injectable configuration
 └── features/
-    ├── exercise_catalog/      # Exercise list, seeding, muscle-group filtering
-    │   ├── domain/            # ExerciseDefinition, ExerciseRepository, GetExercises
-    │   ├── data/               # Drift data source, repository impl, mapper
-    │   └── presentation/       # ExerciseCatalogBloc, SelectExercisePage
-    ├── workout/                # Workout session lifecycle (start/update/finish)
-    │   ├── domain/             # WorkoutSession/Exercise/Set, WorkoutRepository, use cases
-    │   ├── data/                # Drift data source, repository impl, mappers
-    │   └── presentation/        # WorkoutBloc, WorkoutPage, ManualWorkoutPage, mappers/models
-    ├── history/                 # Browsing completed workout sessions
-    │   └── presentation/         # HistoryBloc, HistoryPage
-    ├── progress/                 # Deterministic progress analysis
-    │   ├── domain/
-    │   │   ├── entities/          # ExerciseSessionSummary, RecentExerciseProgress,
-    │   │   │                      # LongTermExerciseProgress, ProgressTrend
-    │   │   ├── services/          # ExerciseSessionSummarizer, SessionTargetClassifier,
-    │   │   │                      # RecentProgressAnalyzer, LongTermProgressAnalyzer,
-    │   │   │                      # LongTermTrendCalculator
-    │   │   └── usecases/          # GetExerciseProgress (orchestrator)
-    │   └── presentation/           # ProgressBloc, ProgressPage
-    ├── profile/                   # User profile (goal, weight, height, age)
-    │   ├── domain/ / data/ / presentation/
-    └── recommendation/             # AI Context + Gemini integration
-        ├── domain/
-        │   ├── entities/           # WorkoutRequest, AiContext, WorkoutRecommendation
-        │   ├── services/           # AiContextBuilder, RecommendationValidator
-        │   └── usecases/           # PrepareAiContext, GenerateRecommendation
-        ├── data/
-        │   ├── datasources/         # GeminiRemoteDataSource
-        │   ├── prompts/              # RecommendationPrompt (system instruction)
-        │   ├── schemas/               # WorkoutRecommendationSchema (Gemini response schema)
-        │   ├── serializers/            # AiContextSerializer (AiContext → JSON)
-        │   ├── mappers/                 # WorkoutRecommendationMapper (JSON → domain)
-        │   └── repositories/             # RecommendationRepositoryImpl
-        └── presentation/                  # RecommendationBloc, RecommendationPage, mapper
+    ├── exercise_catalog/        # Seeded catalog (13 exercises, 6 focus groups)
+    ├── recommendation/          # AI context, Gemini API client, validation
+    ├── workout/                 # Manual planning, session lifecycle, resume
+    ├── history/                 # Completed workout browsing
+    ├── progress/                # Recent/long-term analytics, cache, 5-session chart
+    └── profile/                 # Locally stored fitness profile
+
+backend/
+└── cloudflare-worker/
+    ├── src/index.js             # Auth, validation, D1 limits, Gemini request
+    ├── migrations/              # D1 schema for per-user usage tracking
+    └── README.md                # Backend details and deployment notes
 ```
 
-## How the Application Works
+### Workout Lifecycle
 
-1. **Home** — the user picks a muscle group and/or specific exercises and writes an optional note, then chooses **AI đề xuất** (AI recommendation) or **Tự tạo buổi tập** (manual workout).
-2. **Planning**:
-   - *AI path* → `/recommendation`: `RecommendationBloc` prepares the AI context, calls Gemini, validates the result, and shows a plan the user can regenerate or accept.
-   - *Manual path* → `/manual-workout`: the user enters sets/weight/reps per selected exercise directly.
-3. **Execution** → `/workout`: `WorkoutBloc` starts a session from the chosen exercises. The user records actual weight/reps per set and marks sets completed; the session can be finished once ready.
-4. **Persistence**: `WorkoutRepositoryImpl` upserts the session, its exercises, and its sets into SQLite via Drift.
-5. **History** — completed sessions are listed with their full suggested-vs-actual breakdown per set.
-6. **Progress** — for any exercise with history, `GetExerciseProgress` recomputes Recent and Long-Term progress straight from SQLite on demand (no separate cached/denormalized progress table).
-7. **Future recommendations** reuse the same progress pipeline as an input, closing the loop between past performance and future suggestions.
+```text
+          AI Recommendation                Manual Workout
+          (Gemini-backed)                  (local setup)
+                 \                              /
+                  \                            /
+                   v                          v
+                      List<WorkoutExercise>
+                                |
+                                v
+                          StartWorkout
+                                |
+                         session: inProgress
+                                |
+                    UpdateExerciseSet (save to SQLite)
+                                |
+                      +---------+---------+
+                      |                   |
+                      v                   v
+                 Resume Workout      Finish / Cancel
+                                          |
+                           +--------------+--------------+
+                           |                             |
+                        completed                      cancelled
+                           |                             |
+                 History + Progress Cache       Excluded from completed
+                           |                    History / Progress
+                        Progress UI
+```
+
+### Progress Data Flow
+
+Raw workout sessions, exercises, and sets are the **source of truth**. Progress data is derived from completed sessions, not independently entered by users.
+
+```text
+Completed Workout (Drift/SQLite)
+        |
+        v
+ExerciseSessionSummarizer
+        |
+        +--> RecentProgressAnalyzer   --> Recent Progress (last 5)
+        |           |
+        |           +--> Recent Window --> Weight Chart
+        |
+        +--> LongTermProgressAnalyzer --> Long-Term Progress
+                    |
+                    v
+             ProgressTrendCalculator (shared by Recent and Long-Term)
+
+After FinishWorkout: incremental cache synchronization when safe
+On Progress read: validate cache -> reuse or rebuild from history
+```
+
+The same computed progress information can be used in the Progress screen and in the AI Context for future recommendations. The weight chart reads recent session summaries; it does not require another Gemini request.
+
+### AI Recommendation Request Flow
+
+```text
+Flutter
+  WorkoutRequest + Profile + Exercise Progress
+       |
+       v
+  PrepareAiContext -> AiContextSerializer
+       |
+       v
+  Firebase Anonymous ID Token
+       |
+       v
+  HTTPS POST /recommendation
+       |
+       v
+Cloudflare Worker
+  Verify Firebase token -> Validate request -> Check D1 rate limits
+       |
+       v
+  Gemini API (API key stored as Worker Secret)
+       |
+       v
+Flutter
+  WorkoutRecommendationMapper -> RecommendationValidator
+       |
+       v
+  Review recommendation -> Start shared workout flow
+```
+
+**Data boundary:** workout history, the exercise catalog, the user profile, and progress caches remain in local SQLite. When generating AI recommendations, the app sends the relevant *selected context* (including any available profile and progress values) to the Worker and onward to Gemini. Cloudflare D1 stores AI usage metadata, not the app's workout history.
 
 ## Getting Started
 
 ### Prerequisites
 
-- [FVM](https://fvm.app) (recommended) with Flutter **3.44.0** as pinned in `.fvmrc`, or a compatible Flutter/Dart SDK directly (`dart --version` must be `>=3.12.0` to satisfy `injectable_generator`).
-- A Gemini API key if you want to use the AI recommendation flow (optional — manual workouts, history, and progress work without it).
+- **Flutter `3.44.0`**, pinned via `.fvmrc` (recommended: [FVM](https://fvm.app)); the project declares Dart SDK `^3.11.1`.
+- A Firebase project configured for this Flutter app, with **Anonymous Authentication enabled**. `main.dart` calls `Firebase.initializeApp()` on startup, so Firebase configuration is needed **even when testing only manual workouts**.
+- An Android emulator or a compatible Flutter target; the project's demo flow has been exercised on an Android emulator.
+- For **AI recommendations**, a deployed Cloudflare Worker with a server-side Gemini key and D1 binding. Manual workouts, local History, and Progress do not require a successful Gemini request.
 
-### Install dependencies
+### Flutter Application
+
+From the project root:
 
 ```bash
+# Install the version specified in .fvmrc, if needed
+fvm install
+
+# Fetch packages
 fvm flutter pub get
-# or, without FVM:
-flutter pub get
-```
 
-### Generate code
-
-Drift tables and Injectable registrations are code-generated. Run this after `pub get` and whenever you change a Drift table, or add/change an `@injectable`/`@LazySingleton` class:
-
-```bash
+# Regenerate Drift / Injectable code when source annotations or tables change
 fvm dart run build_runner build --delete-conflicting-outputs
+
+# Launch on your selected device / emulator
+fvm flutter run
 ```
 
-Generated files (`*.g.dart`, `lib/core/di/injection.config.dart`) are committed to the repository — regenerate and commit them together with the source change that required them.
+You can also specify a target with `fvm flutter devices` and `fvm flutter run -d <device-id>`.
 
-## Environment Configuration
+If FVM is not installed, use the corresponding `flutter` and `dart` commands with a compatible SDK.
 
-The AI recommendation feature reads its Gemini API key from a compile-time environment variable, `GEMINI_API_KEY` (see `lib/features/recommendation/data/datasources/gemini_remote_data_source.dart`). It is **not** read from any committed file. If the key is missing, `GeminiRemoteDataSource` throws before making a network call, and `RecommendationBloc` surfaces this as a generation failure — every other feature (manual workouts, tracking, history, progress, profile) works without it.
+Firebase configuration is loaded from the FlutterFire-generated `lib/firebase_options.dart` and relevant platform-specific Firebase setup. When forking the app, configure **your own Firebase project** (for example, using the FlutterFire CLI) and enable Anonymous Authentication. Do not assume the original project's Firebase configuration will work for your deployment.
 
-Supply the key via `--dart-define` when running or building:
+**Important:** Do **not** pass `GEMINI_API_KEY` into the Flutter app using `--dart-define`. The Flutter application communicates with the Worker; the Gemini key belongs only in the Worker environment.
 
-```bash
-fvm flutter run --dart-define=GEMINI_API_KEY=your_api_key_here
+The Flutter backend endpoint is currently configured in:
+
+```text
+lib/features/recommendation/data/datasources/gemini_remote_data_source.dart
 ```
 
-The repository's `.gitignore` also excludes a local `gemini.local.json` file, which you may use to keep your own key notes out of version control; it is not read by the application code itself — the key must still be passed through `--dart-define` (or your own run configuration that does so) for the app to pick it up.
+If you deploy your own Worker, update the endpoint used by this data source to point to your deployment's `/recommendation` route. The app's Firebase project and the Worker's `FIREBASE_PROJECT_ID` must match.
 
-## Running the Application
+### Cloudflare Worker Configuration
 
-```bash
-fvm flutter run --dart-define=GEMINI_API_KEY=your_api_key_here
-```
+The backend is located in `backend/cloudflare-worker/`. Its source uses these bindings:
 
-The app registers Android, iOS, Linux, macOS, Windows, and web targets; use `flutter run -d <device>` (or your IDE's device selector) to pick a specific one. Without the Gemini key, use **Tự tạo buổi tập** (manual workout) from the Home screen to exercise the rest of the app.
+| Binding | Type | Purpose |
+|---|---|---|
+| `GEMINI_API_KEY` | Worker Secret | Server-side Gemini API credential |
+| `FIREBASE_PROJECT_ID` | Environment variable | Verify Firebase token audience and issuer |
+| `DB` | Cloudflare D1 binding | Store per-user request counters |
+
+The D1 table is defined in `backend/cloudflare-worker/migrations/0001_create_rate_limits.sql`.
+
+The Worker source sets **`DAILY_AI_LIMIT = 12` per Firebase UID per UTC day** and **`AI_COOLDOWN_MS = 60_000` (60 seconds)** between accepted requests. These are application-level limits; Gemini's upstream quota is separate. A request recorded in D1 may still consume a slot if Gemini later fails. **Verify the deployed Worker has the same values**: dashboard deployments and repository commits are not automatically synchronized.
+
+The backend documentation describes **manual Cloudflare Dashboard deployment**, not a repository-to-Cloudflare CI/CD pipeline. See the [backend README](backend/cloudflare-worker/README.md) for API and deployment details.
+
+> **Security:** Never commit actual API keys, tokens, Worker secrets, or private Firebase credentials. Firebase's public application configuration is not a substitute for protecting backend secrets.
 
 ## Testing and Code Quality
 
 ```bash
-fvm flutter test                 # run the full test suite
-fvm flutter test <path/to/file>  # run a single test file
-fvm flutter analyze              # static analysis (flutter_lints)
+# Static analysis
+fvm flutter analyze
+
+# All Flutter tests
+fvm flutter test
+
+# One specific test file
+fvm flutter test test/features/progress/domain/services/recent_progress_analyzer_test.dart
 ```
 
-Tests mirror the `lib/` path under `test/`. Domain services and use cases that only depend on other domain logic (progress analyzers, the session summarizer, the trend calculator) are tested by constructing their real collaborators directly — no mocking framework. Code that crosses a real I/O boundary is tested differently:
+The test suite covers domain calculations and use cases, recommendation logic, and parts of the Drift-backed workout lifecycle. Some tests use **in-memory SQLite** through Drift, while isolated dependencies can be mocked with Mocktail.
 
-- **Drift-backed repositories/use cases** (`workout`) are tested against an in-memory Drift database (`AppDatabase.forTesting(NativeDatabase.memory())`), not mocks.
-- **The Gemini HTTP boundary** (`recommendation`) is tested with `mocktail`, since it is the one dependency that cannot run in a test environment.
+The project includes generated Drift (`*.g.dart`) and Injectable (`injection.config.dart`) files. Regenerate them after changes to database definitions or injectable constructors, and commit relevant generated files with the source changes.
 
-## Current Implementation Status
+## Current Scope and Limitations
 
-**Implemented and working end-to-end:**
-- Exercise catalog, selection, and muscle-group filtering.
-- Manual and AI-assisted workout planning, converging into a single execution flow.
-- Workout tracking (suggested vs. actual) and persistence to SQLite.
-- Workout history browsing.
-- Recent/Long-Term progress analysis computed from real SQLite data, shown in the Progress tab and reused as AI input.
-- Gemini-based recommendation generation with response-schema enforcement and post-generation validation.
-- User profile storage, used in the AI context.
+**Implemented:** AI and manual workout planning; persistent per-set tracking; resume/cancel; completed history; recent and long-term progress analytics; incremental/rebuildable progress caching; Firebase-authenticated Cloudflare Worker integration; and a five-session weight chart.
 
-**Known gaps and simplifications (by design or not yet addressed):**
-- `FinishWorkout` does not currently validate that completed sets have actual weight/reps, or force resolution of sets still left `pending` — a session can be marked completed as-is. Progress analysis trends assume reasonably clean actual data as a result.
-- There is no persistent cache/table for Recent/Long-Term progress; both are recomputed from raw history on every request. This is simple and correct, but not optimized for very large histories.
-- There is no "memory" mechanism for remembering longer-lived user notes (e.g., a recurring injury) across sessions — the per-request `note` field is only used as context for a single recommendation.
-- No authentication, backend, or cloud sync — the app is entirely local-first, single-user.
-- No automated UI/widget test coverage beyond the default Flutter counter smoke test in `test/widget_test.dart` (which is unrelated to this app's actual UI and currently fails, since the app has no counter).
+**Current limitations:**
 
-## Future Improvements
+- Workout records and profile information are **local to the device**; there is no cloud backup or multi-device workout synchronization.
+- Firebase Anonymous Authentication provides a per-installation identity for AI access, not a full registration/account management flow or strong abuse prevention by itself.
+- The Worker records an accepted request before calling Gemini; failed upstream requests can still consume application-level quota.
+- The Worker deployment and D1 setup are currently managed manually, without CI/CD or automated deployment/migration steps.
+- The progress chart displays up to five recent weight observations; it does not provide an unlimited historical chart.
+- The project is a portfolio application and has not been presented as a production-hardened fitness or security product.
 
-The following are natural next steps given the current architecture, not committed roadmap items:
+## Screenshots
 
-- Validate workout completeness in `FinishWorkout` before allowing a session to be marked completed.
-- Persist a denormalized progress snapshot if/when recomputing from raw history becomes a measurable performance concern.
-- Introduce a longer-lived "memory" concept for durable user notes that should influence future recommendations beyond a single request.
-- Expand automated test coverage to BLoCs and widgets beyond the current domain/use-case/repository layer.
+The app currently includes Home, AI Recommendation, Manual Workout, Workout Tracking, History, Progress, and Profile screens. To display screenshots on GitHub, add image files to a folder such as `docs/screenshots/` and then link them here. No screenshot paths are included yet, to avoid broken images in a fresh clone.
+
+## Possible Next Steps
+
+- Extend widget and integration tests for workout completion, resume, and progress visualization.
+- Strengthen concurrent set-update handling and improve recovery from individual save errors.
+- Add richer chart interaction or optional volume visualization, keeping the chart grounded in recorded data.
+- Automate backend deployment and improve handling of failed Gemini requests and usage accounting.
+
+---
+
+Built as a personal project to practice **Flutter application architecture, reliable local data handling, progress-analysis logic, and secure AI API integration**.
