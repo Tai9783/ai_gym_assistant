@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage> {
   WorkoutFocus? _selectedMuscleGroup;
   List<ExerciseDefinition> _selectedExercises = [];
 
-  // Giữ nguyên điều kiện tạo Workout thủ công như phiên bản cũ.
   bool get _canCreateManualWorkout =>
       _selectedMuscleGroup != null && _selectedExercises.isNotEmpty;
 

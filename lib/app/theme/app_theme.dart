@@ -21,7 +21,6 @@ abstract final class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: AppColors.background,
       // Kiểu Floating Snackbar mặc định cho cả app,
-      // kể cả những thông báo được thêm vào trong tương lai.
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.text,

@@ -4,8 +4,7 @@ import '../theme/app_colors.dart';
 
 enum AppNoticeType { success, warning, error, info }
 
-/// Hiển thị thông báo ngắn, nổi phía dưới màn hình.
-/// Tự ẩn và chỉ cho phép một thông báo xuất hiện tại một thời điểm.
+
 abstract final class AppNotice {
   static void show(
       BuildContext context,

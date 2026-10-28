@@ -1,7 +1,4 @@
-/// Formats dates for display in the app.
-///
-/// All methods convert the supplied DateTime to the device's local time.
-/// Do not use these display strings for SQLite storage or API serialization.
+
 abstract final class AppDateFormatter {
   static String _twoDigits(int value) => value.toString().padLeft(2, '0');
 
@@ -21,7 +18,6 @@ abstract final class AppDateFormatter {
   static String dateTime(DateTime value) => '${date(value)} • ${time(value)}';
 
   /// Example: 24 tháng 10, 2026.
-  /// Includes the year so groups from different years remain unambiguous.
   static String historyDayHeading(DateTime value) {
     final local = value.toLocal();
     return '${local.day} tháng ${local.month}, ${local.year}';
