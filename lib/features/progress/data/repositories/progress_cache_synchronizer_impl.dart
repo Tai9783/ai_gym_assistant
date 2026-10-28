@@ -167,6 +167,7 @@ class ProgressCacheSynchronizerImpl
   Future<({
   RecentExerciseProgress? recent,
   LongTermExerciseProgress? longTerm,
+  List<ExerciseSessionSummary> recentWindow,
   })> readValidProgress(String exerciseId) {
     return _cacheDataSource.runInTransaction(() async {
       //Đếm số lần tập thật trong History.
@@ -174,7 +175,7 @@ class ProgressCacheSynchronizerImpl
           .countCompletedWorkoutExercises(exerciseId);
 
       if (historyCount == 0) {
-        return (recent: null, longTerm: null);
+        return (recent: null, longTerm: null,recentWindow: <ExerciseSessionSummary>[],);
       }
 
       //Đọc Cache hiện có.
@@ -189,6 +190,9 @@ class ProgressCacheSynchronizerImpl
           final recent = RecentProgressCacheCodec.decode(
             cache.recentProgressJson!,
           );
+          final recentWindow = RecentWindowCacheCodec.decode(
+            cache.recentWindowJson,
+          );
 
           final longTerm = LongTermProgressCacheCodec.decode(
             cache.longTermProgressJson!,
@@ -196,8 +200,12 @@ class ProgressCacheSynchronizerImpl
 
           if (recent.exerciseId == exerciseId &&
               longTerm.exerciseId == exerciseId &&
-              longTerm.sessionCount == historyCount) {
-            return (recent: recent, longTerm: longTerm);
+              longTerm.sessionCount == historyCount &&
+            recentWindow.length == recent.sessionCount &&
+            recentWindow.every(
+            (summary) => summary.exerciseId == exerciseId,
+        )) {
+            return (recent: recent, longTerm: longTerm, recentWindow: recentWindow);
           }
         } catch (_) {
         }
@@ -218,6 +226,9 @@ class ProgressCacheSynchronizerImpl
       final recent = RecentProgressCacheCodec.decode(
         rebuilt.recentProgressJson!,
       );
+      final recentWindow = RecentWindowCacheCodec.decode(
+        rebuilt.recentWindowJson,
+      );
 
       final longTerm = LongTermProgressCacheCodec.decode(
         rebuilt.longTermProgressJson!,
@@ -225,11 +236,16 @@ class ProgressCacheSynchronizerImpl
 
       if (recent.exerciseId != exerciseId ||
           longTerm.exerciseId != exerciseId ||
-          longTerm.sessionCount != historyCount) {
+          longTerm.sessionCount != historyCount ||
+          recentWindow.length != recent.sessionCount ||
+          recentWindow.any(
+                (summary) => summary.exerciseId != exerciseId,
+          )
+      ) {
         throw StateError('Progress cache is out of sync');
       }
 
-      return (recent: recent, longTerm: longTerm);
+      return (recent: recent, longTerm: longTerm,recentWindow:recentWindow);
     });
   }
 

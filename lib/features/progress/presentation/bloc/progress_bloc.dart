@@ -145,6 +145,7 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
         selectedExerciseId: exerciseId,
         recent: result.recent,
         longTerm: result.longTerm,
+        recentWindow: result.recentWindow,
       ),
     );
   }

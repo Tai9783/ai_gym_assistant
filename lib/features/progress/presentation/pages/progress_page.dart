@@ -10,6 +10,7 @@ import '../../domain/entities/long_term_exercise_progress.dart';
 import '../bloc/progress_bloc.dart';
 import '../bloc/progress_event.dart';
 import '../bloc/progress_state.dart';
+import '../widgets/recent_weight_chart.dart';
 
 const _primary = AppColors.primary;
 const _background = AppColors.background;
@@ -226,6 +227,13 @@ class _ProgressContent extends StatelessWidget {
         _buildExerciseSelector(context),
 
         const SizedBox(height: 20),
+
+      // Recent weight chart.
+        RecentWeightChart(
+          recentWindow: state.recentWindow,
+        ),
+
+        const SizedBox(height: 16),
 
         // Recent progress.
         if (state.recent != null)
@@ -449,7 +457,7 @@ class _LongTermProgressSection extends StatelessWidget {
 
         _InfoRow(
           label: 'Lần tập gần nhất',
-          value: AppDateFormatter.date(progress.firstPerformedAt),
+          value: AppDateFormatter.date(progress.lastPerformedAt),
         ),
         const SizedBox(height: 12),
 

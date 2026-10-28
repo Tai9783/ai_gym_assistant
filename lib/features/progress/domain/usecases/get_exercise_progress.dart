@@ -74,6 +74,7 @@
 
 import 'package:injectable/injectable.dart';
 
+import '../entities/exercise_session_summary.dart';
 import '../entities/long_term_exercise_progress.dart';
 import '../entities/recent_exercise_progress.dart';
 import '../repositories/progress_cache_synchronizer.dart';
@@ -81,6 +82,7 @@ import '../repositories/progress_cache_synchronizer.dart';
 typedef ExerciseProgressResult = ({
 RecentExerciseProgress? recent,
 LongTermExerciseProgress? longTerm,
+List<ExerciseSessionSummary> recentWindow
 });
 
 @LazySingleton()

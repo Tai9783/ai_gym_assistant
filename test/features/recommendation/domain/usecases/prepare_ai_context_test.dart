@@ -1,6 +1,7 @@
 
 import 'package:ai_gym_assistant/features/profile/domain/entities/user_profile.dart';
 import 'package:ai_gym_assistant/features/profile/domain/usecases/get_user_profile.dart';
+import 'package:ai_gym_assistant/features/progress/domain/entities/exercise_session_summary.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ai_gym_assistant/features/exercise_catalog/domain/entities/exercise_definition.dart';
@@ -71,7 +72,7 @@ void main() {
         exerciseId: any(named: 'exerciseId'),
       ),
     ).thenAnswer(
-          (_) async => (recent: null, longTerm: null),
+          (_) async => (recent: null, longTerm: null, recentWindow: <ExerciseSessionSummary>[],),
     );
     // Return no user profile by default.
     when(

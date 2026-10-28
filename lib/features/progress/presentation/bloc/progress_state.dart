@@ -1,3 +1,4 @@
+import '../../domain/entities/exercise_session_summary.dart';
 import '../../domain/entities/long_term_exercise_progress.dart';
 import '../../domain/entities/recent_exercise_progress.dart';
 
@@ -23,6 +24,7 @@ final class ProgressLoaded extends ProgressState {
   final String selectedExerciseId;
   final RecentExerciseProgress? recent;
   final LongTermExerciseProgress? longTerm;
+  final List<ExerciseSessionSummary> recentWindow;
 
   const ProgressLoaded({
     required this.exerciseIds,
@@ -30,6 +32,7 @@ final class ProgressLoaded extends ProgressState {
     required this.selectedExerciseId,
     required this.recent,
     required this.longTerm,
+    required this.recentWindow,
   });
 }
 

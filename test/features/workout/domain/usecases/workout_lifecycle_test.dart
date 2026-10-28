@@ -1,4 +1,5 @@
 
+import 'package:ai_gym_assistant/features/progress/domain/entities/exercise_session_summary.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -31,8 +32,9 @@ class _FakeProgressCacheSynchronizer
   Future<({
   RecentExerciseProgress? recent,
   LongTermExerciseProgress? longTerm,
+  List<ExerciseSessionSummary> recentWindow,
   })> readValidProgress(String exerciseId) async {
-    return (recent: null, longTerm: null);
+    return (recent: null, longTerm: null, recentWindow: <ExerciseSessionSummary>[],);
   }
 }
 
