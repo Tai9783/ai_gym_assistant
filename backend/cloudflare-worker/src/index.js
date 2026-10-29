@@ -1,6 +1,6 @@
-const DAILY_AI_LIMIT = 12;
-const AI_COOLDOWN_MS = 60_000;
-const GEMINI_MODEL = 'gemini-3.8-flash';
+const DAILY_AI_LIMIT = 10;
+const AI_COOLDOWN_MS = 30_000;
+const GEMINI_MODEL = 'gemini-3.5-flash-lite';
 
 const SYSTEM_INSTRUCTION = `
 You are an AI workout recommendation assistant.

@@ -50,7 +50,7 @@ class ExerciseProgressCacheInitializer {
             (a, b) => a.performedAt.compareTo(b.performedAt),
       );
 
-    //Tính Recent và Long-term bằng Analyzer cũ.
+    //Tính Recent và Long-term.
     final recent = _recentAnalyzer.analyze(
       exerciseId: exerciseId,
       summaries: ordered,
