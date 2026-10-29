@@ -94,11 +94,6 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }
 
   @override
-  Future<int> countCompletedWorkoutExercises(String exerciseId) {
-    return localDataSource.countCompletedWorkoutExercises(exerciseId);
-  }
-
-  @override
   Future<List<WorkoutSession>> getCompletedWorkoutSessions() async {
     final sessionIds = await localDataSource.getCompletedWorkoutSessionIds();
 
@@ -200,6 +195,9 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       );
 
       await saveWorkoutSession(completedSession);
+      await localDataSource.insertPendingProgressUpdate(
+        workoutId: completedSession.id,
+      );
 
       return completedSession;
     });

@@ -16,6 +16,4 @@ abstract class WorkoutRepository {
   });
 
   Future<WorkoutSession> completeWorkoutSession({required String sessionId});
-  //đếm số lần tập đã hoàn thành của bài tập để check cache đã cập nhật đủ hay thiếu.
-  Future<int> countCompletedWorkoutExercises(String exerciseId);
 }

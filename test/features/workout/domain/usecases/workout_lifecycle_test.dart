@@ -36,6 +36,10 @@ class _FakeProgressCacheSynchronizer
   })> readValidProgress(String exerciseId) async {
     return (recent: null, longTerm: null, recentWindow: <ExerciseSessionSummary>[],);
   }
+
+  @override
+  Future<void> recoverPendingProgressUpdates() async {
+  }
 }
 
 void main() {

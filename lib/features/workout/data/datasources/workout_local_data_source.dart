@@ -126,30 +126,15 @@ class WorkoutLocalDataSource {
           (records) => records.map((record) => record.id).toList(),
     );
   }
-
-  //đếm số lần tập đã hoàn thành của bài tập để check cache đã cập nhật đủ hay thiếu.
-  Future<int> countCompletedWorkoutExercises(String exerciseId) async {
-    final countExpression = database.workoutExercises.id.count();
-
-    final query = database.selectOnly(database.workoutExercises)
-      ..addColumns([countExpression])
-      ..join([
-        innerJoin(
-          database.workoutSessions,
-          database.workoutSessions.id.equalsExp(
-            database.workoutExercises.sessionId,
-          ),
-        ),
-      ])
-      ..where(database.workoutExercises.exerciseId.equals(exerciseId))
-      ..where(
-        database.workoutSessions.status.equals(
-          WorkoutSessionStatus.completed.name,
-        ),
-      );
-
-    final row = await query.getSingle();
-
-    return row.read(countExpression) ?? 0;
+  Future<void> insertPendingProgressUpdate({
+    required String workoutId,
+  }) async {
+    await database.into(database.pendingProgressUpdates).insert(
+      PendingProgressUpdatesCompanion.insert(
+        workoutId: workoutId,
+      ),
+      //Nếu ID đã tồn tại thì không chèn bản ghi trùng.
+      mode: InsertMode.insertOrIgnore,
+    );
   }
 }

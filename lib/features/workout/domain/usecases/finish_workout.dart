@@ -21,7 +21,7 @@ class FinishWorkout {
     //Sau khi History đã lưu thành công,
     // sẽ tiến hành đồng bộ Progress Cache.
     try {
-      await progressCacheSynchronizer.syncAfterWorkout(completedSession);
+      await progressCacheSynchronizer.recoverPendingProgressUpdates();
     } catch (error, stackTrace) {
       developer.log(
         'Progress Cache sync failed: $sessionId',

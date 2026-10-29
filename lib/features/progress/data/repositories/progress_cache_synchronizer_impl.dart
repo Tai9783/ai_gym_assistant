@@ -45,6 +45,12 @@ class ProgressCacheSynchronizerImpl
     }
 
     await _cacheDataSource.runInTransaction(() async {
+      // Workout không còn Pending thì không xử lý lại.
+      final isPending = await _cacheDataSource
+          .hasPendingProgressUpdate(completedSession.id);
+
+      if (!isPending) return;
+
       final exerciseIds = completedSession.exercises
           .map((exercise) => exercise.exerciseId)
           .toSet();
@@ -55,21 +61,37 @@ class ProgressCacheSynchronizerImpl
           completedSession: completedSession,
         );
       }
+      await _cacheDataSource.deletePendingProgressUpdate(
+        completedSession.id,
+      );
     });
   }
+  @override
+  Future<void> recoverPendingProgressUpdates() async {
+    final pendingIds =
+    await _cacheDataSource.getPendingWorkoutIds();
 
+    if (pendingIds.isEmpty) return;
+
+    for (final workoutId in pendingIds) {
+      final session =
+      await _workoutRepository.getWorkoutSessionById(workoutId);
+
+      if (session == null ||
+          session.status != WorkoutSessionStatus.completed) {
+        throw StateError('Invalid pending workout: $workoutId');
+      }
+
+      await syncAfterWorkout(session);
+    }
+  }
   Future<void> _syncExercise({
     required String exerciseId,
     required WorkoutSession completedSession,
   }) async {
-    final historyCount = await _workoutRepository
-        .countCompletedWorkoutExercises(exerciseId);
 
     final cache = await _cacheDataSource.getByExerciseId(exerciseId);
 
-    if (historyCount == 0) {
-      throw StateError('Completed exercise not found in History');
-    }
 
     LongTermExerciseProgress? cachedLongTerm;
 
@@ -97,25 +119,21 @@ class ProgressCacheSynchronizerImpl
       }
     }
 
-    // Cache hợp lệ và đã đủ số lần tập.
     if (cachedLongTerm != null &&
-        cachedLongTerm.sessionCount == historyCount) {
+        cache!.lastProcessedSessionId == completedSession.id) {
       return;
     }
 
-    final matchingExercises = completedSession.exercises
-        .where((exercise) => exercise.exerciseId == exerciseId)
-        .toList();
+    // Chỉ incremental khi Cache hợp lệ
+    // và buổi tập mới có thời gian sau Cache hiện tại.
+    if (cachedLongTerm != null) {
+      final exercise = completedSession.exercises.singleWhere(
+            (exercise) => exercise.exerciseId == exerciseId,
+      );
 
-    // Chỉ incremental khi chắc chắn chỉ thêm
-    // một lần tập mới sau dữ liệu Cache hiện tại.
-    if (cachedLongTerm != null &&
-        cachedLongTerm.sessionCount + 1 == historyCount &&
-        matchingExercises.length == 1 &&
-        cache!.lastProcessedSessionId != completedSession.id) {
       final newSummary = _summarizer.summarize(
         session: completedSession,
-        exercise: matchingExercises.single,
+        exercise: exercise,
       );
 
       if (newSummary.performedAt.isAfter(
@@ -128,12 +146,17 @@ class ProgressCacheSynchronizerImpl
 
     // Không đủ điều kiện incremental:
     // khởi tạo lại từ History.
-    await _rebuildExercise(exerciseId, historyCount);
+    final rebuilt = await _rebuildExercise(exerciseId);
+
+    if (!rebuilt) {
+      throw StateError(
+        'Completed exercise not found in History: $exerciseId',
+      );
+    }
   }
 
-  Future<void> _rebuildExercise(
+  Future<bool> _rebuildExercise(
       String exerciseId,
-      int expectedCount,
       ) async {
     final sessions = await _workoutRepository
         .getCompletedWorkoutSessionsByExerciseId(exerciseId);
@@ -153,14 +176,14 @@ class ProgressCacheSynchronizerImpl
       }
     }
 
-    if (summaries.length != expectedCount) {
-      throw StateError('History count changed during cache rebuild');
+    if (summaries.isEmpty) {
+      return false;
     }
-
     await _initializer.initialize(
       exerciseId: exerciseId,
       historySummaries: summaries,
     );
+    return true;
   }
 
   @override
@@ -170,14 +193,6 @@ class ProgressCacheSynchronizerImpl
   List<ExerciseSessionSummary> recentWindow,
   })> readValidProgress(String exerciseId) {
     return _cacheDataSource.runInTransaction(() async {
-      //Đếm số lần tập thật trong History.
-      final historyCount = await _workoutRepository
-          .countCompletedWorkoutExercises(exerciseId);
-
-      if (historyCount == 0) {
-        return (recent: null, longTerm: null,recentWindow: <ExerciseSessionSummary>[],);
-      }
-
       //Đọc Cache hiện có.
       final cache = await _cacheDataSource.getByExerciseId(exerciseId);
 
@@ -200,7 +215,6 @@ class ProgressCacheSynchronizerImpl
 
           if (recent.exerciseId == exerciseId &&
               longTerm.exerciseId == exerciseId &&
-              longTerm.sessionCount == historyCount &&
             recentWindow.length == recent.sessionCount &&
             recentWindow.every(
             (summary) => summary.exerciseId == exerciseId,
@@ -212,7 +226,15 @@ class ProgressCacheSynchronizerImpl
       }
 
       //Cache thiếu, lỗi hoặc chưa đồng bộ.
-      await _rebuildExercise(exerciseId, historyCount);
+      final rebuiltSuccessfully = await _rebuildExercise(exerciseId);
+
+      if (!rebuiltSuccessfully) {
+        return (
+        recent: null,
+        longTerm: null,
+        recentWindow: <ExerciseSessionSummary>[],
+        );
+      }
 
       //Đọc lại Cache vừa rebuild.
       final rebuilt = await _cacheDataSource.getByExerciseId(exerciseId);
@@ -236,7 +258,6 @@ class ProgressCacheSynchronizerImpl
 
       if (recent.exerciseId != exerciseId ||
           longTerm.exerciseId != exerciseId ||
-          longTerm.sessionCount != historyCount ||
           recentWindow.length != recent.sessionCount ||
           recentWindow.any(
                 (summary) => summary.exerciseId != exerciseId,

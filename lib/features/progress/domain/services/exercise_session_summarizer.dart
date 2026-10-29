@@ -118,12 +118,7 @@ class ExerciseSessionSummarizer {
     return set.suggestedWeight != null || set.suggestedReps != null;
   }
 
-  // - Only completed sets are evaluated.
-  // - Skipped/pending sets are not considered hit or under target.
-  // - If suggested weight exists, actual weight must be >= suggested weight.
-  // - If suggested reps exists, actual reps must be >= suggested reps.
-  // - All existing targets must be reached for the set to be considered HIT.
-  // - If at least one existing target is not reached, the set is UNDER target.
+
   // Target 40kg x 8, Actual 40kg x 8     -> HIT
   // Target 40kg x 8, Actual 42.5kg x 8   -> HIT
   // Target 40kg x 8, Actual 40kg x 7     -> UNDER

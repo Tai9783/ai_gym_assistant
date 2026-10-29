@@ -5,7 +5,6 @@ import '../entities/long_term_exercise_progress.dart';
 import '../entities/recent_exercise_progress.dart';
 
 abstract class ProgressCacheSynchronizer {
-  // Đồng bộ cache sau khi hoàn thành Workout.
   Future<void> syncAfterWorkout(
       WorkoutSession completedSession,
       );
@@ -16,4 +15,6 @@ abstract class ProgressCacheSynchronizer {
   LongTermExerciseProgress? longTerm,
   List<ExerciseSessionSummary> recentWindow,
   })> readValidProgress(String exerciseId);
+
+  Future<void> recoverPendingProgressUpdates();
 }
