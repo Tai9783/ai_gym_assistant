@@ -2465,6 +2465,177 @@ class ExerciseProgressCachesCompanion
   }
 }
 
+class $PendingProgressUpdatesTable extends PendingProgressUpdates
+    with TableInfo<$PendingProgressUpdatesTable, PendingProgressUpdate> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PendingProgressUpdatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _workoutIdMeta = const VerificationMeta(
+    'workoutId',
+  );
+  @override
+  late final GeneratedColumn<String> workoutId = GeneratedColumn<String>(
+    'workout_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [workoutId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pending_progress_updates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PendingProgressUpdate> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('workout_id')) {
+      context.handle(
+        _workoutIdMeta,
+        workoutId.isAcceptableOrUnknown(data['workout_id']!, _workoutIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_workoutIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {workoutId};
+  @override
+  PendingProgressUpdate map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PendingProgressUpdate(
+      workoutId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workout_id'],
+      )!,
+    );
+  }
+
+  @override
+  $PendingProgressUpdatesTable createAlias(String alias) {
+    return $PendingProgressUpdatesTable(attachedDatabase, alias);
+  }
+}
+
+class PendingProgressUpdate extends DataClass
+    implements Insertable<PendingProgressUpdate> {
+  final String workoutId;
+  const PendingProgressUpdate({required this.workoutId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['workout_id'] = Variable<String>(workoutId);
+    return map;
+  }
+
+  PendingProgressUpdatesCompanion toCompanion(bool nullToAbsent) {
+    return PendingProgressUpdatesCompanion(workoutId: Value(workoutId));
+  }
+
+  factory PendingProgressUpdate.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PendingProgressUpdate(
+      workoutId: serializer.fromJson<String>(json['workoutId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{'workoutId': serializer.toJson<String>(workoutId)};
+  }
+
+  PendingProgressUpdate copyWith({String? workoutId}) =>
+      PendingProgressUpdate(workoutId: workoutId ?? this.workoutId);
+  PendingProgressUpdate copyWithCompanion(
+    PendingProgressUpdatesCompanion data,
+  ) {
+    return PendingProgressUpdate(
+      workoutId: data.workoutId.present ? data.workoutId.value : this.workoutId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingProgressUpdate(')
+          ..write('workoutId: $workoutId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => workoutId.hashCode;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PendingProgressUpdate && other.workoutId == this.workoutId);
+}
+
+class PendingProgressUpdatesCompanion
+    extends UpdateCompanion<PendingProgressUpdate> {
+  final Value<String> workoutId;
+  final Value<int> rowid;
+  const PendingProgressUpdatesCompanion({
+    this.workoutId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PendingProgressUpdatesCompanion.insert({
+    required String workoutId,
+    this.rowid = const Value.absent(),
+  }) : workoutId = Value(workoutId);
+  static Insertable<PendingProgressUpdate> custom({
+    Expression<String>? workoutId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (workoutId != null) 'workout_id': workoutId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PendingProgressUpdatesCompanion copyWith({
+    Value<String>? workoutId,
+    Value<int>? rowid,
+  }) {
+    return PendingProgressUpdatesCompanion(
+      workoutId: workoutId ?? this.workoutId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (workoutId.present) {
+      map['workout_id'] = Variable<String>(workoutId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingProgressUpdatesCompanion(')
+          ..write('workoutId: $workoutId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2480,6 +2651,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $UserProfilesTable userProfiles = $UserProfilesTable(this);
   late final $ExerciseProgressCachesTable exerciseProgressCaches =
       $ExerciseProgressCachesTable(this);
+  late final $PendingProgressUpdatesTable pendingProgressUpdates =
+      $PendingProgressUpdatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2491,6 +2664,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     exerciseDefinitions,
     userProfiles,
     exerciseProgressCaches,
+    pendingProgressUpdates,
   ];
 }
 
@@ -4326,6 +4500,161 @@ typedef $$ExerciseProgressCachesTableProcessedTableManager =
       ExerciseProgressCacheRecord,
       PrefetchHooks Function()
     >;
+typedef $$PendingProgressUpdatesTableCreateCompanionBuilder =
+    PendingProgressUpdatesCompanion Function({
+      required String workoutId,
+      Value<int> rowid,
+    });
+typedef $$PendingProgressUpdatesTableUpdateCompanionBuilder =
+    PendingProgressUpdatesCompanion Function({
+      Value<String> workoutId,
+      Value<int> rowid,
+    });
+
+class $$PendingProgressUpdatesTableFilterComposer
+    extends Composer<_$AppDatabase, $PendingProgressUpdatesTable> {
+  $$PendingProgressUpdatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get workoutId => $composableBuilder(
+    column: $table.workoutId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PendingProgressUpdatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PendingProgressUpdatesTable> {
+  $$PendingProgressUpdatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get workoutId => $composableBuilder(
+    column: $table.workoutId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PendingProgressUpdatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PendingProgressUpdatesTable> {
+  $$PendingProgressUpdatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get workoutId =>
+      $composableBuilder(column: $table.workoutId, builder: (column) => column);
+}
+
+class $$PendingProgressUpdatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PendingProgressUpdatesTable,
+          PendingProgressUpdate,
+          $$PendingProgressUpdatesTableFilterComposer,
+          $$PendingProgressUpdatesTableOrderingComposer,
+          $$PendingProgressUpdatesTableAnnotationComposer,
+          $$PendingProgressUpdatesTableCreateCompanionBuilder,
+          $$PendingProgressUpdatesTableUpdateCompanionBuilder,
+          (
+            PendingProgressUpdate,
+            BaseReferences<
+              _$AppDatabase,
+              $PendingProgressUpdatesTable,
+              PendingProgressUpdate
+            >,
+          ),
+          PendingProgressUpdate,
+          PrefetchHooks Function()
+        > {
+  $$PendingProgressUpdatesTableTableManager(
+    _$AppDatabase db,
+    $PendingProgressUpdatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PendingProgressUpdatesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$PendingProgressUpdatesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$PendingProgressUpdatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> workoutId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PendingProgressUpdatesCompanion(
+                workoutId: workoutId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String workoutId,
+                Value<int> rowid = const Value.absent(),
+              }) => PendingProgressUpdatesCompanion.insert(
+                workoutId: workoutId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $PendingProgressUpdatesTable,
+                    PendingProgressUpdate
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $PendingProgressUpdatesTable,
+                    PendingProgressUpdate
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PendingProgressUpdatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PendingProgressUpdatesTable,
+      PendingProgressUpdate,
+      $$PendingProgressUpdatesTableFilterComposer,
+      $$PendingProgressUpdatesTableOrderingComposer,
+      $$PendingProgressUpdatesTableAnnotationComposer,
+      $$PendingProgressUpdatesTableCreateCompanionBuilder,
+      $$PendingProgressUpdatesTableUpdateCompanionBuilder,
+      (
+        PendingProgressUpdate,
+        BaseReferences<
+          _$AppDatabase,
+          $PendingProgressUpdatesTable,
+          PendingProgressUpdate
+        >,
+      ),
+      PendingProgressUpdate,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4344,5 +4673,10 @@ class $AppDatabaseManager {
       $$ExerciseProgressCachesTableTableManager(
         _db,
         _db.exerciseProgressCaches,
+      );
+  $$PendingProgressUpdatesTableTableManager get pendingProgressUpdates =>
+      $$PendingProgressUpdatesTableTableManager(
+        _db,
+        _db.pendingProgressUpdates,
       );
 }

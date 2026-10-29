@@ -1,5 +1,6 @@
 import 'package:ai_gym_assistant/core/database/tables/exercise_definitions.dart';
 import 'package:ai_gym_assistant/core/database/tables/exercise_progress_caches.dart';
+import 'package:ai_gym_assistant/core/database/tables/pending_progress_updates.dart';
 import 'package:ai_gym_assistant/core/database/tables/user_profiles.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
@@ -19,6 +20,7 @@ part 'app_database.g.dart';
     ExerciseDefinitions,
     UserProfiles,
     ExerciseProgressCaches,
+    PendingProgressUpdates,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -26,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
@@ -41,6 +43,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 4) {
         await m.createTable(exerciseProgressCaches);
+      }
+      if (from < 5) {
+        await m.createTable(pendingProgressUpdates);
       }
     },
   );
